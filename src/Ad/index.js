@@ -21,7 +21,10 @@ class Ad extends Component {
   });
   destroyAd = this.cmdPush(() => window.googletag.destroySlots([this.slot]));
   addService = this.cmdPush(() => this.slot.addService(window.googletag.pubads()));
-  setCollapseEmpty = this.cmdPush(() => this.slot.setCollapseEmptyDiv(this.props.setCollapseEmpty));
+  setCollapseEmpty = this.cmdPush(() => {
+    if (!this.props.setCollapseEmpty) return;
+    this.slot.setCollapseEmptyDiv(true, true)
+  });
   enableService = this.cmdPush(() => window.googletag.enableServices());
   setTargeting = this.cmdPush(() => R.toPairs(this.props.targeting).map(([k, v]) => this.slot.setTargeting(k, v)));
   setMQListeners = this.cmdPush(() => {
@@ -41,7 +44,7 @@ class Ad extends Component {
     this.createSlot();
     this.setMappingSize();
     this.setMQListeners();
-    // this.setCollapseEmpty();
+    this.setCollapseEmpty();
     this.addService();
     this.setTargeting();
     this.enableService();
@@ -49,7 +52,7 @@ class Ad extends Component {
   }
 
   componentWillUnmount() {
-    this.destroy();
+    this.destroyAd();
   }
 
   render() {
@@ -57,12 +60,11 @@ class Ad extends Component {
       <>
         <button onClick={this.refresh}>refresh</button>
         <button onClick={this.destroyAd}>Destroy</button>
-        <div style={{
-          height: '300vh'
-        }}>
+        <div style={{ overflow: 'hidden' }}>
           <div
             id={this.props.id}
             className={this.props.className}
+            style={this.props.style}
           >
           </div>
         </div>
@@ -73,6 +75,7 @@ class Ad extends Component {
 
 Ad.defaultProps = {
   id: 'id',
+  style: {},
   className: null,
   adUnitPath: '/6355419/Travel/Europe/France/Paris',
   size: [300, 250],
@@ -82,9 +85,13 @@ Ad.defaultProps = {
 
 Ad.propTypes = {
   id: PropTypes.string.isRequired,
+  style: PropTypes.object,
   className: PropTypes.string,
   adUnitPath: PropTypes.string.isRequired,
-  size: PropTypes.array.isRequired,
+  size: PropTypes.oneOfType([
+    PropTypes.array.isRequired,
+    PropTypes.string.isRequired,
+  ]),
   sizeMapping: PropTypes.arrayOf(
     PropTypes.shape({
       viewPort: PropTypes.arrayOf(PropTypes.number),
