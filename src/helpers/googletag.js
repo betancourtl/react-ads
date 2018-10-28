@@ -34,31 +34,6 @@ export const startGoogleTagQue = () => {
 };
 
 /**
- * Will monkey patch the global gootletag functions so that we can subscribe to
- * Whenever the function is called.
- * @function
- * @param pubsub {object} - PubSub instance used to emit events.
- */
-export const createGoogleTagEvents = (pubsub) => {
-  window.googletag.cmd.push(() => {
-    const defineSlot = window.googletag.defineSlot;
-    window.googletag.defineSlot = function () {
-      const slot = defineSlot.apply(this, arguments);
-      pubsub.emit('define', slot);
-      return slot;
-    };
-  });
-
-  window.googletag.cmd.push(() => {
-    const refresh = window.googletag.pubads().refresh;
-    window.googletag.pubads().refresh = function () {
-      refresh.apply(this, arguments);
-      pubsub.emit('refresh');
-    };
-  });
-};
-
-/**
  * Will enable singleRequests so that multiple ads can be fetched from a single
  * HTTP request.
  * @function
@@ -107,5 +82,42 @@ export const enableLazyLoad = (isEnabled = true) => {
 export const setCentering = (isCentered = false) => {
   window.googletag.cmd.push(() => {
     window.googletag.pubads().setCentering(isCentered);
+  });
+};
+
+/**
+ * Will monkey patch the global googletag functions so that we can subscribe to
+ * Whenever the function is called.
+ * @function
+ * @param pubSub {object} - PubSub instance used to emit events.
+ */
+export const createGoogleTagEvents = pubSub => {
+
+  // Listen to the defineSlot function when it is called
+  window.googletag.cmd.push(() => {
+    const defineSlot = window.googletag.defineSlot;
+    window.googletag.defineSlot = function () {
+      const slot = defineSlot.apply(this, arguments);
+      pubSub.emit('defineSlot', slot);
+      return slot;
+    };
+  });
+
+  // Listen to the refresh function when it is called
+  window.googletag.cmd.push(() => {
+    const refresh = window.googletag.pubads().refresh;
+    window.googletag.pubads().refresh = function () {
+      refresh.apply(this, arguments);
+      pubSub.emit('refresh');
+    };
+  });
+
+  // Listen to the destroySlots function when it is called
+  window.googletag.cmd.push(() => {
+    const destroySlots = window.googletag.destroySlots;
+    window.googletag.destroySlots = function () {
+      destroySlots.apply(this, arguments);
+      pubSub.emit('destroySlots');
+    };
   });
 };

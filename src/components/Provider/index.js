@@ -1,14 +1,15 @@
+/* eslint-disable no-console */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
 import {
+  setCentering,
+  enableLazyLoad,
   createGPTScript,
   startGoogleTagQue,
-  createGoogleTagEvents,
-  enableSingleRequest,
   disableInitialLoad,
-  enableLazyLoad,
-  setCentering,
+  enableSingleRequest,
+  createGoogleTagEvents,
 } from '../../helpers/googletag';
 
 class Provider extends Component {
@@ -16,12 +17,15 @@ class Provider extends Component {
     super(props);
     const pubSub = new PubSub();
     window.pubSub = pubSub;
-    pubSub.on('define', (slot) => console.log(slot.getSlotElementId()));
+    pubSub.on('defineSlot', (slot) => console.log('defineSlot', slot.getSlotElementId()));
     pubSub.on('refresh', () => console.log('refreshed'));
+    pubSub.on('destroySlots', () => console.log('destroySlots'));
+    pubSub.on('apiReady', (val) => console.log('apiReady', val));
+    pubSub.on('pubadsReady', (val) => console.log('pubadsReady', val));
     // creates the gpt script
     createGPTScript();
     // creates the gpt queue
-    startGoogleTagQue();
+    startGoogleTagQue(pubSub);
     // create gpt events that we can hook into (refresh, display, destroy) slots
     createGoogleTagEvents(pubSub);
     // enables SR mode
