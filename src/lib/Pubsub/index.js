@@ -33,6 +33,10 @@ class PubSub {
     }
   };
 
+  clear = () => {
+    this.state.events = {};
+  };
+
   /**
    * Will emit an action and then call the functions that are subscribed to
    * the event.

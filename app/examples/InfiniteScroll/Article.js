@@ -19,7 +19,7 @@ const Article = (props) => {
         />
       </div>
       <div>
-        <div style={{ height: '300vh' }} />
+        <div style={{ height: '100vh' }} />
         <Ad
           id={`${props.id}-div-2`}
           adUnitPath="/6355419/travel"
@@ -34,7 +34,7 @@ const Article = (props) => {
         />
       </div>
       <div>
-        <div style={{ height: '900vh' }} />
+        <div style={{ height: '200vh' }} />
         <Ad
           id={`${props.id}-div-3`}
           adUnitPath="/6355419/travel"

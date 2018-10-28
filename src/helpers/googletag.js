@@ -65,12 +65,20 @@ export const disableInitialLoad = (disabled) => {
  * the ad meets the lazy lading requirements.
  * HTTP request.
  * @function
- * @param isEnabled {bool}
+ * @param props {bool | object}
  */
-export const enableLazyLoad = (isEnabled = true) => {
-  if (!isEnabled) return;
+export const enableLazyLoad = (props = true) => {
+  if (!props) return;
   window.googletag.cmd.push(() => {
-    window.googletag.pubads().enableLazyLoad(isEnabled);
+    const value = props === true
+      ? {
+        fetchMarginPercent: 10,  // Fetch slots within 5 viewports.
+        renderMarginPercent: 10,  // Render slots within 2 viewports.
+        mobileScaling: 1  // Double the above values on mobile.
+      }
+      : props;
+
+    window.googletag.pubads().enableLazyLoad(value);
   });
 };
 
@@ -82,6 +90,64 @@ export const enableLazyLoad = (isEnabled = true) => {
 export const setCentering = (isCentered = false) => {
   window.googletag.cmd.push(() => {
     window.googletag.pubads().setCentering(isCentered);
+  });
+};
+
+/**
+ * Will enable Async rendering. By default this is true, Only use this
+ * to override a previous setting.
+ * @function
+ * @param isEnabled {bool}
+ */
+export const enableAsyncRendering = (isEnabled = false) => {
+  if (!isEnabled) return;
+  window.googletag.cmd.push(() => {
+    window.googletag.pubads().enableAsyncRendering(isEnabled);
+  });
+};
+
+/**
+ * Will enable Sync rendering of ads.
+ * @function
+ * @param isEnabled {bool}
+ */
+export const enableSyncRendering = (isEnabled = false) => {
+  if (!isEnabled) return;
+  window.googletag.cmd.push(() => {
+    window.googletag.pubads().enableSyncRendering(isEnabled);
+  });
+};
+
+/**
+ * Will enable enable video ads.
+ * @function
+ * @param isEnabled {bool}
+ */
+export const enableVideoAds = (isEnabled = false) => {
+  if (!isEnabled) return;
+  window.googletag.cmd.push(() => {
+    window.googletag.pubads().enableVideoAds();
+  });
+};
+
+/**
+ * Will collapse empty divs.
+ * @function
+ * @param isEnabled {bool}
+ */
+export const collapseEmptyDivs = (isEnabled = false) => {
+  window.googletag.cmd.push(() => {
+    window.googletag.pubads().collapseEmptyDivs(isEnabled);
+  });
+};
+
+/**
+ * Will get the googletag version
+ * @function
+ */
+export const getVersion = () => {
+  window.googletag.cmd.push(() => {
+    window.googletag.getVersion();
   });
 };
 
@@ -107,8 +173,9 @@ export const createGoogleTagEvents = pubSub => {
   window.googletag.cmd.push(() => {
     const refresh = window.googletag.pubads().refresh;
     window.googletag.pubads().refresh = function () {
-      refresh.apply(this, arguments);
+      const result = refresh.apply(this, arguments);
       pubSub.emit('refresh');
+      return result;
     };
   });
 
@@ -116,8 +183,102 @@ export const createGoogleTagEvents = pubSub => {
   window.googletag.cmd.push(() => {
     const destroySlots = window.googletag.destroySlots;
     window.googletag.destroySlots = function () {
-      destroySlots.apply(this, arguments);
+      const result = destroySlots.apply(this, arguments);
       pubSub.emit('destroySlots');
+      return result;
     };
   });
+
+  // Listen to the disableInitialLoad function when it is called
+  window.googletag.cmd.push(() => {
+    const disableInitialLoad = window.googletag.pubads().disableInitialLoad;
+    window.googletag.pubads().disableInitialLoad = function () {
+      const result = disableInitialLoad.apply(this, arguments);
+      pubSub.emit('disableInitialLoad', true);
+      return result;
+    };
+  });
+
+  // Listen to the enableAsyncRendering function when it is called
+  window.googletag.cmd.push(() => {
+    const enableAsyncRendering = window.googletag.pubads().enableAsyncRendering;
+    window.googletag.pubads().enableAsyncRendering = function () {
+      const result = enableAsyncRendering.apply(this, arguments);
+      pubSub.emit('enableAsyncRendering', result);
+      return result;
+    };
+  });
+
+  // Listen to the enableAsyncRendering function when it is called
+  window.googletag.cmd.push(() => {
+    const enableSyncRendering = window.googletag.pubads().enableSyncRendering;
+    window.googletag.pubads().enableSyncRendering = function () {
+      const result = enableSyncRendering.apply(this, arguments);
+      pubSub.emit('enableSyncRendering', result);
+      return result;
+    };
+  });
+
+  // Listen to the enableLazyLoad function when it is called
+  window.googletag.cmd.push(() => {
+    const enableLazyLoad = window.googletag.pubads().enableLazyLoad;
+    window.googletag.pubads().enableLazyLoad = function () {
+      const result = enableLazyLoad.apply(this, arguments);
+      pubSub.emit('enableLazyLoad', true);
+      return result;
+    };
+  });
+
+  // Listen to the enableSingleRequest function when it is called
+  window.googletag.cmd.push(() => {
+    const enableSingleRequest = window.googletag.pubads().enableSingleRequest;
+    window.googletag.pubads().enableSingleRequest = function () {
+      const result = enableSingleRequest.apply(this);
+      pubSub.emit('enableSingleRequest', result);
+      return result;
+    };
+  });
+
+  // Listen to the enableVideoAds function when it is called
+  window.googletag.cmd.push(() => {
+    const enableVideoAds = window.googletag.pubads().enableVideoAds;
+    window.googletag.pubads().enableVideoAds = function () {
+      const result = enableVideoAds.apply(this, arguments);
+      pubSub.emit('enableVideoAds', true);
+      return result;
+    };
+  });
+
+  // Listen to the setCentering function when it is called
+  window.googletag.cmd.push(() => {
+    const setCentering = window.googletag.pubads().setCentering;
+    window.googletag.pubads().setCentering = function (...props) {
+      const result = setCentering.apply(this, arguments);
+      pubSub.emit('setCentering', ...props);
+      return result;
+    };
+  });
+
+  // Listen to the collapseEmptyDivs function when it is called
+  window.googletag.cmd.push(() => {
+    const collapseEmptyDivs = window.googletag.pubads().collapseEmptyDivs;
+    window.googletag.pubads().collapseEmptyDivs = function (...props) {
+      const result = collapseEmptyDivs.apply(this, arguments);
+      pubSub.emit('collapseEmptyDivs', ...props);
+      return result;
+    };
+  });
+
+
+  // Listen to the getVersion function when it is called
+  window.googletag.cmd.push(() => {
+    const getVersion = window.googletag.getVersion;
+    window.googletag.getVersion = function () {
+      const result = getVersion.apply(this, arguments);
+      pubSub.emit('getVersion', result);
+      return result;
+    };
+  });
+
 };
+

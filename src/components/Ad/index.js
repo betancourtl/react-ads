@@ -17,7 +17,6 @@ class Ad extends Component {
   display = this.cmdPush(() => window.googletag.display(this.props.id));
   refresh = this.cmdPush(() => {
     window.googletag.pubads().refresh([this.slot]);
-    this.forceUpdate();
   });
   destroyAd = this.cmdPush(() => window.googletag.destroySlots([this.slot]));
   addService = this.cmdPush(() => this.slot.addService(window.googletag.pubads()));
@@ -25,7 +24,6 @@ class Ad extends Component {
     if (!this.props.setCollapseEmpty) return;
     this.slot.setCollapseEmptyDiv(true, true)
   });
-  enableService = this.cmdPush(() => window.googletag.enableServices());
   setTargeting = this.cmdPush(() => R.toPairs(this.props.targeting).map(([k, v]) => this.slot.setTargeting(k, v)));
   setMQListeners = this.cmdPush(() => {
     if (!this.props.sizeMapping) return;
@@ -47,8 +45,7 @@ class Ad extends Component {
     this.setCollapseEmpty();
     this.addService();
     this.setTargeting();
-    this.enableService();
-    this.display();
+    this.display()
   }
 
   componentWillUnmount() {
