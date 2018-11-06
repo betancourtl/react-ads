@@ -20,8 +20,8 @@ class PubSub {
    * Will subscribe to an event, so that when the emit method is called. The
    * callback function can be called.
    * @function
-   * @param eventName {string} - The event name that we want to subscript to.
-   * @param eventCallback {function} - The function that we want to call when an event happens.
+   * @param {string} eventName - The event name that we want to subscript to.
+   * @param {function} eventCallback - The function that we want to call when an event happens.
    */
   on = (eventName = '', eventCallback) => {
     const events = this.state.events[eventName];
@@ -41,8 +41,8 @@ class PubSub {
    * Will emit an action and then call the functions that are subscribed to
    * the event.
    * @function
-   * @param eventName {string} - The event that we want to emit.
-   * @param props {*} - parameters to pass to the callback.
+   * @param {string} eventName - The event that we want to emit.
+   * @param {*} props - parameters to pass to the callback.
    */
   emit = (eventName = '', ...props) => {
     const event = this.state.events[eventName];

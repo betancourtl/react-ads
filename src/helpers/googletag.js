@@ -37,7 +37,7 @@ export const startGoogleTagQue = () => {
  * Will enable singleRequests so that multiple ads can be fetched from a single
  * HTTP request.
  * @function
- * @param enabled {bool}
+ * @param {bool} enabled
  */
 export const enableSingleRequest = (enabled) => {
   if (!enabled) return;
@@ -49,7 +49,7 @@ export const enableSingleRequest = (enabled) => {
 /**
  * Will stop the initial ad load.
  * @function
- * @param disabled {bool}
+ * @param {bool} disabled
  */
 export const disableInitialLoad = (disabled) => {
   if (disabled)
@@ -65,7 +65,7 @@ export const disableInitialLoad = (disabled) => {
  * the ad meets the lazy lading requirements.
  * HTTP request.
  * @function
- * @param props {bool | object}
+ * @param {bool | object} props
  */
 export const enableLazyLoad = (props = true) => {
   if (!props) return;
@@ -85,7 +85,7 @@ export const enableLazyLoad = (props = true) => {
 /**
  * Will center the ads automatically.
  * @function
- * @param isCentered {bool}
+ * @param {bool} isCentered
  */
 export const setCentering = (isCentered = false) => {
   window.googletag.cmd.push(() => {
@@ -97,7 +97,7 @@ export const setCentering = (isCentered = false) => {
  * Will enable Async rendering. By default this is true, Only use this
  * to override a previous setting.
  * @function
- * @param isEnabled {bool}
+ * @param {bool} isEnabled
  */
 export const enableAsyncRendering = (isEnabled = false) => {
   if (!isEnabled) return;
@@ -109,7 +109,7 @@ export const enableAsyncRendering = (isEnabled = false) => {
 /**
  * Will enable Sync rendering of ads.
  * @function
- * @param isEnabled {bool}
+ * @param {bool} isEnabled
  */
 export const enableSyncRendering = (isEnabled = false) => {
   if (!isEnabled) return;
@@ -121,7 +121,7 @@ export const enableSyncRendering = (isEnabled = false) => {
 /**
  * Will enable enable video ads.
  * @function
- * @param isEnabled {bool}
+ * @param {bool} isEnabled
  */
 export const enableVideoAds = (isEnabled = false) => {
   if (!isEnabled) return;
@@ -131,9 +131,9 @@ export const enableVideoAds = (isEnabled = false) => {
 };
 
 /**
- * Will collapse empty divs.
+ * Will collapse empty divs..
  * @function
- * @param isEnabled {bool}
+ * @param {bool} isEnabled
  */
 export const collapseEmptyDivs = (isEnabled = false) => {
   window.googletag.cmd.push(() => {
@@ -142,7 +142,7 @@ export const collapseEmptyDivs = (isEnabled = false) => {
 };
 
 /**
- * Will get the googletag version
+ * Will get the googletag version.
  * @function
  */
 export const getVersion = () => {
@@ -152,14 +152,24 @@ export const getVersion = () => {
 };
 
 /**
+ * Will enable googletag services.
+ * @function
+ */
+export const enableServices = () => {
+  window.googletag.cmd.push(() => {
+    window.googletag.enableServices();
+  });
+};
+
+/**
  * Will monkey patch the global googletag functions so that we can subscribe to
  * Whenever the function is called.
  * @function
- * @param pubSub {object} - PubSub instance used to emit events.
+ * @param {object} pubSub - PubSub instance used to emit events.
  */
 export const createGoogleTagEvents = pubSub => {
 
-  // Listen to the defineSlot function when it is called
+  // Listen to the defineSlot function when it is called.
   window.googletag.cmd.push(() => {
     const defineSlot = window.googletag.defineSlot;
     window.googletag.defineSlot = function () {
@@ -169,7 +179,7 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
-  // Listen to the refresh function when it is called
+  // Listen to the refresh function when it is called.
   window.googletag.cmd.push(() => {
     const refresh = window.googletag.pubads().refresh;
     window.googletag.pubads().refresh = function () {
@@ -179,7 +189,7 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
-  // Listen to the destroySlots function when it is called
+  // Listen to the destroySlots function when it is called.
   window.googletag.cmd.push(() => {
     const destroySlots = window.googletag.destroySlots;
     window.googletag.destroySlots = function () {
@@ -189,7 +199,7 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
-  // Listen to the disableInitialLoad function when it is called
+  // Listen to the disableInitialLoad function when it is called.
   window.googletag.cmd.push(() => {
     const disableInitialLoad = window.googletag.pubads().disableInitialLoad;
     window.googletag.pubads().disableInitialLoad = function () {
@@ -199,7 +209,7 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
-  // Listen to the enableAsyncRendering function when it is called
+  // Listen to the enableAsyncRendering function when it is called.
   window.googletag.cmd.push(() => {
     const enableAsyncRendering = window.googletag.pubads().enableAsyncRendering;
     window.googletag.pubads().enableAsyncRendering = function () {
@@ -209,7 +219,7 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
-  // Listen to the enableAsyncRendering function when it is called
+  // Listen to the enableAsyncRendering function when it is called.
   window.googletag.cmd.push(() => {
     const enableSyncRendering = window.googletag.pubads().enableSyncRendering;
     window.googletag.pubads().enableSyncRendering = function () {
@@ -219,7 +229,7 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
-  // Listen to the enableLazyLoad function when it is called
+  // Listen to the enableLazyLoad function when it is called.
   window.googletag.cmd.push(() => {
     const enableLazyLoad = window.googletag.pubads().enableLazyLoad;
     window.googletag.pubads().enableLazyLoad = function () {
@@ -229,7 +239,7 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
-  // Listen to the enableSingleRequest function when it is called
+  // Listen to the enableSingleRequest function when it is called.
   window.googletag.cmd.push(() => {
     const enableSingleRequest = window.googletag.pubads().enableSingleRequest;
     window.googletag.pubads().enableSingleRequest = function () {
@@ -239,7 +249,7 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
-  // Listen to the enableVideoAds function when it is called
+  // Listen to the enableVideoAds function when it is called.
   window.googletag.cmd.push(() => {
     const enableVideoAds = window.googletag.pubads().enableVideoAds;
     window.googletag.pubads().enableVideoAds = function () {
@@ -249,7 +259,7 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
-  // Listen to the setCentering function when it is called
+  // Listen to the setCentering function when it is called.
   window.googletag.cmd.push(() => {
     const setCentering = window.googletag.pubads().setCentering;
     window.googletag.pubads().setCentering = function (...props) {
@@ -259,7 +269,7 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
-  // Listen to the collapseEmptyDivs function when it is called
+  // Listen to the collapseEmptyDivs function when it is called.
   window.googletag.cmd.push(() => {
     const collapseEmptyDivs = window.googletag.pubads().collapseEmptyDivs;
     window.googletag.pubads().collapseEmptyDivs = function (...props) {
@@ -269,8 +279,7 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
-
-  // Listen to the getVersion function when it is called
+  // Listen to the getVersion function when it is called.
   window.googletag.cmd.push(() => {
     const getVersion = window.googletag.getVersion;
     window.googletag.getVersion = function () {
@@ -280,5 +289,14 @@ export const createGoogleTagEvents = pubSub => {
     };
   });
 
+  // Listen to the enableServices function when it is called.
+  window.googletag.cmd.push(() => {
+    const enableServices = window.googletag.enableServices;
+    window.googletag.enableServices = function () {
+      const result = enableServices.apply(this, arguments);
+      pubSub.emit('enableServices', true);
+      return result;
+    };
+  });
 };
 

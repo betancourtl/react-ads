@@ -6,6 +6,7 @@ import {
   getVersion,
   setCentering,
   enableLazyLoad,
+  enableServices,
   enableVideoAds,
   createGPTScript,
   startGoogleTagQue,
@@ -59,6 +60,7 @@ class Provider extends Component {
     this.pubSub.on('defineSlot', (slot) => console.log('defineSlot', slot.getSlotElementId()));
     this.pubSub.on('refresh', () => console.log('refreshed'));
     this.pubSub.on('destroySlots', () => console.log('destroySlots'));
+    this.pubSub.on('enableServices', () => console.log('enableServices'));
     this.pubSub.on('disableInitialLoad', (disableInitialLoad) => this.setStateInConstructor({ disableInitialLoad }));
     this.pubSub.on('enableAsyncRendering', (enableAsyncRendering) => this.setStateInConstructor({ enableAsyncRendering }));
     this.pubSub.on('enableLazyLoad', (enableLazyLoad) => this.setStateInConstructor({ enableLazyLoad }));
@@ -85,12 +87,10 @@ class Provider extends Component {
     collapseEmptyDivs(this.props.collapseEmptyDivs);
     // center ads
     setCentering(this.props.setCentering);
-    //getVersion
+    // getVersion
     getVersion();
-
-    window.googletag.cmd.push(() => {
-      window.googletag.enableServices();
-    });
+    // Allow ads to be fetched.
+    enableServices();
   }
 
   componentDidMount() {
