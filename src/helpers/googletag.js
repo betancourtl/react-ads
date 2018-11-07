@@ -3,9 +3,10 @@
  */
 
 /**
- * Will create the google tag scripts and load the googletag
- * library.
+ * Will create the google tag scripts and load the googletag library.
+ *
  * @function
+ * @returns {void}
  */
 export const createGPTScript = () => {
   const id = 'react-ads-google-tag-script';
@@ -24,9 +25,10 @@ export const createGPTScript = () => {
 };
 
 /**
- * Will create the googleTag que for handling asynchronous
- * googletag function calls.
+ * Will create the googleTag queue for handling asynchronous calls.
+ *
  * @function
+ * @returns {void}
  */
 export const startGoogleTagQue = () => {
   window.googletag = window.googletag || {};
@@ -36,10 +38,12 @@ export const startGoogleTagQue = () => {
 /**
  * Will enable singleRequests so that multiple ads can be fetched from a single
  * HTTP request.
+ *
  * @function
  * @param {bool} enabled
+ * @returns {void}
  */
-export const enableSingleRequest = (enabled) => {
+export const enableSingleRequest = enabled => {
   if (!enabled) return;
   window.googletag.cmd.push(() => {
     window.googletag.pubads().enableSingleRequest();
@@ -48,24 +52,23 @@ export const enableSingleRequest = (enabled) => {
 
 /**
  * Will stop the initial ad load.
+ *
  * @function
  * @param {bool} disabled
  */
 export const disableInitialLoad = (disabled) => {
-  if (disabled)
-    window.googletag.cmd.push(() => {
-      window.googletag.pubads().disableInitialLoad();
-    });
+  if (!disabled) return;
+  window.googletag.cmd.push(() => {
+    window.googletag.pubads().disableInitialLoad();
+  });
 };
 
 /**
- * Will enable lazy loading ads. Be aware that lazy loading and SRA will not
- * work properly when both are enabled. Enabling SRA and lazy load will only lazy
- * load the initial ads and then it will fetch the rest of the other ads whenever
- * the ad meets the lazy lading requirements.
- * HTTP request.
+ * Will enable lazy loading ads.
+ *
  * @function
- * @param {bool | object} props
+ * @param {bool|object} props
+ * @returns {void}
  */
 export const enableLazyLoad = (props = true) => {
   if (!props) return;
@@ -84,8 +87,10 @@ export const enableLazyLoad = (props = true) => {
 
 /**
  * Will center the ads automatically.
+ *
  * @function
  * @param {bool} isCentered
+ * @returns {void}
  */
 export const setCentering = (isCentered = false) => {
   window.googletag.cmd.push(() => {
@@ -96,8 +101,10 @@ export const setCentering = (isCentered = false) => {
 /**
  * Will enable Async rendering. By default this is true, Only use this
  * to override a previous setting.
+ *
  * @function
  * @param {bool} isEnabled
+ * @returns {void}
  */
 export const enableAsyncRendering = (isEnabled = false) => {
   if (!isEnabled) return;
@@ -107,9 +114,11 @@ export const enableAsyncRendering = (isEnabled = false) => {
 };
 
 /**
- * Will enable Sync rendering of ads.
+ * Will enable Synchronous rendering of ads.
+ *
  * @function
  * @param {bool} isEnabled
+ * @returns {void}
  */
 export const enableSyncRendering = (isEnabled = false) => {
   if (!isEnabled) return;
@@ -120,8 +129,10 @@ export const enableSyncRendering = (isEnabled = false) => {
 
 /**
  * Will enable enable video ads.
+ *
  * @function
  * @param {bool} isEnabled
+ * @returns {void}
  */
 export const enableVideoAds = (isEnabled = false) => {
   if (!isEnabled) return;
@@ -131,9 +142,11 @@ export const enableVideoAds = (isEnabled = false) => {
 };
 
 /**
- * Will collapse empty divs..
+ * Will collapse empty divs. Enabling this might cause issues with SRA.
+ *
  * @function
  * @param {bool} isEnabled
+ * @returns {void}
  */
 export const collapseEmptyDivs = (isEnabled = false) => {
   window.googletag.cmd.push(() => {
@@ -143,7 +156,9 @@ export const collapseEmptyDivs = (isEnabled = false) => {
 
 /**
  * Will get the googletag version.
+ *
  * @function
+ * @returns {void}
  */
 export const getVersion = () => {
   window.googletag.cmd.push(() => {
@@ -153,7 +168,9 @@ export const getVersion = () => {
 
 /**
  * Will enable googletag services.
+ *
  * @function
+ * @returns {void}
  */
 export const enableServices = () => {
   window.googletag.cmd.push(() => {
@@ -164,139 +181,48 @@ export const enableServices = () => {
 /**
  * Will monkey patch the global googletag functions so that we can subscribe to
  * Whenever the function is called.
+ *
  * @function
  * @param {object} pubSub - PubSub instance used to emit events.
+ * @returns {void}
  */
 export const createGoogleTagEvents = pubSub => {
-
-  // Listen to the defineSlot function when it is called.
   window.googletag.cmd.push(() => {
-    const defineSlot = window.googletag.defineSlot;
-    window.googletag.defineSlot = function () {
-      const slot = defineSlot.apply(this, arguments);
-      pubSub.emit('defineSlot', slot);
-      return slot;
-    };
-  });
+    const googletag = window.googletag;
+    const pubads = googletag.pubads();
 
-  // Listen to the refresh function when it is called.
-  window.googletag.cmd.push(() => {
-    const refresh = window.googletag.pubads().refresh;
-    window.googletag.pubads().refresh = function () {
-      const result = refresh.apply(this, arguments);
-      pubSub.emit('refresh');
-      return result;
+    const events = {
+      googletag: [
+        'defineSlot',
+        'destroySlots',
+        'refresh',
+      ],
+      pubads: [
+        'disableInitialLoad',
+        'enableAsyncRendering',
+        'enableSyncRendering',
+        'enableLazyLoad',
+        'enableSingleRequest',
+        'enableVideoAds',
+        'setCentering',
+        'collapseEmptyDivs',
+        'getVersion',
+        'enableServices',
+      ],
     };
-  });
 
-  // Listen to the destroySlots function when it is called.
-  window.googletag.cmd.push(() => {
-    const destroySlots = window.googletag.destroySlots;
-    window.googletag.destroySlots = function () {
-      const result = destroySlots.apply(this, arguments);
-      pubSub.emit('destroySlots');
-      return result;
+    const monkeyPatch = (objName, fnName) => {
+      const fn = [objName][fnName];
+      [objName][fnName] = function () {
+        const slot = fn.apply(this, arguments);
+        pubSub.emit(fnName, slot);
+        return slot;
+      };
     };
-  });
 
-  // Listen to the disableInitialLoad function when it is called.
-  window.googletag.cmd.push(() => {
-    const disableInitialLoad = window.googletag.pubads().disableInitialLoad;
-    window.googletag.pubads().disableInitialLoad = function () {
-      const result = disableInitialLoad.apply(this, arguments);
-      pubSub.emit('disableInitialLoad', true);
-      return result;
-    };
-  });
-
-  // Listen to the enableAsyncRendering function when it is called.
-  window.googletag.cmd.push(() => {
-    const enableAsyncRendering = window.googletag.pubads().enableAsyncRendering;
-    window.googletag.pubads().enableAsyncRendering = function () {
-      const result = enableAsyncRendering.apply(this, arguments);
-      pubSub.emit('enableAsyncRendering', result);
-      return result;
-    };
-  });
-
-  // Listen to the enableAsyncRendering function when it is called.
-  window.googletag.cmd.push(() => {
-    const enableSyncRendering = window.googletag.pubads().enableSyncRendering;
-    window.googletag.pubads().enableSyncRendering = function () {
-      const result = enableSyncRendering.apply(this, arguments);
-      pubSub.emit('enableSyncRendering', result);
-      return result;
-    };
-  });
-
-  // Listen to the enableLazyLoad function when it is called.
-  window.googletag.cmd.push(() => {
-    const enableLazyLoad = window.googletag.pubads().enableLazyLoad;
-    window.googletag.pubads().enableLazyLoad = function () {
-      const result = enableLazyLoad.apply(this, arguments);
-      pubSub.emit('enableLazyLoad', true);
-      return result;
-    };
-  });
-
-  // Listen to the enableSingleRequest function when it is called.
-  window.googletag.cmd.push(() => {
-    const enableSingleRequest = window.googletag.pubads().enableSingleRequest;
-    window.googletag.pubads().enableSingleRequest = function () {
-      const result = enableSingleRequest.apply(this);
-      pubSub.emit('enableSingleRequest', result);
-      return result;
-    };
-  });
-
-  // Listen to the enableVideoAds function when it is called.
-  window.googletag.cmd.push(() => {
-    const enableVideoAds = window.googletag.pubads().enableVideoAds;
-    window.googletag.pubads().enableVideoAds = function () {
-      const result = enableVideoAds.apply(this, arguments);
-      pubSub.emit('enableVideoAds', true);
-      return result;
-    };
-  });
-
-  // Listen to the setCentering function when it is called.
-  window.googletag.cmd.push(() => {
-    const setCentering = window.googletag.pubads().setCentering;
-    window.googletag.pubads().setCentering = function (...props) {
-      const result = setCentering.apply(this, arguments);
-      pubSub.emit('setCentering', ...props);
-      return result;
-    };
-  });
-
-  // Listen to the collapseEmptyDivs function when it is called.
-  window.googletag.cmd.push(() => {
-    const collapseEmptyDivs = window.googletag.pubads().collapseEmptyDivs;
-    window.googletag.pubads().collapseEmptyDivs = function (...props) {
-      const result = collapseEmptyDivs.apply(this, arguments);
-      pubSub.emit('collapseEmptyDivs', ...props);
-      return result;
-    };
-  });
-
-  // Listen to the getVersion function when it is called.
-  window.googletag.cmd.push(() => {
-    const getVersion = window.googletag.getVersion;
-    window.googletag.getVersion = function () {
-      const result = getVersion.apply(this, arguments);
-      pubSub.emit('getVersion', result);
-      return result;
-    };
-  });
-
-  // Listen to the enableServices function when it is called.
-  window.googletag.cmd.push(() => {
-    const enableServices = window.googletag.enableServices;
-    window.googletag.enableServices = function () {
-      const result = enableServices.apply(this, arguments);
-      pubSub.emit('enableServices', true);
-      return result;
-    };
+    Object
+      .entries(events)
+      .forEach(([objName, evts = []]) => evts.forEach(evt => monkeyPatch(objName, evt)));
   });
 };
 

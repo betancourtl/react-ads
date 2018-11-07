@@ -23,73 +23,57 @@ class Provider extends Component {
     super(props);
     this.state = {
       ads: [],
-      // properties
-      apiReady: undefined, // ok
-      pubadsReady: undefined, // ok
-
-      // fnCalls
-      disableInitialLoad: undefined, //ok
-      enableAsyncRendering: undefined, // ok
-      enableLazyLoad: undefined, // ok
-      enableSingleRequest: undefined, // ok
-      enableSyncRendering: undefined, // ok
-      enableVideoAds: undefined, // ok
-      setCentering: undefined, // ok
-      collapseEmptyDivs: undefined,
-      version: undefined,
       isMounted: false,
+      version: undefined,
+      apiReady: undefined,
+      pubadsReady: undefined,
+      setCentering: undefined,
+      enableLazyLoad: undefined,
+      enableVideoAds: undefined,
+      collapseEmptyDivs: undefined,
+      disableInitialLoad: undefined,
+      enableSingleRequest: undefined,
+      enableSyncRendering: undefined,
+      enableAsyncRendering: undefined,
     };
-    this.pubSub = new PubSub();
 
-    window.pubSub = this.pubSub;
-    // creates the gpt script
+    this.pubSub = new PubSub();
     createGPTScript();
-    // creates the gpt queue
     startGoogleTagQue();
-    // create gpt events that we can hook into (refresh, display, destroy) slots
     createGoogleTagEvents(this.pubSub);
 
-    // pubads service
-    // pubSub.on('apiReady', (apiReady) => this.setState({ apiReady }));
-    // pubSub.on('pubadsReady', (pubadsReady) => this.setState({ pubadsReady }));
     this.setStateInConstructor = (props) => {
       this.state.isMounted
         ? this.setState(props)
         : this.state = { ...this.state, ...props };
     };
-    this.pubSub.on('defineSlot', (slot) => console.log('defineSlot', slot.getSlotElementId()));
+
+    // pubSub.on('pubadsReady', (pubadsReady) => this.setState({ pubadsReady }));
+    // pubSub.on('apiReady', (apiReady) => this.setState({ apiReady }));
+
     this.pubSub.on('refresh', () => console.log('refreshed'));
     this.pubSub.on('destroySlots', () => console.log('destroySlots'));
     this.pubSub.on('enableServices', () => console.log('enableServices'));
-    this.pubSub.on('disableInitialLoad', (disableInitialLoad) => this.setStateInConstructor({ disableInitialLoad }));
-    this.pubSub.on('enableAsyncRendering', (enableAsyncRendering) => this.setStateInConstructor({ enableAsyncRendering }));
-    this.pubSub.on('enableLazyLoad', (enableLazyLoad) => this.setStateInConstructor({ enableLazyLoad }));
-    this.pubSub.on('enableSingleRequest', (enableSingleRequest) => this.setStateInConstructor({ enableSingleRequest }));
-    this.pubSub.on('enableSyncRendering', (enableSyncRendering) => this.setStateInConstructor({ enableSyncRendering }));
-    this.pubSub.on('enableVideoAds', (enableVideoAds) => this.setStateInConstructor({ enableVideoAds }));
-    this.pubSub.on('setCentering', (setCentering) => this.setStateInConstructor({ setCentering }));
-    this.pubSub.on('collapseEmptyDivs', (collapseEmptyDivs) => this.setStateInConstructor({ collapseEmptyDivs }));
-    this.pubSub.on('getVersion', (version) => this.setStateInConstructor({ version }));
+    this.pubSub.on('getVersion', version => this.setStateInConstructor({ version }));
+    this.pubSub.on('defineSlot', slot => console.log('defineSlot', slot.getSlotElementId()));
+    this.pubSub.on('setCentering', setCentering => this.setStateInConstructor({ setCentering }));
+    this.pubSub.on('enableLazyLoad', enableLazyLoad => this.setStateInConstructor({ enableLazyLoad }));
+    this.pubSub.on('enableVideoAds', enableVideoAds => this.setStateInConstructor({ enableVideoAds }));
+    this.pubSub.on('collapseEmptyDivs', collapseEmptyDivs => this.setStateInConstructor({ collapseEmptyDivs }));
+    this.pubSub.on('disableInitialLoad', disableInitialLoad => this.setStateInConstructor({ disableInitialLoad }));
+    this.pubSub.on('enableSingleRequest', enableSingleRequest => this.setStateInConstructor({ enableSingleRequest }));
+    this.pubSub.on('enableSyncRendering', enableSyncRendering => this.setStateInConstructor({ enableSyncRendering }));
+    this.pubSub.on('enableAsyncRendering', enableAsyncRendering => this.setStateInConstructor({ enableAsyncRendering }));
 
-    // enables SR mode
-    enableSingleRequest(this.props.enableSingleRequest);
-    // enables SR mode
-    enableAsyncRendering(this.props.enableAsyncRendering);
-    // enables SR mode
-    enableSyncRendering(this.props.enableSyncRendering);
-    // disableInitialLoad
-    disableInitialLoad(this.props.disableInitialLoad);
-    // enables video ads
-    enableVideoAds(this.props.enableVideoAds);
-    // enable lazyLoad
-    enableLazyLoad(this.props.enableLazyLoad);
-    // collapses empty divs
-    collapseEmptyDivs(this.props.collapseEmptyDivs);
-    // center ads
-    setCentering(this.props.setCentering);
-    // getVersion
     getVersion();
-    // Allow ads to be fetched.
+    enableSingleRequest(this.props.enableSingleRequest);
+    enableAsyncRendering(this.props.enableAsyncRendering);
+    enableSyncRendering(this.props.enableSyncRendering);
+    disableInitialLoad(this.props.disableInitialLoad);
+    enableVideoAds(this.props.enableVideoAds);
+    enableLazyLoad(this.props.enableLazyLoad);
+    collapseEmptyDivs(this.props.collapseEmptyDivs);
+    setCentering(this.props.setCentering);
     enableServices();
   }
 
@@ -102,12 +86,7 @@ class Provider extends Component {
   }
 
   render() {
-    console.log('state', this.state);
-    return (
-      <div>
-        {this.props.children}
-      </div>
-    );
+    return this.props.children;
   }
 }
 
@@ -124,23 +103,23 @@ Provider.defaultProps = {
 
 Provider.propTypes = {
   setCentering: PropTypes.bool,
+  enableVideoAds: PropTypes.bool,
+  collapseEmptyDivs: PropTypes.bool,
+  disableInitialLoad: PropTypes.bool,
+  enableSingleRequest: PropTypes.bool,
+  enableSyncRendering: PropTypes.bool,
+  enableAsyncRendering: PropTypes.bool,
+  children: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.arrayOf(PropTypes.node),
+  ]),
   enableLazyLoad: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.shape({
-      fetchMarginPercent: PropTypes.number,  // 500 = Fetch slots within 5 viewports.
-      renderMarginPercent: PropTypes.number,  // 200 = Render slots within 2 viewports.
-      mobileScaling: PropTypes.number  // 2.0 = Double the above values on mobile.
+      fetchMarginPercent: PropTypes.number,
+      renderMarginPercent: PropTypes.number,
+      mobileScaling: PropTypes.number,
     })
-  ]),
-  disableInitialLoad: PropTypes.bool,
-  enableSingleRequest: PropTypes.bool,
-  enableAsyncRendering: PropTypes.bool,
-  enableSyncRendering: PropTypes.bool,
-  enableVideoAds: PropTypes.bool,
-  collapseEmptyDivs: PropTypes.bool,
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
   ]),
 };
 
