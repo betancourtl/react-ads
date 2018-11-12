@@ -19,7 +19,7 @@ const styles = {
   }
 };
 
-const Routes = props => {
+const Routes = () => {
   return (
     <BrowserRouter>
       <main style={styles.main}>

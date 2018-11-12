@@ -18,6 +18,15 @@ import {
   createGoogleTagEvents,
 } from '../../helpers/googletag';
 
+
+/**
+ * Enables the googletag service and configures the GPT service.
+ * TODO [] - Create initial ads queue.
+ * TODO [] - Create lazy-loded ads queue, by monkey patching the gpt cmd array.
+ * TODO [] - Create custom lazy-loaded functionality similar to nfl/react-gpt
+ * TODO [] -
+ *
+ */
 class Provider extends Component {
   constructor(props) {
     super(props);
@@ -48,6 +57,7 @@ class Provider extends Component {
         : this.state = { ...this.state, ...props };
     };
 
+    // proxy the apiReady property so that we an load ads when ready.
     // pubSub.on('pubadsReady', (pubadsReady) => this.setState({ pubadsReady }));
     // pubSub.on('apiReady', (apiReady) => this.setState({ apiReady }));
 
@@ -66,22 +76,26 @@ class Provider extends Component {
     this.pubSub.on('enableAsyncRendering', enableAsyncRendering => this.setStateInConstructor({ enableAsyncRendering }));
 
     getVersion();
-    enableSingleRequest(this.props.enableSingleRequest);
-    enableAsyncRendering(this.props.enableAsyncRendering);
-    enableSyncRendering(this.props.enableSyncRendering);
-    disableInitialLoad(this.props.disableInitialLoad);
+    setCentering(this.props.setCentering);
     enableVideoAds(this.props.enableVideoAds);
     enableLazyLoad(this.props.enableLazyLoad);
     collapseEmptyDivs(this.props.collapseEmptyDivs);
-    setCentering(this.props.setCentering);
+    disableInitialLoad(this.props.disableInitialLoad);
+    enableSyncRendering(this.props.enableSyncRendering);
+    enableSingleRequest(this.props.enableSingleRequest);
+    enableAsyncRendering(this.props.enableAsyncRendering);
+    // Must be the last fn to run in the constructor.
     enableServices();
   }
 
   componentDidMount() {
+    // The event listener triggers setState before the component is fully mounted
+    // This triggers an error in react.
     this.setState({ isMounted: true });
   }
 
   componentWillUnmount() {
+    // Clears the event listener.
     this.pubSub.clear();
   }
 

@@ -183,46 +183,54 @@ export const enableServices = () => {
  * Whenever the function is called.
  *
  * @function
- * @param {object} pubSub - PubSub instance used to emit events.
+ * @param {callback} pubSub - PubSub instance used to emit events.
  * @returns {void}
  */
 export const createGoogleTagEvents = pubSub => {
   window.googletag.cmd.push(() => {
-    const googletag = window.googletag;
-    const pubads = googletag.pubads();
+    // Pass this outside the function. There is no need to know about the inner
+    // workings of the pubSub.
+    const callback = (evtName, result) => pubSub.emit(evtName, result);
 
-    const events = {
-      googletag: [
-        'defineSlot',
-        'destroySlots',
-        'refresh',
-      ],
-      pubads: [
-        'disableInitialLoad',
-        'enableAsyncRendering',
-        'enableSyncRendering',
-        'enableLazyLoad',
-        'enableSingleRequest',
-        'enableVideoAds',
-        'setCentering',
-        'collapseEmptyDivs',
-        'getVersion',
-        'enableServices',
-      ],
-    };
+    const fns = [
+      {
+        ref: window.googletag,
+        events: [
+          'defineSlot',
+          'destroySlots',
+          'refresh',
+        ],
+      },
+      {
+        ref: window.googletag.pubads(),
+        events: [
+          'disableInitialLoad',
+          'enableAsyncRendering',
+          'enableSyncRendering',
+          'enableLazyLoad',
+          'enableSingleRequest',
+          'enableVideoAds',
+          'setCentering',
+          'collapseEmptyDivs',
+          'getVersion',
+          'enableServices',
+        ],
+      },
+    ];
 
-    const monkeyPatch = (objName, fnName) => {
-      const fn = [objName][fnName];
-      [objName][fnName] = function () {
-        const slot = fn.apply(this, arguments);
-        pubSub.emit(fnName, slot);
-        return slot;
+    const monkeyPatch = (obj, fnName, cb) => {
+      const fn = obj[fnName];
+      obj[fnName] = function () {
+        const result = fn.apply(this, arguments);
+        cb(fnName, result);
+        return result;
       };
     };
 
-    Object
-      .entries(events)
-      .forEach(([objName, evts = []]) => evts.forEach(evt => monkeyPatch(objName, evt)));
+    fns
+      .forEach(([{ ref, events }]) => {
+        events
+          .forEach(evt => monkeyPatch(ref, evt, callback));
+      });
   });
 };
-
