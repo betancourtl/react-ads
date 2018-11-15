@@ -24,8 +24,6 @@ import {
  * TODO [] - Create initial ads queue.
  * TODO [] - Create lazy-loded ads queue, by monkey patching the gpt cmd array.
  * TODO [] - Create custom lazy-loaded functionality similar to nfl/react-gpt
- * TODO [] -
- *
  */
 class Provider extends Component {
   constructor(props) {

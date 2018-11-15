@@ -186,11 +186,15 @@ export const enableServices = () => {
  * @param {callback} pubSub - PubSub instance used to emit events.
  * @returns {void}
  */
-export const createGoogleTagEvents = pubSub => {
+export const createGoogleTagEvents = (pubSub, log = false) => {
   window.googletag.cmd.push(() => {
+
     // Pass this outside the function. There is no need to know about the inner
     // workings of the pubSub.
-    const callback = (evtName, result) => pubSub.emit(evtName, result);
+    const callback = (evtName, result) => {
+      if (log) console.log('fired ', evtName);
+      pubSub.emit(evtName, result);
+    };
 
     const fns = [
       {
@@ -228,9 +232,8 @@ export const createGoogleTagEvents = pubSub => {
     };
 
     fns
-      .forEach(([{ ref, events }]) => {
-        events
-          .forEach(evt => monkeyPatch(ref, evt, callback));
+      .forEach(({ ref, events }) => {
+        events.forEach(evt => monkeyPatch(ref, evt, callback));
       });
   });
 };
