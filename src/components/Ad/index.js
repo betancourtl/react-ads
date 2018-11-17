@@ -2,11 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as R from 'ramda';
 
-// Add listeners
-// slotVisibilityChanged
-// SlotRenderEnded
-// SlotOnload
-
 class Ad extends Component {
   constructor(props) {
     super(props);
@@ -71,7 +66,6 @@ class Ad extends Component {
 
   slotRenderEnded = this.cmdPush(() => {
     if (!typeof this.props.onSlotRenderEnded === 'function') return;
-
     window.googletag.pubads().addEventListener('slotRenderEnded', e => {
       if (e.slot === this.slot) this.props.onSlotRenderEnded(e);
     });

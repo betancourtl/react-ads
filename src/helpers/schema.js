@@ -66,7 +66,6 @@ const googletag = {
     'allowPushExpansion',
     'sandbox'
   ],
-  // googletag.pubads().addEventListener()
   Service: [
     'addEventListener',
     'getSlots'
