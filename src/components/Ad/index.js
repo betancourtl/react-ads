@@ -12,15 +12,22 @@ class Ad extends Component {
      * @type {object}
      */
     this.slot = null;
+    /**
+     * List of event listener removing functions.
+     * @type {Array}
+     */
+    this.listeners = [];
   }
 
   cmdPush = (cb) => () => window.googletag.cmd.push(cb);
 
-  createSlot = this.cmdPush(() => this.slot = window.googletag.defineSlot(
-    this.props.adUnitPath,
-    this.props.size,
-    this.props.id
-  ));
+  defineSlot = () => {
+    window.googletag.cmd.push(() => {
+      this.slot = this.props.outOfPageSlot
+        ? window.googletag.defineOutOfPageSlot(this.props.adUnitPath, this.props.id)
+        : window.googletag.defineSlot(this.props.adUnitPath, this.props.size, this.props.id);
+    });
+  };
 
   display = this.cmdPush(() => window.googletag.display(this.props.id));
 
@@ -45,7 +52,12 @@ class Ad extends Component {
     this.props.sizeMapping.forEach(({ viewPort: [width] }) => {
       const mq = window.matchMedia(`(max-width: ${width}px)`);
       mq.addListener(this.refresh);
+      this.listeners.push(() => mq.removeListener(this.refresh));
     });
+  });
+
+  unsetMQListeners = this.cmdPush(() => {
+    this.listeners.forEach(fn => fn());
   });
 
   setMappingSize = this.cmdPush(() => {
@@ -55,7 +67,7 @@ class Ad extends Component {
   });
 
   componentDidMount() {
-    this.createSlot();
+    this.defineSlot();
     this.setMappingSize();
     this.setMQListeners();
     this.setCollapseEmpty();
@@ -66,7 +78,7 @@ class Ad extends Component {
 
   componentWillUnmount() {
     this.destroyAd();
-    // this.removeMQ();
+    this.unsetMQListeners();
   }
 
   render() {
@@ -89,6 +101,7 @@ Ad.defaultProps = {
   targeting: {},
   className: null,
   size: [300, 250],
+  outOfPageSlot: false,
   setCollapseEmpty: false,
   adUnitPath: '/6355419/Travel/Europe/France/Paris',
 };
@@ -97,6 +110,7 @@ Ad.propTypes = {
   style: PropTypes.object,
   className: PropTypes.string,
   targeting: PropTypes.object,
+  outOfPageSlot: PropTypes.bool,
   id: PropTypes.string.isRequired,
   setCollapseEmpty: PropTypes.bool,
   adUnitPath: PropTypes.string.isRequired,
