@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as R from 'ramda';
 
-// TODO [] - Remove the event listeners for each individual ad.
+// Add listeners
+// slotVisibilityChanged
+// SlotRenderEnded
+// SlotOnload
 
 class Ad extends Component {
   constructor(props) {
@@ -66,8 +69,43 @@ class Ad extends Component {
     this.slot.defineSizeMapping(mapping.build());
   });
 
+  slotRenderEnded = this.cmdPush(() => {
+    if (!typeof this.props.onSlotRenderEnded === 'function') return;
+
+    window.googletag.pubads().addEventListener('slotRenderEnded', e => {
+      if (e.slot === this.slot) this.props.onSlotRenderEnded(e);
+    });
+  });
+
+  impressionViewable = this.cmdPush(() => {
+    if (!typeof this.props.onImpressionViewable === 'function') return;
+    window.googletag.pubads().addEventListener('impressionViewable', e => {
+      if (e.slot === this.slot) this.props.onImpressionViewable(e);
+    });
+  });
+
+  slotVisibilityChanged = this.cmdPush(() => {
+    if (!typeof this.props.onSlotVisibilityChanged === 'function') return;
+    window.googletag.pubads().addEventListener('slotVisibilityChanged', e => {
+      if (e.slot === this.slot) this.props.onSlotVisibilityChanged(e);
+    });
+  });
+
+  slotOnload = this.cmdPush(() => {
+    if (!typeof this.props.onSlotOnLoad === 'function') return;
+    window.googletag.pubads().addEventListener('slotOnload', e => {
+      if (e.slot === this.slot) this.props.onSlotOnLoad(e);
+    });
+  });
+
   componentDidMount() {
     this.defineSlot();
+    // event start
+    this.slotOnload();
+    this.slotRenderEnded();
+    this.impressionViewable();
+    this.slotVisibilityChanged();
+    // events end
     this.setMappingSize();
     this.setMQListeners();
     this.setCollapseEmpty();
@@ -104,6 +142,10 @@ Ad.defaultProps = {
   outOfPageSlot: false,
   setCollapseEmpty: false,
   adUnitPath: '/6355419/Travel/Europe/France/Paris',
+  onSlotRenderEnded: null,
+  onImpressionViewable: null,
+  onSlotOnLoad: null,
+  onSlotVisibilityChanged: null,
 };
 
 Ad.propTypes = {
@@ -124,6 +166,11 @@ Ad.propTypes = {
       slots: PropTypes.arrayOf(PropTypes.number)
     })
   ),
+  // events
+  onSlotOnLoad: PropTypes.func,
+  onSlotRenderEnded: PropTypes.func,
+  onImpressionViewable: PropTypes.func,
+  onSlotVisibilityChanged: PropTypes.func,
 };
 
 export default Ad;

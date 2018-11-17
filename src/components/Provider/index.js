@@ -59,11 +59,11 @@ class Provider extends Component {
     // pubSub.on('pubadsReady', (pubadsReady) => this.setState({ pubadsReady }));
     // pubSub.on('apiReady', (apiReady) => this.setState({ apiReady }));
 
-    this.pubSub.on('refresh', () => console.log('refreshed'));
-    this.pubSub.on('destroySlots', () => console.log('destroySlots'));
-    this.pubSub.on('enableServices', () => console.log('enableServices'));
+    // this.pubSub.on('refresh', () => console.log('refreshed'));
+    // this.pubSub.on('destroySlots', () => console.log('destroySlots'));
+    // this.pubSub.on('enableServices', () => console.log('enableServices'));
     this.pubSub.on('getVersion', version => this.setStateInConstructor({ version }));
-    this.pubSub.on('defineSlot', slot => console.log('defineSlot', slot.getSlotElementId()));
+    // this.pubSub.on('defineSlot', slot => console.log('defineSlot', slot.getSlotElementId()));
     this.pubSub.on('setCentering', setCentering => this.setStateInConstructor({ setCentering }));
     this.pubSub.on('enableLazyLoad', enableLazyLoad => this.setStateInConstructor({ enableLazyLoad }));
     this.pubSub.on('enableVideoAds', enableVideoAds => this.setStateInConstructor({ enableVideoAds }));
