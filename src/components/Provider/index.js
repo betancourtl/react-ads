@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
+import '../../../prebid/index'; // window.pbjs
+
 import {
   getVersion,
   setCentering,
@@ -17,7 +19,6 @@ import {
   enableAsyncRendering,
   createGoogleTagEvents,
 } from '../../helpers/googletag';
-
 
 /**
  * Enables the googletag service and configures the GPT service.
