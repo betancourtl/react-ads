@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
-import '../../../prebid/index'; // window.pbjs
+import '../../../prebid'; // window.pbjs
 
 import {
   getVersion,

@@ -12,16 +12,20 @@
     "ramda": "^0.25.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.2",
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.6",
+    "@babel/node": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.0.0",
     "babel-loader": "^8.0.4",
+    "chai": "^4.2.0",
     "eslint": "^5.7.0",
     "eslint-plugin-react": "^7.11.1",
     "gulp-cli": "^2.0.1",
     "jsdoc": "^3.5.5",
-    "mocha": "^2.4.5",
+    "mocha": "^2.5.3",
     "prebid.js": "^1.32.0",
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
@@ -36,8 +40,7 @@
     "start": "webpack-dev-server --mode development",
     "lint": "./node_modules/.bin/eslint ./src/**/*.js",
     "jsdoc": "./node_modules/.bin/jsdoc --recurse src",
-    "test": "mocha --recursive ./**/*.spec.js",
-    "test:watch": "npm run test -- --watch",
+    "test:watch": "mocha test --watch --compilers js:@babel/register",
     "prebid:build": "./prebid.sh"
   },
   "keywords": [

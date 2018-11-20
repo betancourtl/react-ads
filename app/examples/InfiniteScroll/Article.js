@@ -11,10 +11,8 @@ const Article = (props) => {
           targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}
           sizeMapping={[
-            { viewPort: [1050, 200], slots: [1024, 120] },
-            { viewPort: [750, 200], slots: [728, 90] },
-            { viewPort: [320, 700], slots: [320, 50] },
-            { viewPort: [100, 100], slots: [300, 50] }
+            { viewPort: [850, 200], slots: [728, 90] },
+            { viewPort: [0, 0], slots: [] },
           ]}
         />
       </div>
@@ -26,10 +24,8 @@ const Article = (props) => {
           targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}
           sizeMapping={[
-            { viewPort: [1050, 200], slots: [1024, 120] },
-            { viewPort: [750, 200], slots: [728, 90] },
-            { viewPort: [320, 700], slots: [320, 50] },
-            { viewPort: [100, 100], slots: [300, 50] }
+            { viewPort: [850, 200], slots: [728, 90] },
+            { viewPort: [0, 0], slots: [] },
           ]}
         />
       </div>
