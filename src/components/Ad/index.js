@@ -41,7 +41,6 @@ class Ad extends Component {
 
   refresh = this.cmdPush(() => {
     window.googletag.pubads().refresh([this.slot]);
-    this._setState({ showBorder: true, });
   });
 
   destroyAd = this.cmdPush(() => window.googletag.destroySlots([this.slot]));
