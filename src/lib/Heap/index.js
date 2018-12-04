@@ -34,24 +34,6 @@ class Heap {
     return this;
   }
 
-  // left index
-  // (0 * 2) + 1 = 1
-  // (1 * 2) + 1 = 3
-  // (2 * 2) + 1 = 5
-  // (3 * 2) + 1 = 7
-
-  // right index
-  // (0 * 2) + 2 = 2
-  // (1 * 2) + 2 = 4
-  // (2 * 2) + 2 = 6
-  // (3 * 2) + 2 = 8
-
-  //         0
-  //      /    \
-  //     1      2
-  //    /\      /\
-  //   3  4    5  6
-
   getLeftIndex = index => {
     return (index * 2) + 1;
   };
@@ -82,7 +64,7 @@ class Heap {
     const size = this.size;
 
     if (left < size && this.compareFn(this.heap[element], this.heap[left])) element = left;
-    if (right < size && this.compareFn(this.heap[left], this.heap[right])) element = right;
+    if (right < size && this.compareFn(this.heap[element], this.heap[right])) element = right;
 
     if (index !== element) {
       this.swap(this.heap, index, element);
@@ -90,11 +72,6 @@ class Heap {
     }
   }
 
-  //         0
-  //      /    \
-  //     1      2
-  //    /\      /\
-  //   3  4    5  6
   extract() {
     if (this.isEmpty) return undefined;
     if (this.size === 1) return this.heap.shift();

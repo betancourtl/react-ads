@@ -9,6 +9,7 @@
     "prop-types": "^15.x.x"
   },
   "dependencies": {
+    "lodash.debounce": "^4.0.8",
     "ramda": "^0.25.0"
   },
   "devDependencies": {

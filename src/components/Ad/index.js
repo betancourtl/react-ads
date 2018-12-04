@@ -5,6 +5,9 @@ import * as R from 'ramda';
 class Ad extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      showBorder: true,
+    };
     /**
      * Reference the the googletag GPT slot.
      * @type {object}
@@ -15,6 +18,11 @@ class Ad extends Component {
      * @type {Array}
      */
     this.listeners = [];
+
+    this._setState = (props) => {
+      if (this.unmounted) return;
+      this.setState(props);
+    };
   }
 
   cmdPush = (cb) => () => window.googletag.cmd.push(cb);
@@ -27,10 +35,13 @@ class Ad extends Component {
     });
   };
 
-  display = this.cmdPush(() => window.googletag.display(this.props.id));
+  display = this.cmdPush(() => {
+    window.googletag.display(this.props.id);
+  });
 
   refresh = this.cmdPush(() => {
     window.googletag.pubads().refresh([this.slot]);
+    this._setState({ showBorder: true, });
   });
 
   destroyAd = this.cmdPush(() => window.googletag.destroySlots([this.slot]));
@@ -50,6 +61,7 @@ class Ad extends Component {
     this.props.sizeMapping.forEach(({ viewPort: [width] }) => {
       const mq = window.matchMedia(`(max-width: ${width}px)`);
       mq.addListener(this.refresh);
+
       this.listeners.push(() => mq.removeListener(this.refresh));
     });
   });
@@ -64,31 +76,41 @@ class Ad extends Component {
     this.slot.defineSizeMapping(mapping.build());
   });
 
+  withAdProps = (props) => ({
+    id: this.props.id,
+    ref: this.ref,
+    ...props,
+  });
+
   slotRenderEnded = this.cmdPush(() => {
-    if (!typeof this.props.onSlotRenderEnded === 'function') return;
+    if (typeof this.props.onSlotRenderEnded !== 'function') return;
+
     window.googletag.pubads().addEventListener('slotRenderEnded', e => {
-      if (e.slot === this.slot) this.props.onSlotRenderEnded(e);
+      if (e.slot === this.slot) this.props.onSlotRenderEnded(this.withAdProps(e));
     });
   });
 
   impressionViewable = this.cmdPush(() => {
-    if (!typeof this.props.onImpressionViewable === 'function') return;
+    if (typeof this.props.onImpressionViewable !== 'function') return;
     window.googletag.pubads().addEventListener('impressionViewable', e => {
-      if (e.slot === this.slot) this.props.onImpressionViewable(e);
+      if (e.slot === this.slot) this.props.onImpressionViewable(this.withAdProps(e));
     });
   });
 
   slotVisibilityChanged = this.cmdPush(() => {
-    if (!typeof this.props.onSlotVisibilityChanged === 'function') return;
+    if (typeof this.props.onSlotVisibilityChanged !== 'function') return;
     window.googletag.pubads().addEventListener('slotVisibilityChanged', e => {
-      if (e.slot === this.slot) this.props.onSlotVisibilityChanged(e);
+      if (e.slot === this.slot) this.props.onSlotVisibilityChanged(this.withAdProps(e));
     });
   });
 
   slotOnload = this.cmdPush(() => {
-    if (!typeof this.props.onSlotOnLoad === 'function') return;
+
     window.googletag.pubads().addEventListener('slotOnload', e => {
-      if (e.slot === this.slot) this.props.onSlotOnLoad(e);
+      if (typeof this.props.onSlotOnLoad === 'function') {
+        if (e.slot === this.slot) this.props.onSlotOnLoad(this.withAdProps(e));
+      }
+      this._setState({ showBorder: false, });
     });
   });
 
@@ -109,17 +131,42 @@ class Ad extends Component {
   }
 
   componentWillUnmount() {
+    this.unmounted = true;
     this.destroyAd();
     this.unsetMQListeners();
   }
 
+  getAdDimensions = (
+    size = { width: this.props.size[0], height: this.props.size[1] },
+    sizeMap = this.props.sizeMapping,
+    wWidth = window.innerWidth,
+  ) => {
+    return sizeMap
+      .sort((a, b) => a.viewPort[0] < b.viewPort[0] ? -1 : 1)
+      .reduce((acc, { viewPort: [vWidth], slots: [width, height] }) => {
+        return (wWidth >= vWidth) ? { width, height } : acc;
+      }, { width: size.width, height: size.height });
+  };
+
   render() {
+    const dim = this.getAdDimensions();
     return (
-      <div style={{ overflow: 'hidden' }}>
+      <div style={{ position: 'relative' }}>
+        <div style={{
+          border: '1px solid black',
+          width: dim.width + 'px',
+          height: dim.height + 'px',
+          display: this.state.showBorder ? 'block' : 'none',
+          left: 0,
+          right: 0,
+          margin: '0 auto',
+          position: 'absolute',
+        }} />
         <div
           id={this.props.id}
+          ref={ref => this.ref = ref}
           className={this.props.className}
-          style={this.props.style}
+          style={{ ...this.props.style, }}
         >
         </div>
       </div>

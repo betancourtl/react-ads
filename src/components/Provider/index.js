@@ -51,16 +51,23 @@ class Provider extends Component {
     createGoogleTagEvents(this.pubSub);
 
     this.setStateInConstructor = (props) => {
-      this.state.isMounted
-        ? this.setState(props)
-        : this.state = { ...this.state, ...props };
+      window.googletag.cmd.push(() => {
+        this.state.isMounted
+          ? this.setState(props)
+          : this.state = { ...this.state, ...props };
+      });
     };
 
     // proxy the apiReady property so that we an load ads when ready.
     // pubSub.on('pubadsReady', (pubadsReady) => this.setState({ pubadsReady }));
     // pubSub.on('apiReady', (apiReady) => this.setState({ apiReady }));
 
-    // this.pubSub.on('refresh', () => console.log('refreshed'));
+    this.pubSub.on('refresh', () => {
+      console.log('refresh called');
+    });
+    this.pubSub.on('display', () => {
+      console.log('display called');
+    });
     // this.pubSub.on('destroySlots', () => console.log('destroySlots'));
     // this.pubSub.on('enableServices', () => console.log('enableServices'));
     this.pubSub.on('getVersion', version => this.setStateInConstructor({ version }));
@@ -83,6 +90,7 @@ class Provider extends Component {
     enableSyncRendering(this.props.enableSyncRendering);
     enableSingleRequest(this.props.enableSingleRequest);
     enableAsyncRendering(this.props.enableAsyncRendering);
+
     // Must be the last fn to run in the constructor.
     enableServices();
   }
