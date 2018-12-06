@@ -1,6 +1,6 @@
 import React from 'react';
 import Article from './Article';
-import { Provider } from '../../../src';
+import { Provider } from 'react-dfp-ads';
 
 class Page extends React.Component {
   constructor() {

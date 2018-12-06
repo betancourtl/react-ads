@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ad } from 'react-ads';
+import { Ad } from 'react-dfp-ads';
 
 const Article = (props) => {
   return (

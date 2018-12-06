@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const config = {
+  resolve: { symlinks: false },
   entry: './app/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),

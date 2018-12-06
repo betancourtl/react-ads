@@ -4,9 +4,9 @@
   "description": "package to manage ads",
   "main": "./lib/index.js",
   "peerDependencies": {
-    "react": "^16.x.x",
-    "react-dom": "^16.x.x",
-    "prop-types": "^15.x.x"
+    "react": "^16.x",
+    "react-dom": "^16.x",
+    "prop-types": "^15.x"
   },
   "dependencies": {
     "lodash.debounce": "^4.0.8",
