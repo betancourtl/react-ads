@@ -125,3 +125,4 @@ fabric.properties
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 /npm/dist/
+.idea/
