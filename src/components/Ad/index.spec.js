@@ -1,4 +1,4 @@
-describe.only('Ad', () => {
+describe('Ad', () => {
   it('should sizeMap', () => {
     const sizeMap = [
       { viewPort: [750, 200], slots: [728, 90] },
