@@ -1,8 +1,8 @@
 {
-  "name": "react-ads",
+  "name": "react-dfp-ads",
   "version": "1.0.0",
   "description": "package to manage ads",
-  "main": "./src/index.js",
+  "main": "./lib/index.js",
   "peerDependencies": {
     "react": "^16.x.x",
     "react-dom": "^16.x.x",
@@ -27,6 +27,7 @@
     "gulp-cli": "^2.0.1",
     "jsdoc": "^3.5.5",
     "mocha": "^5.2.0",
+    "np": "^3.0.4",
     "prebid.js": "^1.32.0",
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
@@ -38,14 +39,16 @@
     "webpack-dev-server": "^3.1.9"
   },
   "scripts": {
+    "lint": "eslint ./src/**/*.js",
+    "jsdoc": "jsdoc --recurse src",
     "start": "webpack-dev-server --mode development && npm run build:watch",
+    "test": "mocha test --compilers js:@babel/register",
+    "test:watch": "mocha test --watch --compilers js:@babel/register",
     "prebuild": "rm -rf ./lib",
     "build": "NODE_ENV=production babel src --out-dir lib --ignore ./src/**/*.spec.js",
     "build:watch": "NODE_ENV=production babel --watch src --out-dir lib --ignore ./src/**/*.spec.js",
-    "lint": "./node_modules/.bin/eslint ./src/**/*.js",
-    "jsdoc": "./node_modules/.bin/jsdoc --recurse src",
-    "test:watch": "mocha test --watch --compilers js:@babel/register",
-    "prebid:build": "./prebid.sh"
+    "prebid:build": "./prebid.sh",
+    "release": "np"
   },
   "keywords": [
     "react",
@@ -55,5 +58,17 @@
     "bidder"
   ],
   "author": "Luis Betancourt",
-  "license": "MIT"
+  "license": "MIT",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webdeveloperpr/react-ads.git"
+  },
+  "bugs": {
+    "url": "https://github.com/webdeveloperpr/react-ads/issues"
+  },
+  "homepage": "https://github.com/webdeveloperpr/react-ads#readme"
 }

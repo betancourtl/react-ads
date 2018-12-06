@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ad } from '../../../src';
+import { Ad } from 'react-ads';
 
 const Article = (props) => {
   return (
