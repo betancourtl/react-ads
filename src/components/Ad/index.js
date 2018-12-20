@@ -114,22 +114,19 @@ class Ad extends Component {
   });
 
   componentDidMount() {
-    window.setTimeout(() => {
-      this.defineSlot();
-      // event start
-      this.slotOnload();
-      this.slotRenderEnded();
-      this.impressionViewable();
-      this.slotVisibilityChanged();
-      // events end
-      this.setMappingSize();
-      this.setMQListeners();
-      this.setCollapseEmpty();
-      this.addService();
-      this.setTargeting();
-      console.log('Display slot')
-      this.display()
-    }, 10000);
+    this.defineSlot();
+    // event start
+    this.slotOnload();
+    this.slotRenderEnded();
+    this.impressionViewable();
+    this.slotVisibilityChanged();
+    // events end
+    this.setMappingSize();
+    this.setMQListeners();
+    this.setCollapseEmpty();
+    this.addService();
+    this.setTargeting();
+    this.display()
   }
 
   componentWillUnmount() {

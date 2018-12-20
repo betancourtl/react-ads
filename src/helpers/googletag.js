@@ -160,8 +160,6 @@ export const getVersion = () => {
  */
 export const enableServices = () => {
   window.googletag.cmd.push(() => {
-    window.googletag.pubads().set('adsense_background_color', '#000000');
-    window.googletag.pubads().set('adsense_border_color', '#000000');
     window.googletag.enableServices();
   });
 };
@@ -190,6 +188,7 @@ export const createGoogleTagEvents = (pubSub, log = false) => {
         events: [
           'defineSlot',
           'destroySlots',
+          'enableServices',
           'display',
         ],
       },
@@ -206,7 +205,6 @@ export const createGoogleTagEvents = (pubSub, log = false) => {
           'collapseEmptyDivs',
           'getVersion',
           'refresh',
-          'enableServices',
         ],
       },
     ];

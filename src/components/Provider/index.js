@@ -68,9 +68,9 @@ class Provider extends Component {
       console.log('display called');
     });
     // this.pubSub.on('destroySlots', () => console.log('destroySlots'));
-    // this.pubSub.on('enableServices', () => console.log('enableServices'));
+    this.pubSub.on('enableServices', () => console.log('enableServices'));
     this.pubSub.on('getVersion', version => this.setStateInConstructor({ version }));
-    // this.pubSub.on('defineSlot', slot => console.log('defineSlot', slot.getSlotElementId()));
+    this.pubSub.on('defineSlot', slot => console.log('defineSlot', slot.getSlotElementId()));
     this.pubSub.on('setCentering', setCentering => this.setStateInConstructor({ setCentering }));
     this.pubSub.on('enableLazyLoad', enableLazyLoad => this.setStateInConstructor({ enableLazyLoad }));
     this.pubSub.on('enableVideoAds', enableVideoAds => this.setStateInConstructor({ enableVideoAds }));
