@@ -114,19 +114,22 @@ class Ad extends Component {
   });
 
   componentDidMount() {
-    this.defineSlot();
-    // event start
-    this.slotOnload();
-    this.slotRenderEnded();
-    this.impressionViewable();
-    this.slotVisibilityChanged();
-    // events end
-    this.setMappingSize();
-    this.setMQListeners();
-    this.setCollapseEmpty();
-    this.addService();
-    this.setTargeting();
-    this.display()
+    window.setTimeout(() => {
+      this.defineSlot();
+      // event start
+      this.slotOnload();
+      this.slotRenderEnded();
+      this.impressionViewable();
+      this.slotVisibilityChanged();
+      // events end
+      this.setMappingSize();
+      this.setMQListeners();
+      this.setCollapseEmpty();
+      this.addService();
+      this.setTargeting();
+      console.log('Display slot')
+      this.display()
+    }, 10000);
   }
 
   componentWillUnmount() {
@@ -135,40 +138,14 @@ class Ad extends Component {
     this.unsetMQListeners();
   }
 
-  getAdDimensions = (
-    size = { width: this.props.size[0], height: this.props.size[1] },
-    sizeMap = this.props.sizeMapping,
-    wWidth = window.innerWidth,
-  ) => {
-    return sizeMap
-      .sort((a, b) => a.viewPort[0] < b.viewPort[0] ? -1 : 1)
-      .reduce((acc, { viewPort: [vWidth], slots: [width, height] }) => {
-        return (wWidth >= vWidth) ? { width, height } : acc;
-      }, { width: size.width, height: size.height });
-  };
-
   render() {
-    const dim = this.getAdDimensions();
     return (
-      <div style={{ position: 'relative' }}>
-        <div style={{
-          border: '1px solid black',
-          width: dim.width + 'px',
-          height: dim.height + 'px',
-          display: this.state.showBorder ? 'block' : 'none',
-          left: 0,
-          right: 0,
-          margin: '0 auto',
-          position: 'absolute',
-        }} />
         <div
           id={this.props.id}
           ref={ref => this.ref = ref}
           className={this.props.className}
           style={{ ...this.props.style, }}
-        >
-        </div>
-      </div>
+        />
     );
   }
 }

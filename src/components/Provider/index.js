@@ -77,7 +77,6 @@ class Provider extends Component {
     this.pubSub.on('collapseEmptyDivs', collapseEmptyDivs => this.setStateInConstructor({ collapseEmptyDivs }));
     this.pubSub.on('disableInitialLoad', disableInitialLoad => this.setStateInConstructor({ disableInitialLoad }));
     this.pubSub.on('enableSingleRequest', enableSingleRequest => this.setStateInConstructor({ enableSingleRequest }));
-    this.pubSub.on('enableSyncRendering', enableSyncRendering => this.setStateInConstructor({ enableSyncRendering }));
     this.pubSub.on('enableAsyncRendering', enableAsyncRendering => this.setStateInConstructor({ enableAsyncRendering }));
 
     getVersion();
@@ -86,18 +85,18 @@ class Provider extends Component {
     enableLazyLoad(this.props.enableLazyLoad);
     collapseEmptyDivs(this.props.collapseEmptyDivs);
     disableInitialLoad(this.props.disableInitialLoad);
-    enableSyncRendering(this.props.enableSyncRendering);
     enableSingleRequest(this.props.enableSingleRequest);
     enableAsyncRendering(this.props.enableAsyncRendering);
 
     // Must be the last fn to run in the constructor.
+    console.log('Service Enabled')
     enableServices();
   }
 
   componentDidMount() {
     // The event listener triggers setState before the component is fully mounted
     // This triggers an error in react.
-    this.setState({ isMounted: true });
+    this.setState({ isMounted: true });    
   }
 
   componentWillUnmount() {
@@ -118,7 +117,6 @@ Provider.defaultProps = {
   disableInitialLoad: false,
   enableSingleRequest: true,
   enableAsyncRendering: true,
-  enableSyncRendering: false,
 };
 
 Provider.propTypes = {
@@ -127,7 +125,6 @@ Provider.propTypes = {
   collapseEmptyDivs: PropTypes.bool,
   disableInitialLoad: PropTypes.bool,
   enableSingleRequest: PropTypes.bool,
-  enableSyncRendering: PropTypes.bool,
   enableAsyncRendering: PropTypes.bool,
   children: PropTypes.oneOfType([
     PropTypes.node,

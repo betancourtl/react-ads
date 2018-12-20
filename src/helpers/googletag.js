@@ -114,20 +114,6 @@ export const enableAsyncRendering = (isEnabled = false) => {
 };
 
 /**
- * Will enable Synchronous rendering of ads.
- *
- * @function
- * @param {bool} isEnabled
- * @returns {void}
- */
-export const enableSyncRendering = (isEnabled = false) => {
-  if (!isEnabled) return;
-  window.googletag.cmd.push(() => {
-    window.googletag.pubads().enableSyncRendering(isEnabled);
-  });
-};
-
-/**
  * Will enable enable video ads.
  *
  * @function
