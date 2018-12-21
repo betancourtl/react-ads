@@ -9,8 +9,7 @@
     "prop-types": "^15.x"
   },
   "dependencies": {
-    "lodash.debounce": "^4.0.8",
-    "ramda": "^0.25.0"
+    "lodash.debounce": "^4.0.8"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import * as R from 'ramda';
+import { AdsContext } from '../context';
+import connect from '../connector';
 
 class Ad extends Component {
   constructor(props) {
@@ -52,7 +53,7 @@ class Ad extends Component {
     this.slot.setCollapseEmptyDiv(true, true)
   });
 
-  setTargeting = this.cmdPush(() => R.toPairs(this.props.targeting)
+  setTargeting = this.cmdPush(() => Object.entries(this.props.targeting)
     .map(([k, v]) => this.slot.setTargeting(k, v)));
 
   setMQListeners = this.cmdPush(() => {
@@ -187,4 +188,4 @@ Ad.propTypes = {
   onSlotVisibilityChanged: PropTypes.func,
 };
 
-export default Ad;
+export default connect(AdsContext, Ad);

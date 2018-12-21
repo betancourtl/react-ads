@@ -29,7 +29,13 @@ class Page extends React.Component {
 
   render() {
     return (
-      <Provider>
+      <Provider
+        enableLazyLoad={false}
+        enableVideoAds={false}
+        collapseEmptyDivs={false}
+        disableInitialLoad={false}
+        enableSingleRequest={true}
+      >
         {Array(this.state.articleQty).fill('').map((x, i) => {
           return <Article key={i + 1} id={'id-' + (i + 1)} />;
         })}

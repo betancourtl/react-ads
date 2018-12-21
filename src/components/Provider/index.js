@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
+import { AdsContext } from '../context';
 
 import {
   getVersion,
@@ -14,7 +15,6 @@ import {
   collapseEmptyDivs,
   disableInitialLoad,
   enableSingleRequest,
-  enableSyncRendering,
   enableAsyncRendering,
   createGoogleTagEvents,
 } from '../../helpers/googletag';
@@ -42,6 +42,7 @@ class Provider extends Component {
       enableSingleRequest: undefined,
       enableSyncRendering: undefined,
       enableAsyncRendering: undefined,
+      serviceEnabled: false,
     };
 
     this.pubSub = new PubSub();
@@ -68,7 +69,7 @@ class Provider extends Component {
       console.log('display called');
     });
     // this.pubSub.on('destroySlots', () => console.log('destroySlots'));
-    this.pubSub.on('enableServices', () => console.log('enableServices'));
+    this.pubSub.on('enableServices', () => this.setStateInConstructor({ serviceEnabled: true }));
     this.pubSub.on('getVersion', version => this.setStateInConstructor({ version }));
     this.pubSub.on('defineSlot', slot => console.log('defineSlot', slot.getSlotElementId()));
     this.pubSub.on('setCentering', setCentering => this.setStateInConstructor({ setCentering }));
@@ -105,7 +106,13 @@ class Provider extends Component {
   }
 
   render() {
-    return this.props.children;
+    return (
+      <AdsContext.Provider 
+        value={this.state}
+      >
+        {this.props.children}
+      </AdsContext.Provider>
+    );    
   }
 }
 
