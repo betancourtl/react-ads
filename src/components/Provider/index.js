@@ -3,9 +3,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
+import Queue from '../../lib/Queue'
+import debounce from 'lodash.debounce';
 
 import {
-  getVersion,
+  display,
+  getVersion,  
   setCentering,
   enableLazyLoad,
   enableServices,
@@ -27,9 +30,9 @@ import {
  */
 class Provider extends Component {
   constructor(props) {
-    super(props);
+    super(props);    
     this.state = {
-      ads: [],
+      ads: [],      
       isMounted: false,
       version: undefined,
       apiReady: undefined,
@@ -42,9 +45,10 @@ class Provider extends Component {
       enableSingleRequest: undefined,
       enableSyncRendering: undefined,
       enableAsyncRendering: undefined,
-      serviceEnabled: false,
+      serviceEnabled: false,      
     };
-
+    
+    this.defineSlotQueue = new Queue();
     this.pubSub = new PubSub();
     createGPTScript();
     startGoogleTagQue();
@@ -61,7 +65,6 @@ class Provider extends Component {
     // proxy the apiReady property so that we an load ads when ready.
     // pubSub.on('pubadsReady', (pubadsReady) => this.setState({ pubadsReady }));
     // pubSub.on('apiReady', (apiReady) => this.setState({ apiReady }));
-
     this.pubSub.on('refresh', () => {
       console.log('refresh called');
     });
@@ -69,7 +72,10 @@ class Provider extends Component {
       console.log('display called');
     });
     // this.pubSub.on('destroySlots', () => console.log('destroySlots'));
-    this.pubSub.on('enableServices', () => this.setStateInConstructor({ serviceEnabled: true }));
+    this.pubSub.on('enableServices', () => {
+      this.setStateInConstructor({ serviceEnabled: true });
+      console.log('Service Enabled');
+    });
     this.pubSub.on('getVersion', version => this.setStateInConstructor({ version }));
     this.pubSub.on('defineSlot', slot => console.log('defineSlot', slot.getSlotElementId()));
     this.pubSub.on('setCentering', setCentering => this.setStateInConstructor({ setCentering }));
@@ -88,11 +94,25 @@ class Provider extends Component {
     disableInitialLoad(this.props.disableInitialLoad);
     enableSingleRequest(this.props.enableSingleRequest);
     enableAsyncRendering(this.props.enableAsyncRendering);
-
-    // Must be the last fn to run in the constructor.
-    console.log('Service Enabled')
-    enableServices();
   }
+
+  process = debounce((q, cb) => {
+    // deque calls the defineSlot initialization function.
+    while (q.peek()) q.dequeue()(); 
+    cb();              
+  }, 10);
+
+  // Define all the slots first
+  // when pubAds is ready
+  // process queueue
+  // Then enableServices
+  define = (initializeAd, slotId) => {
+    const queue = this.defineSlotQueue.enqueue(initializeAd);
+      this.process(queue, () => {
+        if (!this.state.serviceEnabled) enableServices();        
+        display(slotId); // With SRA enabled only call display once. This will refresh all the defined ads.
+      });
+  };
 
   componentDidMount() {
     // The event listener triggers setState before the component is fully mounted
@@ -107,9 +127,10 @@ class Provider extends Component {
 
   render() {
     return (
-      <AdsContext.Provider 
-        value={this.state}
-      >
+      <AdsContext.Provider value={{        
+        ...this.state,
+        define: this.define,        
+      }}>
         {this.props.children}
       </AdsContext.Provider>
     );    

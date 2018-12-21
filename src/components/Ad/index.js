@@ -36,10 +36,6 @@ class Ad extends Component {
     });
   };
 
-  display = this.cmdPush(() => {
-    window.googletag.display(this.props.id);
-  });
-
   refresh = this.cmdPush(() => {
     window.googletag.pubads().refresh([this.slot]);
   });
@@ -105,7 +101,6 @@ class Ad extends Component {
   });
 
   slotOnload = this.cmdPush(() => {
-
     window.googletag.pubads().addEventListener('slotOnload', e => {
       if (typeof this.props.onSlotOnLoad === 'function') {
         if (e.slot === this.slot) this.props.onSlotOnLoad(this.withAdProps(e));
@@ -115,19 +110,20 @@ class Ad extends Component {
   });
 
   componentDidMount() {
-    this.defineSlot();
-    // event start
-    this.slotOnload();
-    this.slotRenderEnded();
-    this.impressionViewable();
-    this.slotVisibilityChanged();
-    // events end
-    this.setMappingSize();
-    this.setMQListeners();
-    this.setCollapseEmpty();
-    this.addService();
-    this.setTargeting();
-    this.display()
+    this.props.provider.define(() => {
+      // event start
+      this.defineSlot();
+      this.slotOnload();
+      this.slotRenderEnded();
+      this.impressionViewable();
+      this.slotVisibilityChanged();
+      // events end
+      this.setMappingSize();
+      this.setMQListeners();
+      this.setCollapseEmpty();
+      this.addService();
+      this.setTargeting();
+    }, this.props.id);
   }
 
   componentWillUnmount() {

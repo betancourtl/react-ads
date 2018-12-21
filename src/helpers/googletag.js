@@ -153,6 +153,19 @@ export const getVersion = () => {
 };
 
 /**
+ * Will fetch the google ad from DFP. When SRA is inabled this will
+ * fetch ALL the ads that called the defintSlot function, but have
+ * not been displayed.
+ * @param {string|Slot} id - The slotElementId or the Slot Object.
+ */
+export const display = id => {
+  window.googletag.cmd.push(() => {
+    console.log('id', id);
+    window.googletag.display(id);
+  });  
+};
+
+/**
  * Will enable googletag services.
  *
  * @function

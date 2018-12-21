@@ -20,6 +20,7 @@ class Queue {
         this.items[this.count] = item;
         this.count++;
       });
+      return this;
   };
 
   dequeue = () => {

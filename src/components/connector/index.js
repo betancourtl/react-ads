@@ -9,7 +9,7 @@ export const connect = (Context, Component) => {
               return(
                 <Component 
                   {...this.props}
-                  adsProvider={ctxProps}
+                  provider={ctxProps}
                 />
               );
             }}
