@@ -107,8 +107,8 @@ class Provider extends Component {
   // process queueue
   // Then enableServices
   define = (initializeAd, slotId) => {
-    const queue = this.defineSlotQueue.enqueue(initializeAd);
-      this.process(queue, () => {
+    const q = this.defineSlotQueue.enqueue(initializeAd);
+      this.process(q, () => {
         if (!this.state.serviceEnabled) enableServices();        
         display(slotId); // With SRA enabled only call display once. This will refresh all the defined ads.
       });

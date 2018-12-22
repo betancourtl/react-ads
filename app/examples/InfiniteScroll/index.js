@@ -30,7 +30,11 @@ class Page extends React.Component {
   render() {
     return (
       <Provider
-        enableLazyLoad={false}
+        enableLazyLoad={{
+          fetchMarginPercent: 1,  // Fetch slots within 5 viewports.
+          renderMarginPercent: 2,  // Render slots within 2 viewports.
+          mobileScaling: 1.0  // Double the above values on mobile.
+        }}
         enableVideoAds={false}
         collapseEmptyDivs={false}
         disableInitialLoad={false}
