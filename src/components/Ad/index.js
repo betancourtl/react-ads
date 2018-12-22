@@ -105,7 +105,6 @@ class Ad extends Component {
       if (typeof this.props.onSlotOnLoad === 'function') {
         if (e.slot === this.slot) this.props.onSlotOnLoad(this.withAdProps(e));
       }
-      this._setState({ showBorder: false, });
     });
   });
 
