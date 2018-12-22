@@ -106,7 +106,7 @@ googletag.defineSlot() fn.
 
 **sizeMapping {Array}**
 
-Sefine the the viewport size and the slots allowed to be rendered in the viewportSize.
+Define the the viewport size and the slots allowed to be rendered in the viewportSize.
 This value is an array so you can define multiple ads per viewport size.
 
 ex.
@@ -279,3 +279,27 @@ enabled.
 
 So to take advantage of SRA we have to define all slots before enabling the 
 service.
+
+ ## Future Features
+___
+
+| Features                                            | Status | Expected By |
+|-----------------------------------------------------|--------|-------------|
+| Create initial ads Heap                             | x      |             |
+| Create Lazy Loaded Ads Heap                         | x      |             |
+| Create Custom Lazy Loading functionality            | x      |             |
+| Create Heap extraction/fetching/re-extraction logic | x      |             |
+| Integrate Prebid.JS                                 | x      |             |
+| Add Unit Testing Framework                          | x      |             |
+| Add Line Item Generator Utils                       | x      |             |
+
+
+
+
+
+
+
+
+
+
+Tables created with: https://www.tablesgenerator.com/markdown_tables
