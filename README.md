@@ -283,23 +283,59 @@ service.
  ## Future Features
 ___
 
-| Features                                            | Status | Expected By |
-|-----------------------------------------------------|--------|-------------|
-| Create initial ads Heap                             | x      |             |
-| Create Lazy Loaded Ads Heap                         | x      |             |
-| Create Custom Lazy Loading functionality            | x      |             |
-| Create Heap extraction/fetching/re-extraction logic | x      |             |
-| Integrate Prebid.JS                                 | x      |             |
-| Add Unit Testing Framework                          | x      |             |
-| Add Line Item Generator Utils                       | x      |             |
+| Features                                            | Status | Expected By   |
+|-----------------------------------------------------|--------|---------------|
+| 1. Create initial ads Heap                             | x      |            |
+| 2. Create Lazy Loaded Ads Heap                         | x      |            |
+| 3. Create Custom Lazy Loading functionality            | x      |            |
+| 4. Create Heap extraction/fetching/re-extraction logic | x      |            |
+| 5.Integrate Prebid.JS                                  | x      |            |
+| 6. Add Unit Testing Framework                          | x      |            |
+| 7. Add Line Item Generator Utils                       | x      |            |
 
+**AdQueue**
 
+The Ad Queue should provide a heaping mechanism for loading ads based on priority.
 
+priority level data structure is defined below:
 
+```javascript
+// ENUMS = ['initial', 'lazy']
+    {
+        type: 'ENUM'
+        priority: 'NUMBER',
+        cb: 'FUNCTION' 
+    }
+```
 
+### Priority types levels
 
+1. Initial
+2. Lazy
 
+### Priority numbers
 
+1. #1 highest priority
+2. #2 lowest priority
+3. ...
+
+Ads with the hightest proprity should be added to the top of 
+the heap to allow faster fetching/renderings. This should be the ads that generate the highest revenue.
+
+### When do Initial ads get added to the heap?
+
+As soon the as ads are rendered added. the ad will call the define fn from the Provider this will register the cb. The heap will wait a few ms for any additionl ad registration calls. Once this time is up the heap will then extract x amount of ads .
+
+## Extracted initial ads
+
+initial ads are refreshed in bulk.
+
+If the ad is initial it will added to a new initial heap.
+Initial ads will be iterated over and then it will call the `googletag.refresh([id,id,id, ...])` fn().
+
+## Extracted lazy ads
+
+Lazy Ads are in charge of calling the refresh function. The refresh fn call should then add the refresh calls to a new Refresh Queue so that they can call the `googletag.refresh([id,id,id, ...])` fn(). in bulk and bennefit from the SRA architecture.
 
 
 Tables created with: https://www.tablesgenerator.com/markdown_tables
