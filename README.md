@@ -293,17 +293,29 @@ ___
 | 6. Add Unit Testing Framework                          | x      |            |
 | 7. Add Line Item Generator Utils                       | x      |            |
 
-**AdQueue**
+## AdCallManager
 
-The Ad Queue should provide a heaping mechanism for loading ads based on priority.
+The AdCallManager should provide a heaping mechanism for loading ads based on priority, and also for controlling when events happen.
+___
 
-priority level data structure is defined below:
+The AdCallManager consists of the following data structures.
+
+- AdHeap
+- InitialQueue
+- LazyQueue
+- LazyRefreshQueue
+
+**AdHeap**
+
+The AdHeap is in charge of Prioritizing the ads in order. The priority order is based on load type and level type.
+
+Priority level data structure is defined below:
 
 ```javascript
 // ENUMS = ['initial', 'lazy']
     {
         type: 'ENUM'
-        priority: 'NUMBER',
+        level: 'NUMBER',
         cb: 'FUNCTION' 
     }
 ```
@@ -319,23 +331,135 @@ priority level data structure is defined below:
 2. #2 lowest priority
 3. ...
 
-Ads with the hightest proprity should be added to the top of 
-the heap to allow faster fetching/renderings. This should be the ads that generate the highest revenue.
+Ads with the highest proprity should be added to the top of 
+the heap to allow faster fetching/renderings.
 
-### When do Initial ads get added to the heap?
+**InitialQueue**
 
-As soon the as ads are rendered added. the ad will call the define fn from the Provider this will register the cb. The heap will wait a few ms for any additionl ad registration calls. Once this time is up the heap will then extract x amount of ads .
+The Initial Queue is in charge of storing the defineSlot callbacks from the <\/Ad> components.
 
-## Extracted initial ads
+**LazyQueue**
+
+The Lazy Queue is in charge of storing the defineSlot callbacks from the lazy loaded <\/Ad> components.
+
+**LazyRefreshQueue**
+
+The lazy refresh queue is in charge of queing the refresh calls from the lazy-loaded ads.
+
+### AdCallManager
+___
+
+The AdCallManager synchronizes the heap and queue's so they can execute in the correct order.
+
+**state**
+
+```javascript
+{   
+    heap: {},
+    InitialQueue: [],
+    LazyQueue: [],
+    LazyRefreshQueue: [],
+    isProcessing: false,
+    requested:  0,
+    rendered: 0,
+    processDebounce: 10,
+    chunkSize: 5,
+    defineDelay: 100,
+    refreshDelay: 100,
+    displayFn: googletag.display,
+    refreshFn: googletag.refresh
+}
+
+const createMessage = (props = {}) => ({
+    type: props.type //'Enum',
+    level: props.level // 'Number'
+    data: {
+        cb: props.data.cb // 'Function'
+        id: props.data.id // 'String',
+    }
+})
+
+const define = (props) => {
+    const message = createMessage(props);
+    heap.add(message);
+    if (!isProcessing) processDefinitions();
+};
+
+const processDefine = async () => {
+    isProcessing = true;
+    
+    if (heap.empty()) {
+        isProcessing = false;
+        return
+    };
+
+    const messages = [].forEach((ad) => {
+        if (message.type === 'initial') InitialQueue.add(message);
+        if (message.type === 'lazy') LazyQueue.add(message);        
+    }, { });
+
+    processInitialAds(InitialQueue);
+    processLazyAds(LazyQueue);    
+    // process ads again.
+    setTimeout(process, processingDelay);
+};
+
+const processInitialAds = (queue) => {
+    ids = [];
+    while (queue.peek()) {
+        const {id, cb} = queue.extract();
+        cb();
+        ids.push(id);
+        displayFn(ids);
+    }
+};
+
+const processLazyAds = () => {
+    while (queue.peek()) {
+        const {cb} = queue.extract();
+        cb();
+    }
+};
+
+const refresh = () => {
+    const message = createMessage(props);
+    LazyRefreshQueue.add(message);
+    if (!isProcessing) processDefinitions(); //debounced
+};
+
+const processRefreshRequest = () => {
+        const ids = [];
+        while (queue.peek()) {
+        const { id } = queue.extract();
+        refresh(ids);
+    }
+};
+
+```
+
+**What are the steps that the adCallManager should take to process the calls?**
+
+1. AdCall manager receives a request to display ads. The add() function will accept a callback.
+
+2. The add function will then call the debounced function process. The debounced function will have a debounced timeout set to the processDebounce variable.
+
+3. The process function will grab the amount of ads defined in chunkSize from the heap. Ads with type initial will be added to the InitialHeap, Ads with the lazy type will be added tothe LazyHeap.
+
+4. processInitialAds will accept an InitialAdHeap object, dequeue it and call the cb function.
+
+5. The processLazyAds will accept a LazyQueue object, dequeue it  and then call cb function.
+
+6. The
+
+**InitialAds**
 
 initial ads are refreshed in bulk.
 
-If the ad is initial it will added to a new initial heap.
-Initial ads will be iterated over and then it will call the `googletag.refresh([id,id,id, ...])` fn().
+If the ad is of initial type it will added to a new initial heap. Initial ads will be iterated over and then it will call the `googletag.refresh([id,id,id, ...])` fn(). This will refresh the ads.
 
-## Extracted lazy ads
+## Processing extracted lazy ads.
 
-Lazy Ads are in charge of calling the refresh function. The refresh fn call should then add the refresh calls to a new Refresh Queue so that they can call the `googletag.refresh([id,id,id, ...])` fn(). in bulk and bennefit from the SRA architecture.
+Lazy Ads are in charge of asking to display and asking to refresh. The display part is ran  The refresh fn call should then add the refresh calls to a new Refresh Queue so that they can call the `googletag.refresh([id,id,id, ...])` fn(). in bulk and bennefit from the SRA architecture.
 
 
 Tables created with: https://www.tablesgenerator.com/markdown_tables
