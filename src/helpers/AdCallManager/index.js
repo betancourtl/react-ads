@@ -18,7 +18,7 @@ const AdCallManager = (props = {}) => {
     chunkSize: 5,
     defineDelay: 100,
     refreshDelay: 100,
-    displayFn: empyFn,
+    displayFn: empyFn, 
     refreshFn: empyFn,
     ...props,
   };
@@ -93,6 +93,11 @@ const AdCallManager = (props = {}) => {
     }
     
     refresh(ids);
+  };
+
+  return {
+    refresh,
+    define,
   };
 };
 
