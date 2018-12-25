@@ -28,30 +28,28 @@ and know that one or more ad slots on your page don't always get filled, you can
  page, so how you use it depends on how often you expect an ad slot to be 
  filled.
 
-**disableInitialLoad(Boolean) {Function}**
+**disableInitialLoad {Boolean}**
 
 Disables requests for ads on page load, but allows ads to be requested with a 
 googletag.pubads().refresh() call. This should be set prior to enabling 
 the service. Async mode must be used; otherwise it will be impossible to 
 request ads using refresh.
 
-**enableSingleRequest(Boolean) {Function}**
+**enableSingleRequest {Boolean}**
 
 Enables single request mode for fetching multiple ads at the same time. 
 This requires all pubads slots to be defined and added to the pubads service 
 prior to enabling the service. Single request mode must be set before the 
 service is enabled.
 
-**enableAsyncRendering(Boolean) {Function}**
+**enableAsyncRendering {Boolean}**
 
 Enables async rendering mode to enable non-blocking fetching and rendering of 
 ads. Because the service uses asynchronous rendering by default, you only need
  to use this method to override a previous setting. Async mode must be set 
  before the service is enabled.
 
-
-**enableLazyLoad(Boolean | { fetchMarginPercent: Number, renderMarginPercent: Number,
- mobileScaling: Number }) {Function}**
+**enableLazyLoad  {Boolean|Object}**
 
 Enables lazy loading in GPT as defined by the config object.
 
@@ -64,6 +62,7 @@ googletag.pubads().enableLazyLoad({
   mobileScaling: 2.0  // Double the above values on mobile.
 });
 ```
+
 **Notes:**
 
 - Lazy loading only works if using async rendering.
@@ -307,7 +306,7 @@ The AdCallManager consists of the following data structures.
 
 **AdHeap**
 
-The AdHeap is in charge of Prioritizing the ads in order. The priority order is based on load type and level type.
+The AdHeap is in charge of prioritizing the ads in order. The priority order is based on load type and level type.
 
 Priority level data structure is defined below:
 
@@ -331,7 +330,7 @@ Priority level data structure is defined below:
 2. #2 lowest priority
 3. ...
 
-Ads with the highest proprity should be added to the top of 
+Ads with the highest priority should be added to the top of 
 the heap to allow faster fetching/renderings.
 
 **InitialQueue**
@@ -424,7 +423,7 @@ const processLazyAds = () => {
 const refresh = () => {
     const message = createMessage(props);
     LazyRefreshQueue.add(message);
-    if (!isProcessing) processDefinitions(); //debounced
+    if (!isProcessing) processRefreshRequest(); //debounced
 };
 
 const processRefreshRequest = () => {
@@ -434,7 +433,6 @@ const processRefreshRequest = () => {
         refresh(ids);
     }
 };
-
 ```
 
 **What are the steps that the adCallManager should take to process the calls?**
@@ -455,7 +453,7 @@ const processRefreshRequest = () => {
 
 initial ads are refreshed in bulk.
 
-If the ad is of initial type it will added to a new initial heap. Initial ads will be iterated over and then it will call the `googletag.refresh([id,id,id, ...])` fn(). This will refresh the ads.
+If the ad is of initial type it will be added to a new initial heap. Initial ads will be iterated over and then it will call the `googletag.refresh([id,id,id, ...])` fn(). This will refresh the ads.
 
 ## Processing extracted lazy ads.
 
