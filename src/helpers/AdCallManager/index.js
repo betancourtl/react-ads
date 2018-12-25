@@ -1,9 +1,19 @@
 const empyFn = () => { };
 
-const types = {
+export const types = {
   INITIAL: 'INITIAL',
   LAZY: 'LAZY'
 };
+
+export const createMessage = (props = {}) => ({
+    type: types.INITIAL,
+    level: 1,
+    data: {
+      cb: empyFn,
+      id: 'default-id'
+    },
+    ...props,
+  });
 
 const AdCallManager = (props = {}) => {
   const state = {
@@ -23,15 +33,7 @@ const AdCallManager = (props = {}) => {
     ...props,
   };
 
-  const createMessage = (props = {}) => ({
-    type: types.INITIAL,
-    level: 1,
-    data: {
-      cb: empyFn,
-      id: 'default-id'
-    },
-    ...props,
-  });
+
 
   const define = (props) => {
     const message = createMessage(props);
@@ -101,3 +103,4 @@ const AdCallManager = (props = {}) => {
   };
 };
 
+export default;
