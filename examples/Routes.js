@@ -1,8 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import Nav from './examples/Nav';
-import InfiniteScroll from './examples/InfiniteScroll';
-import Prebid from './examples/Prebid';
+import Nav from './Nav';
+import InfiniteScroll from './InfiniteScroll';
 
 const styles = {
   main: {
@@ -30,7 +29,6 @@ const Routes = () => {
         <section style={styles.section}>
           <Switch>
             <Route exact path="/InfiniteScroll" component={InfiniteScroll} />
-            <Route exact path="/Prebid" component={Prebid} />
           </Switch>
         </section>
       </main>

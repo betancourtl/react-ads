@@ -13,8 +13,10 @@ export const createMessage = (props = {}) => ({
   type: props.type || types.INITIAL,
   level: props.level || 1,
   data: {
-    cb: (props.data && props.data.cb) ? props.data.cb : empyFn,
+    onDefine: (props.data && props.data.onDefine) ? props.data.onDefine : empyFn,
+    onDisplay: (props.data && props.data.onDisplay) ? props.data.onDisplay : empyFn,
     id: (props.data && props.data.id) ? props.data.id : 'default-id',
+    slot: props.data.slot,
   },
 });
 
@@ -27,9 +29,6 @@ export const comparisonFn = (msg1, msg2) => {
   return msg1.priority > msg2.priority;
 };
 
-
-// Expects SRA enabled
-// expects initialLoad disabled.
 const adCallManager = (props = {}) => {
   const state = {    
     heap: new MinHeap(comparisonFn),
@@ -71,7 +70,6 @@ const adCallManager = (props = {}) => {
           count++;
         }
         
-
         if (state.processInitialAds) processInitialAds(state.initialQueue);    
         if (state.processLazyAds) processLazyAds(state.lazyQueue);
     
@@ -80,23 +78,24 @@ const adCallManager = (props = {}) => {
 
   const processInitialAds = queue => {
     const ids = [];
+    const slots = [];
     if (queue.isEmpty) return
     while (!queue.isEmpty) {
-      const { id, cb } = queue.dequeue().data;
-      cb();
-      ids.push(id);      
+      const { id, onDefine, slot } = queue.dequeue().data;
+      ids.push(id);
+      slots.push(onDefine());  
     }
     
-    ids.forEach(id => state.displayFn(id))    
-    state.refreshFn(ids);
+    ids.forEach(id => state.displayFn(id));
+    state.refreshFn(slots);
   };
 
   const processLazyAds = queue => {    
     const ids = [];
     if (queue.isEmpty) return
     while (!queue.isEmpty) {
-      const { cb, id } = queue.dequeue().data;
-      cb();
+      const { onDefine, id } = queue.dequeue().data;
+      onDefine();
       ids.push(id);
     }    
     ids.forEach(id => state.displayFn(id));

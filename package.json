@@ -2,15 +2,14 @@
   "name": "react-dfp-ads",
   "version": "1.0.1",
   "description": "package to manage ads",
-  "main": "./lib/index.js",
+  "main": "./dist/index.js",
   "peerDependencies": {
     "react": "^16.x",
     "react-dom": "^16.x",
     "prop-types": "^15.x"
   },
   "dependencies": {
-    "debounce-promise": "^3.1.0",
-    "lodash.debounce": "^4.0.8"
+    "debounce-promise": "^3.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",

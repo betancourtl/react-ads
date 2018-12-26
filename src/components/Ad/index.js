@@ -24,7 +24,7 @@ class Ad extends Component {
      * Will return true when the ad gets defined.
      * @type {Boolean} 
      */ 
-    this.definded = false;
+    this.displayed = false;
 
     this._setState = (props) => {
       if (this.unmounted) return;
@@ -84,7 +84,8 @@ class Ad extends Component {
     ...props,
   });
 
-  slotRenderEnded = this.cmdPush(() => {
+  slotRenderEnded = this.cmdPush(() => {   
+    console.log('rendered fired'); 
     if (typeof this.props.onSlotRenderEnded !== 'function') return;
 
     window.googletag.pubads().addEventListener('slotRenderEnded', e => {
@@ -114,23 +115,37 @@ class Ad extends Component {
     });
   });
 
+  onDefine = () => {
+    // event start
+    this.defineSlot();
+    this.slotOnload();
+    this.slotRenderEnded();
+    this.impressionViewable();
+    this.slotVisibilityChanged();
+    // events end
+    this.setMappingSize();
+    this.setMQListeners();
+    this.setCollapseEmpty();
+    this.addService();
+    this.setTargeting();
+    
+    return this.slot;
+  }
+
+  onDisplay = () => this.setState({ displayed: true });
+
   componentDidMount() {
-    this.props.provider.define(() => {
-      // event start
-      this.defineSlot();
-      this.slotOnload();
-      this.slotRenderEnded();
-      this.impressionViewable();
-      this.slotVisibilityChanged();
-      // events end
-      this.setMappingSize();
-      this.setMQListeners();
-      this.setCollapseEmpty();
-      this.addService();
-      this.setTargeting();
-    }, 
-    this.props.id
-    );
+    const message = {
+      type: this.props.lazy ? 'LAZY' : 'INITIAL',
+      level: this.props.priority || 1,
+      data: {
+        onDefine: this.onDefine,
+        onDisplay: this.onDisplay,
+        id: this.props.id,
+      }
+    }
+
+    this.props.provider.define(message);
   }
 
   componentWillUnmount() {

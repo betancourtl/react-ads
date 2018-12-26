@@ -160,7 +160,6 @@ export const getVersion = () => {
  */
 export const display = id => {
   window.googletag.cmd.push(() => {
-    console.log('id', id);
     window.googletag.display(id);
   });  
 };
@@ -226,7 +225,7 @@ export const createGoogleTagEvents = (pubSub, log = false) => {
       const fn = obj[fnName];
       obj[fnName] = function () {
         const result = fn.apply(this, arguments);
-        cb(fnName, result);
+        cb(fnName, result, arguments);
         return result;
       };
     };

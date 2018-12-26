@@ -1,6 +1,6 @@
 import React from 'react';
 import Article from './Article';
-import { Provider } from '../../../src';
+import { Provider } from '../../src';
 
 class Page extends React.Component {
   constructor() {
@@ -30,14 +30,9 @@ class Page extends React.Component {
   render() {
     return (
       <Provider
-        enableLazyLoad={{
-          fetchMarginPercent: 1,  // Fetch slots within 5 viewports.
-          renderMarginPercent: 2,  // Render slots within 2 viewports.
-          mobileScaling: 1.0  // Double the above values on mobile.
-        }}
         enableVideoAds={false}
         collapseEmptyDivs={false}
-        disableInitialLoad={false}
+        disableInitialLoad={true}
         enableSingleRequest={true}
       >
         {Array(this.state.articleQty).fill('').map((x, i) => {
