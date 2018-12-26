@@ -27,7 +27,7 @@ const config = {
     new webpack.HotModuleReplacementPlugin()
   ],
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    contentBase: path.join(__dirname, './'),
     historyApiFallback: true,
     port: 3001,
     hot: true

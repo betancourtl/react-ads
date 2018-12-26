@@ -20,6 +20,12 @@ class Ad extends Component {
      */
     this.listeners = [];
 
+    /** 
+     * Will return true when the ad gets defined.
+     * @type {Boolean} 
+     */ 
+    this.definded = false;
+
     this._setState = (props) => {
       if (this.unmounted) return;
       this.setState(props);
@@ -122,7 +128,9 @@ class Ad extends Component {
       this.setCollapseEmpty();
       this.addService();
       this.setTargeting();
-    }, this.props.id);
+    }, 
+    this.props.id
+    );
   }
 
   componentWillUnmount() {
