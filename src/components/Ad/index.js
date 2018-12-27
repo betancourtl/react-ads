@@ -284,25 +284,31 @@ Ad.defaultProps = {
   lazy: false,
   priority: 1,
   targeting: {},
+  adUnitPath: '',
   className: null,
   size: [300, 250],
+  onSlotOnLoad: null,
   outOfPageSlot: false,
   setCollapseEmpty: false,
-  adUnitPath: '',
   onSlotRenderEnded: null,
   onImpressionViewable: null,
-  onSlotOnLoad: null,
   onSlotVisibilityChanged: null,
 };
 
 Ad.propTypes = {
+  lazy: PropTypes.bool,
   style: PropTypes.object,
   className: PropTypes.string,
   targeting: PropTypes.object,
+  onSlotOnLoad: PropTypes.func,
   outOfPageSlot: PropTypes.bool,
   id: PropTypes.string.isRequired,
   setCollapseEmpty: PropTypes.bool,
+  onSlotRenderEnded: PropTypes.func,
+  onImpressionViewable: PropTypes.func,
+  onSlotVisibilityChanged: PropTypes.func,
   adUnitPath: PropTypes.string.isRequired,
+  priority: PropTypes.number,
   size: PropTypes.oneOfType([
     PropTypes.array.isRequired,
     PropTypes.string.isRequired,
@@ -313,13 +319,8 @@ Ad.propTypes = {
       slots: PropTypes.arrayOf(PropTypes.number)
     })
   ),
-  // events
-  onSlotOnLoad: PropTypes.func,
-  onSlotRenderEnded: PropTypes.func,
-  onImpressionViewable: PropTypes.func,
-  onSlotVisibilityChanged: PropTypes.func,
-  lazy: PropTypes.bool,
-  priority: PropTypes.number,
 };
 
-export default connect(AdsContext, Ad);
+const AdWithProvider = connect(AdsContext, Ad, 'provider');
+
+export default AdWithProvider;

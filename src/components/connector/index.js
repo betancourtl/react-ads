@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const connect = (Context, Component) => {
+export const connect = (Context, Component, key = 'provider') => {
   return class Connector extends React.Component {
     render() {
       return (
@@ -9,7 +9,7 @@ export const connect = (Context, Component) => {
             return (
               <Component
                 {...this.props}
-                provider={ctxProps}
+                {...{[key]: ctxProps}}
               />
             );
           }}
