@@ -284,13 +284,13 @@ ___
 
 | Features                                            | Status | Expected By   |
 |-----------------------------------------------------|--------|---------------|
-| 1. Create initial ads Heap                             | x      |            |
-| 2. Create Lazy Loaded Ads Heap                         | x      |            |
-| 3. Create Custom Lazy Loading functionality            | x      |            |
-| 4. Create Heap extraction/fetching/re-extraction logic | x      |            |
-| 5.Integrate Prebid.JS                                  | x      |            |
-| 6. Add Unit Testing Framework                          | x      |            |
-| 7. Add Line Item Generator Utils                       | x      |            |
+| 1. Create initial ads Heap                             | ok  |               |
+| 2. Create Lazy Loaded Ads Heap                         | ok  |               |
+| 3. Create Custom Lazy Loading functionality            | ok  |               |
+| 4. Create Heap extraction/fetching/re-extraction logic | ok  |               |
+| 5.Integrate Prebid.JS                                  | x   |               |
+| 6. Add Unit Testing Framework                          | x   |               |
+| 7. Add Line Item Generator Utils                       | x   |               |
 
 ## AdCallManager
 
@@ -350,91 +350,6 @@ ___
 
 The AdCallManager synchronizes the heap and queue's so they can execute in the correct order.
 
-**state**
-
-```javascript
-{   
-    heap: {},
-    InitialQueue: [],
-    LazyQueue: [],
-    LazyRefreshQueue: [],
-    isProcessing: false,
-    requested:  0,
-    rendered: 0,
-    processDebounce: 10,
-    chunkSize: 5,
-    defineDelay: 100,
-    refreshDelay: 100,
-    displayFn: googletag.display,
-    refreshFn: googletag.refresh
-}
-
-const createMessage = (props = {}) => ({
-    type: props.type //'Enum',
-    level: props.level // 'Number'
-    data: {
-        cb: props.data.cb // 'Function'
-        id: props.data.id // 'String',
-    }
-})
-
-const define = (props) => {
-    const message = createMessage(props);
-    heap.add(message);
-    if (!isProcessing) processDefinitions();
-};
-
-const processDefine = async () => {
-    isProcessing = true;
-    
-    if (heap.empty()) {
-        isProcessing = false;
-        return
-    };
-
-    const messages = [].forEach((ad) => {
-        if (message.type === 'initial') InitialQueue.add(message);
-        if (message.type === 'lazy') LazyQueue.add(message);        
-    }, { });
-
-    processInitialAds(InitialQueue);
-    processLazyAds(LazyQueue);    
-    // process ads again.
-    setTimeout(process, processingDelay);
-};
-
-const processInitialAds = (queue) => {
-    ids = [];
-    while (queue.peek()) {
-        const {id, cb} = queue.extract();
-        cb();
-        ids.push(id);
-        displayFn(ids);
-    }
-};
-
-const processLazyAds = () => {
-    while (queue.peek()) {
-        const {cb} = queue.extract();
-        cb();
-    }
-};
-
-const refresh = () => {
-    const message = createMessage(props);
-    LazyRefreshQueue.add(message);
-    if (!isProcessing) processRefreshRequest(); //debounced
-};
-
-const processRefreshRequest = () => {
-        const ids = [];
-        while (queue.peek()) {
-        const { id } = queue.extract();
-        refresh(ids);
-    }
-};
-```
-
 **What are the steps that the adCallManager should take to process the calls?**
 
 1. AdCall manager receives a request to display ads. The add() function will accept a callback.
@@ -447,7 +362,6 @@ const processRefreshRequest = () => {
 
 5. The processLazyAds will accept a LazyQueue object, dequeue it  and then call cb function.
 
-6. The
 
 **InitialAds**
 
