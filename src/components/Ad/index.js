@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { AdsContext } from '../context';
 import connect from '../connector';
+import inViewport from '../../utils/inViewport';
 
 class Ad extends Component {
   constructor(props) {
@@ -85,7 +87,6 @@ class Ad extends Component {
   });
 
   slotRenderEnded = this.cmdPush(() => {   
-    console.log('rendered fired'); 
     if (typeof this.props.onSlotRenderEnded !== 'function') return;
 
     window.googletag.pubads().addEventListener('slotRenderEnded', e => {
@@ -132,7 +133,17 @@ class Ad extends Component {
     return this.slot;
   }
 
-  onDisplay = () => this.setState({ displayed: true });
+  onDisplay = () => this.setState({ displayed: true }, this.refreshWhenVisible);
+
+  refreshWhenVisible = () => {
+    if (this.state.displayed) {
+      const isVisible = inViewport(ReactDOM.findDOMNode(this));
+      if (isVisible) {
+        this.props.provider.refresh(this.slot);
+        window.removeEventListener('scroll', this.refreshWhenVisible);
+      }      
+    }
+  };
 
   componentDidMount() {
     const message = {
@@ -144,8 +155,9 @@ class Ad extends Component {
         id: this.props.id,
       }
     }
-
+    
     this.props.provider.define(message);
+    if (this.props.lazy) window.addEventListener('scroll', this.refreshWhenVisible);
   }
 
   componentWillUnmount() {
@@ -169,6 +181,7 @@ class Ad extends Component {
 Ad.defaultProps = {
   id: 'id',
   style: {},
+  lazy: false,
   targeting: {},
   className: null,
   size: [300, 250],
@@ -204,6 +217,7 @@ Ad.propTypes = {
   onSlotRenderEnded: PropTypes.func,
   onImpressionViewable: PropTypes.func,
   onSlotVisibilityChanged: PropTypes.func,
+  lazy: PropTypes.bool,
 };
 
 export default connect(AdsContext, Ad);

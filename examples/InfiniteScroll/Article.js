@@ -7,16 +7,20 @@ const Article = (props) => {
       <div>
         <Ad
           id={`${props.id}-div-1`}
+          lazy={true}
           adUnitPath="/6355419/travel"
           targeting={{ test: 'infinitescroll' }}
-          // onSlotRenderEnded={(ad) => {
-          //   console.log('onSlotRenderEnded', ad);
-          //   ad.ref.firstChild.firstChild.style.border = '1px solid red';
-          // }}
-          // onSlotOnLoad={(ad) => {
-          //   console.log('onSlotOnLoad');
-          //   ad.ref.firstChild.firstChild.style.border = null;
-          // }}
+          size={[728, 90]}
+          sizeMapping={[
+            { viewPort: [850, 200], slots: [728, 90] },
+            { viewPort: [0, 0], slots: [] },
+          ]}
+        />
+        <Ad
+          id={`${props.id}-div-2`}
+          lazy={true}
+          adUnitPath="/6355419/travel"
+          targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}
           sizeMapping={[
             { viewPort: [850, 200], slots: [728, 90] },
@@ -27,7 +31,8 @@ const Article = (props) => {
       <div>
         <div style={{ height: '300vh' }} />
         <Ad
-          id={`${props.id}-div-2`}
+          id={`${props.id}-div-3`}
+          lazy={true}
           adUnitPath="/6355419/travel"
           targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}
@@ -40,7 +45,8 @@ const Article = (props) => {
       <div>
         <div style={{ height: '400vh' }} />
         <Ad
-          id={`${props.id}-div-3`}
+          id={`${props.id}-div-4`}
+          lazy={true}
           adUnitPath="/6355419/travel"
           targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}

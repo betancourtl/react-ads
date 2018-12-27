@@ -64,28 +64,6 @@ export const disableInitialLoad = (disabled) => {
 };
 
 /**
- * Will enable lazy loading ads.
- *
- * @function
- * @param {bool|object} props
- * @returns {void}
- */
-export const enableLazyLoad = (props = true) => {
-  if (!props) return;
-  window.googletag.cmd.push(() => {
-    const value = props === true
-      ? {
-        fetchMarginPercent: 10,  // Fetch slots within 5 viewports.
-        renderMarginPercent: 10,  // Render slots within 2 viewports.
-        mobileScaling: 1  // Double the above values on mobile.
-      }
-      : props;
-
-    window.googletag.pubads().enableLazyLoad(value);
-  });
-};
-
-/**
  * Will center the ads automatically.
  *
  * @function

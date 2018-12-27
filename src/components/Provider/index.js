@@ -3,14 +3,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
-import Queue from '../../lib/Queue'
-import adCallManager from '../../AdCallManager';
+import Queue from '../../lib/Queue';
+import adCallManager from '../../adCallManager';
 
 import {
-  display,
   getVersion,  
   setCentering,
-  enableLazyLoad,
   enableServices,
   enableVideoAds,
   createGPTScript,
@@ -22,23 +20,15 @@ import {
   createGoogleTagEvents,
 } from '../../googletag';
 
-/**
- * Enables the googletag service and configures the GPT service.
- * TODO [] - Create initial ads queue.
- * TODO [] - Create lazy-loded ads queue, by monkey patching the gpt cmd array.
- * TODO [] - Create custom lazy-loaded functionality similar to nfl/react-gpt
- */
 class Provider extends Component {
   constructor(props) {
     super(props);    
-    this.state = {
-      ads: [],      
+    this.state = {  
       isMounted: false,
       version: undefined,
       apiReady: undefined,
       pubadsReady: undefined,
       setCentering: undefined,
-      enableLazyLoad: undefined,
       enableVideoAds: undefined,
       collapseEmptyDivs: undefined,
       disableInitialLoad: undefined,
@@ -56,14 +46,14 @@ class Provider extends Component {
 
     // manage display, refresh, define slot calls.
     this.adCallManager = adCallManager({
-      chunkSize: 2,
-      defineDelay: 50,
-      refreshDelay: 50,
+      chunkSize: 4,
+      defineDelay: 100,
+      refreshDelay: 200,
       displayFn: id =>  {
         window.googletag.cmd.push(() => window.googletag.display(id));
       },
       refreshFn: ids => {
-        window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids))
+        window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids));
       },
     });
 
@@ -78,10 +68,10 @@ class Provider extends Component {
     // proxy the apiReady property so that we an load ads when ready.
     // pubSub.on('pubadsReady', (pubadsReady) => this.setState({ pubadsReady }));
     // pubSub.on('apiReady', (apiReady) => this.setState({ apiReady }));
-    this.pubSub.on('refresh', (a, b) => {
+    this.pubSub.on('refresh', () => {
       // console.log('refresh called');
     });
-    this.pubSub.on('display', (a,b) => {
+    this.pubSub.on('display', () => {
       // console.log('display called');
     });
     // this.pubSub.on('destroySlots', () => console.log('destroySlots'));
@@ -90,11 +80,10 @@ class Provider extends Component {
       // console.log('Service Enabled');
     });
     this.pubSub.on('getVersion', version => this.setStateInConstructor({ version }));
-    this.pubSub.on('defineSlot', slot => {
+    this.pubSub.on('defineSlot', () => {
       // console.log('defineSlot', slot.getSlotElementId())
     });
     this.pubSub.on('setCentering', setCentering => this.setStateInConstructor({ setCentering }));
-    this.pubSub.on('enableLazyLoad', enableLazyLoad => this.setStateInConstructor({ enableLazyLoad }));
     this.pubSub.on('enableVideoAds', enableVideoAds => this.setStateInConstructor({ enableVideoAds }));
     this.pubSub.on('collapseEmptyDivs', collapseEmptyDivs => this.setStateInConstructor({ collapseEmptyDivs }));
     this.pubSub.on('disableInitialLoad', disableInitialLoad => {
@@ -110,7 +99,6 @@ class Provider extends Component {
     getVersion();
     setCentering(this.props.setCentering);
     enableVideoAds(this.props.enableVideoAds);
-    enableLazyLoad(this.props.enableLazyLoad);
     collapseEmptyDivs(this.props.collapseEmptyDivs);  
     enableAsyncRendering(this.props.enableAsyncRendering);    
     enableSingleRequest(this.props.enableSingleRequest);
@@ -133,7 +121,8 @@ class Provider extends Component {
     return (
       <AdsContext.Provider value={{        
         ...this.state,
-        define: this.adCallManager.define,        
+        define: this.adCallManager.define,
+        refresh: this.adCallManager.refresh,   
       }}>
         {this.props.children}
       </AdsContext.Provider>
@@ -143,7 +132,6 @@ class Provider extends Component {
 
 Provider.defaultProps = {
   setCentering: true,
-  enableLazyLoad: false,
   enableVideoAds: false,
   collapseEmptyDivs: false,
   disableInitialLoad: true,
@@ -161,14 +149,6 @@ Provider.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.arrayOf(PropTypes.node),
-  ]),
-  enableLazyLoad: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.shape({
-      fetchMarginPercent: PropTypes.number,
-      renderMarginPercent: PropTypes.number,
-      mobileScaling: PropTypes.number,
-    })
   ]),
 };
 

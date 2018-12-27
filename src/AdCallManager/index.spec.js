@@ -6,7 +6,7 @@ import adCallManager, {
 } from './';
 import MinHeap from '../lib/MinHeap';
 
-describe.only('adCallManager', () => {  
+describe('adCallManager', () => {  
   const msg1 = createMessage({
     type: types.INITIAL,
     level: 1,
@@ -55,38 +55,7 @@ describe.only('adCallManager', () => {
     expect(heap.extract()).to.deep.equal(msg4)
   });
 
-  it('Should process definitions by taking 5 messages.', (done) => {
-    const displayCount = 0;
-    const displayFn = () => displayCount++;
-    const adManager = adCallManager({
-      displayFn,
-      processInitialAds: false,
-      processLazyAds: false,            
-    });
-    adManager.getState().heap.insert(msg1);
-    adManager.getState().heap.insert(msg1);
-    adManager.getState().heap.insert(msg1);
-    adManager.getState().heap.insert(msg2);
-    adManager.getState().heap.insert(msg3);
-    adManager.getState().heap.insert(msg4);
-
-
-    setTimeout(() => {
-      adManager
-        .processDefinitions()
-        .then(() => {        
-          expect(adManager.getState().initialQueue.size).to.equal(4);
-          expect(adManager.getState().lazyQueue.size).to.equal(1);        
-          expect(adManager.getState().heap.size).to.equal(1);
-          done();
-        })
-        .catch(() => {
-          expect(true).to.equal(false);
-        })
-    }, 10);      
-  });
-
-  it.only('Should process definitions in chunks of 5 messages.', (done) => {
+  it('Should process definitions in chunks of 5 messages.', (done) => {
     let callArgs = [];
     const displayFn = x => callArgs.push(x);
     const adManager = adCallManager({
