@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Queue from '../../lib/Queue';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
-import Queue from '../../lib/Queue';
 import adCallManager from '../../utils/adCallManager';
 
 import {
@@ -42,13 +42,11 @@ class Provider extends Component {
     this.pubSub = new PubSub();
     createGPTScript();
     startGoogleTagQue();
-    createGoogleTagEvents(this.pubSub);
-
-    // manage display, refresh, define slot calls.
+    createGoogleTagEvents(this.pubSub);  
     this.adCallManager = adCallManager({
-      chunkSize: 4,
-      defineDelay: 100,
-      refreshDelay: 200,
+      chunkSize: props.chunkSize,
+      defineDelay: props.defineDelay,
+      refreshDelay: props.defineDelay,
       displayFn: id =>  window.googletag.cmd.push(() => window.googletag.display(id)),
       refreshFn: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
     });
@@ -64,32 +62,17 @@ class Provider extends Component {
     // proxy the apiReady property so that we an load ads when ready.
     // pubSub.on('pubadsReady', (pubadsReady) => this.setState({ pubadsReady }));
     // pubSub.on('apiReady', (apiReady) => this.setState({ apiReady }));
-    this.pubSub.on('refresh', () => {
-      // console.log('refresh called');
-    });
-    this.pubSub.on('display', () => {
-      // console.log('display called');
-    });
-    // this.pubSub.on('destroySlots', () => console.log('destroySlots'));
-    this.pubSub.on('enableServices', () => {
-      this.setStateInConstructor({ serviceEnabled: true });
-      // console.log('Service Enabled');
-    });
+    this.pubSub.on('refresh', () => {});
+    this.pubSub.on('display', () => {});
+    this.pubSub.on('destroySlots', () => {});
+    this.pubSub.on('enableServices', () => {this.setStateInConstructor({ serviceEnabled: true });});
     this.pubSub.on('getVersion', version => this.setStateInConstructor({ version }));
-    this.pubSub.on('defineSlot', () => {
-      // console.log('defineSlot', slot.getSlotElementId())
-    });
+    this.pubSub.on('defineSlot', () => {});
     this.pubSub.on('setCentering', setCentering => this.setStateInConstructor({ setCentering }));
     this.pubSub.on('enableVideoAds', enableVideoAds => this.setStateInConstructor({ enableVideoAds }));
     this.pubSub.on('collapseEmptyDivs', collapseEmptyDivs => this.setStateInConstructor({ collapseEmptyDivs }));
-    this.pubSub.on('disableInitialLoad', disableInitialLoad => {
-      this.setStateInConstructor({ disableInitialLoad });
-      // console.log('disableInitialLoad');
-    });
-    this.pubSub.on('enableSingleRequest', enableSingleRequest => {
-      this.setStateInConstructor({ enableSingleRequest });
-      // console.log('enableSingleRequest');
-    });
+    this.pubSub.on('disableInitialLoad', disableInitialLoad => {this.setStateInConstructor({ disableInitialLoad });});
+    this.pubSub.on('enableSingleRequest', enableSingleRequest => {this.setStateInConstructor({ enableSingleRequest });});
     this.pubSub.on('enableAsyncRendering', enableAsyncRendering => this.setStateInConstructor({ enableAsyncRendering }));
 
     getVersion();
@@ -127,6 +110,9 @@ class Provider extends Component {
 }
 
 Provider.defaultProps = {
+  chunkSize: 4,
+  defineDelay: 100,
+  refreshDelay: 200,
   setCentering: true,
   enableVideoAds: false,
   collapseEmptyDivs: false,
@@ -136,7 +122,10 @@ Provider.defaultProps = {
 };
 
 Provider.propTypes = {
+  chunkSize: PropTypes.number,
   setCentering: PropTypes.bool,
+  defineDelay: PropTypes.number,
+  refreshDelay: PropTypes.number,
   enableVideoAds: PropTypes.bool,
   collapseEmptyDivs: PropTypes.bool,
   disableInitialLoad: PropTypes.bool,

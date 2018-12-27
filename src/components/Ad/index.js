@@ -26,14 +26,28 @@ class Ad extends Component {
      */
     this.listeners = [];
 
+    /**
+     * Will call setState if the component is not unmounted.
+     * @type {Function}
+     */
     this._setState = (props) => {
       if (this.unmounted) return;
       this.setState(props);
     };
   }
 
+  /**
+   * google command queue wrapper fn.
+   * @function
+   * @callback cb - Callback to be pushed to the queue.
+   */
   cmdPush = (cb) => () => window.googletag.cmd.push(cb);
 
+  /**
+   * Will define this slot on the page.
+   * @function   
+   * @returns {void}
+   */
   defineSlot = () => {
     window.googletag.cmd.push(() => {
       this.slot = this.props.outOfPageSlot
@@ -42,20 +56,51 @@ class Ad extends Component {
     });
   };
 
+  /**
+   * Will refresh this slot.
+   * @function   
+   * @returns {void}
+   */
   refresh = this.cmdPush(() => window.googletag.pubads().refresh([this.slot]));
 
+  /**
+   * Will destroy this slot from the page.
+   * @function   
+   * @returns {void}
+   */
   destroyAd = this.cmdPush(() => window.googletag.destroySlots([this.slot]));
 
+  /**
+   * Will enable the pubads service.
+   * @function   
+   * @returns {void}
+   */
   addService = this.cmdPush(() => this.slot.addService(window.googletag.pubads()));
 
+  /**
+   * Will collapse this ad wheneverit is empty.
+   * @function   
+   * @returns {void}
+   */
   setCollapseEmpty = this.cmdPush(() => {
     if (!this.props.setCollapseEmpty) return;
     this.slot.setCollapseEmptyDiv(true, true)
   });
 
+  /**
+   * Will set the targeting parameters for this ad.
+   * @function   
+   * @returns {void}
+   */
   setTargeting = this.cmdPush(() => Object.entries(this.props.targeting)
     .map(([k, v]) => this.slot.setTargeting(k, v)));
 
+
+  /**
+   * Will listen to mediaQueries for hiding/refreshing ads on the page.
+   * @function   
+   * @returns {void}
+   */
   setMQListeners = this.cmdPush(() => {
     if (!this.props.sizeMapping) return;
     this.props.sizeMapping.forEach(({ viewPort: [width] }) => {
@@ -66,10 +111,21 @@ class Ad extends Component {
     });
   });
 
+  /**
+   * Will remove the listener from the page.
+   * @function   
+   * @returns {void}
+   */
   unsetMQListeners = this.cmdPush(() => {
     this.listeners.forEach(fn => fn());
   });
 
+  /**
+   * Will create the sizeMaps that will show the different ads depending on the
+   * viewport size.
+   * @function   
+   * @returns {void}
+   */
   setMappingSize = this.cmdPush(() => {
     if (!this.props.sizeMapping) return;
     const mapping = this.props.sizeMapping.reduce((acc, x) => acc.addSize(x.viewPort, x.slots), window.googletag.sizeMapping());
@@ -82,6 +138,11 @@ class Ad extends Component {
     ...props,
   });
 
+  /**
+   * Will listen to the slotRenderEnded event and then call the passed function.
+   * @function   
+   * @returns {void}
+   */
   slotRenderEnded = this.cmdPush(() => {   
     if (typeof this.props.onSlotRenderEnded !== 'function') return;
 
@@ -90,6 +151,11 @@ class Ad extends Component {
     });
   });
 
+  /**
+   * Will listen to the impressionViewable event and then call the passed function.
+   * @function   
+   * @returns {void}
+   */
   impressionViewable = this.cmdPush(() => {
     if (typeof this.props.onImpressionViewable !== 'function') return;
     window.googletag.pubads().addEventListener('impressionViewable', e => {
@@ -97,6 +163,11 @@ class Ad extends Component {
     });
   });
 
+  /**
+   * Will listen to the slotVisibilityChanged event and then call the passed function.
+   * @function   
+   * @returns {void}
+   */
   slotVisibilityChanged = this.cmdPush(() => {
     if (typeof this.props.onSlotVisibilityChanged !== 'function') return;
     window.googletag.pubads().addEventListener('slotVisibilityChanged', e => {
@@ -104,6 +175,11 @@ class Ad extends Component {
     });
   });
 
+  /**
+   * Will listen to the slotOnload event and then call the passed function.
+   * @function   
+   * @returns {void}
+   */
   slotOnload = this.cmdPush(() => {
     window.googletag.pubads().addEventListener('slotOnload', e => {
       if (typeof this.props.onSlotOnLoad === 'function') {
@@ -112,6 +188,11 @@ class Ad extends Component {
     });
   });
 
+  /**
+   * Callback that handles defining/configuring this ad.
+   * @function   
+   * @returns {void}
+   */
   onDefine = () => {
     // event start
     this.defineSlot();
@@ -129,8 +210,19 @@ class Ad extends Component {
     return this.slot;
   }
 
+  /**
+   * Callback that gets triggered whenever this ad gets displayed.
+   * @function   
+   * @returns {void}
+   */
   onDisplay = () => this.setState({ displayed: true }, this.refreshWhenVisible);
 
+  /**
+   * Event listener for lazy loaded ads that triggers the refresh function when
+   * the ad becomes visible.
+   * @function   
+   * @returns {void}
+   */
   refreshWhenVisible = () => {
     if (this.state.displayed) {
       const isVisible = inViewport(ReactDOM.findDOMNode(this));

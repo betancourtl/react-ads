@@ -40,7 +40,7 @@ export const startGoogleTagQue = () => {
  * HTTP request.
  *
  * @function
- * @param {bool} enabled
+ * @param {Boolean} enabled
  * @returns {void}
  */
 export const enableSingleRequest = enabled => {
@@ -54,7 +54,7 @@ export const enableSingleRequest = enabled => {
  * Will stop the initial ad load.
  *
  * @function
- * @param {bool} disabled
+ * @param {Boolean} disabled
  */
 export const disableInitialLoad = (disabled) => {
   if (!disabled) return;
@@ -67,7 +67,7 @@ export const disableInitialLoad = (disabled) => {
  * Will center the ads automatically.
  *
  * @function
- * @param {bool} isCentered
+ * @param {Boolean} isCentered
  * @returns {void}
  */
 export const setCentering = (isCentered = false) => {
@@ -77,11 +77,11 @@ export const setCentering = (isCentered = false) => {
 };
 
 /**
- * Will enable Async rendering. By default this is true, Only use this
+ * Will enable Async rendering. By default this is true, only use this
  * to override a previous setting.
  *
  * @function
- * @param {bool} isEnabled
+ * @param {Boolean} isEnabled
  * @returns {void}
  */
 export const enableAsyncRendering = (isEnabled = false) => {
@@ -92,10 +92,10 @@ export const enableAsyncRendering = (isEnabled = false) => {
 };
 
 /**
- * Will enable enable video ads.
+ * Will enable video ads.
  *
  * @function
- * @param {bool} isEnabled
+ * @param {Boolean} isEnabled
  * @returns {void}
  */
 export const enableVideoAds = (isEnabled = false) => {
@@ -132,9 +132,9 @@ export const getVersion = () => {
 
 /**
  * Will fetch the google ad from DFP. When SRA is inabled this will
- * fetch ALL the ads that called the defintSlot function, but have
+ * fetch ALL the ads that called the defineSlot function, but have
  * not been displayed.
- * @param {string|Slot} id - The slotElementId or the Slot Object.
+ * @param {String|Slot} id - The slotElementId or the Slot Object.
  */
 export const display = id => {
   window.googletag.cmd.push(() => {

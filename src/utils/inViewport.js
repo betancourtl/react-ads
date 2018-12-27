@@ -1,3 +1,7 @@
+/**
+ * 
+ * @param {HTMLElement} el - Ad HTML element.
+ */
 const elementInViewport = el => {
   let top = el.offsetTop;
   let left = el.offsetLeft;
