@@ -102,11 +102,15 @@ const adCallManager = (props = {}) => {
   const define = (props = {}) => {
     const message = createMessage(props);
     state.heap.insert(message);
+    
     if (state.isProcessing) return;
-
+    
+    state.isProcessing = true;
+    
     processDefinitions()
       .then(() => {
         if (!state.heap.isEmpty) processDefinitions();
+        else state.isProcessing = false;
       });
   };
 
