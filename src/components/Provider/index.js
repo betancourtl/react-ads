@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Queue from '../../lib/Queue';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
 import adCallManager from '../../utils/adCallManager';
@@ -38,7 +37,6 @@ class Provider extends Component {
       serviceEnabled: false,          
     };
     
-    this.defineSlotQueue = new Queue();
     this.pubSub = new PubSub();
     createGPTScript();
     startGoogleTagQue();
