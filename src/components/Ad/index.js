@@ -37,6 +37,18 @@ class Ad extends Component {
   }
 
   /**
+   * Will get the adUnitPath from the Provider by default.
+   * If the Ad has an unit path then it will override the parent.
+   */
+  get adUnitPath() {
+    const networkId = this.props.provider.networkId;
+    
+    return this.props.adUnitPath
+      ? ['', networkId, this.props.adUnitPath].join('/')
+      : ['', networkId, this.props.provider.adUnitPath].join('/');
+  }
+
+  /**
    * google command queue wrapper fn.
    * @function
    * @callback cb - Callback to be pushed to the queue.
@@ -51,8 +63,8 @@ class Ad extends Component {
   defineSlot = () => {
     window.googletag.cmd.push(() => {
       this.slot = this.props.outOfPageSlot
-        ? window.googletag.defineOutOfPageSlot(this.props.adUnitPath, this.props.id)
-        : window.googletag.defineSlot(this.props.adUnitPath, this.props.size, this.props.id);
+        ? window.googletag.defineOutOfPageSlot(this.adUnitPath, this.props.id)
+        : window.googletag.defineSlot(this.adUnitPath, this.props.size, this.props.id);
     });
   };
 
@@ -260,7 +272,7 @@ class Ad extends Component {
           id={this.props.id}
           ref={ref => this.ref = ref}
           className={this.props.className}
-          style={{ ...this.props.style, }}
+          style={{ ...this.props.style }}
         />
     );
   }
@@ -276,7 +288,7 @@ Ad.defaultProps = {
   size: [300, 250],
   outOfPageSlot: false,
   setCollapseEmpty: false,
-  adUnitPath: '/6355419/Travel/Europe/France/Paris',
+  adUnitPath: '',
   onSlotRenderEnded: null,
   onImpressionViewable: null,
   onSlotOnLoad: null,

@@ -6,6 +6,28 @@ This package allows you to render DFP ads using React components
 
 ___
 
+**networkId {Number}**
+
+This will set The network Id for all of the ads.
+
+**chunkSize {Number}**
+
+This will fetch ads in chunks of the specified number.
+
+**defineDelay {Number}**
+
+Time to wait before defining ads. This allows ads to be added to a queue before
+being defined and displayed. This is usefull for taking advantage of SRA.
+
+**refreshDelay {Number}**
+
+Time to wait before refreshing ads. This allows ads to be added to a queue before
+being defined and refreshed. This multiple ads to be refreshed at the same time.
+
+**adUnitPath {String}**
+
+This will set The network Id for all of the ads. The <Ad \/> can overwrite this.
+
 **setCentering(Boolean) {Function}**
 
 Enables/disables centering of ads. This mode must be set before the service is 
@@ -72,6 +94,11 @@ googletag.pubads().enableLazyLoad({
 #### <Ad  \/>
 
 ___
+
+**adUnitPath {String}**
+
+This will set The network Id for this <Ad \/>. This overwrites the value from 
+the <Provider \/>.
 
 **style {Object}**
 
@@ -291,6 +318,8 @@ ___
 | 5.Integrate Prebid.JS                                  | x   |               |
 | 6. Add Unit Testing Framework                          | x   |               |
 | 7. Add Line Item Generator Utils                       | x   |               |
+| 8. Lazy wrapper function to set make sections lazy.    | x   |               |
+| 9. Add provider gpt event hooks                        | x   |               |
 
 ## AdCallManager
 
