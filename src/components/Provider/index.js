@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
 import Queue from '../../lib/Queue';
-import adCallManager from '../../adCallManager';
+import adCallManager from '../../utils/adCallManager';
 
 import {
   getVersion,  
@@ -18,7 +18,7 @@ import {
   enableSingleRequest,
   enableAsyncRendering,
   createGoogleTagEvents,
-} from '../../googletag';
+} from '../../utils/googletag';
 
 class Provider extends Component {
   constructor(props) {
@@ -49,12 +49,8 @@ class Provider extends Component {
       chunkSize: 4,
       defineDelay: 100,
       refreshDelay: 200,
-      displayFn: id =>  {
-        window.googletag.cmd.push(() => window.googletag.display(id));
-      },
-      refreshFn: ids => {
-        window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids));
-      },
+      displayFn: id =>  window.googletag.cmd.push(() => window.googletag.display(id)),
+      refreshFn: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
     });
 
     this.setStateInConstructor = (props) => {

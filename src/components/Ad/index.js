@@ -9,7 +9,11 @@ class Ad extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showBorder: true,
+    /** 
+     * Will return true when the ad gets defined.
+     * @type {Boolean} 
+     */ 
+      displayed: false,
     };
     /**
      * Reference the the googletag GPT slot.
@@ -21,12 +25,6 @@ class Ad extends Component {
      * @type {Array}
      */
     this.listeners = [];
-
-    /** 
-     * Will return true when the ad gets defined.
-     * @type {Boolean} 
-     */ 
-    this.displayed = false;
 
     this._setState = (props) => {
       if (this.unmounted) return;
@@ -44,9 +42,7 @@ class Ad extends Component {
     });
   };
 
-  refresh = this.cmdPush(() => {
-    window.googletag.pubads().refresh([this.slot]);
-  });
+  refresh = this.cmdPush(() => window.googletag.pubads().refresh([this.slot]));
 
   destroyAd = this.cmdPush(() => window.googletag.destroySlots([this.slot]));
 
@@ -148,13 +144,13 @@ class Ad extends Component {
   componentDidMount() {
     const message = {
       type: this.props.lazy ? 'LAZY' : 'INITIAL',
-      level: this.props.priority || 1,
+      level: this.props.priority,
       data: {
         onDefine: this.onDefine,
         onDisplay: this.onDisplay,
         id: this.props.id,
       }
-    }
+    };
     
     this.props.provider.define(message);
     if (this.props.lazy) window.addEventListener('scroll', this.refreshWhenVisible);
@@ -182,6 +178,7 @@ Ad.defaultProps = {
   id: 'id',
   style: {},
   lazy: false,
+  priority: 1,
   targeting: {},
   className: null,
   size: [300, 250],
@@ -218,6 +215,7 @@ Ad.propTypes = {
   onImpressionViewable: PropTypes.func,
   onSlotVisibilityChanged: PropTypes.func,
   lazy: PropTypes.bool,
+  priority: PropTypes.number,
 };
 
 export default connect(AdsContext, Ad);

@@ -1,5 +1,5 @@
-import MinHeap from '../lib/MinHeap';
-import Queue from '../lib/Queue';
+import MinHeap from '../../lib/MinHeap';
+import Queue from '../../lib/Queue';
 import debounce from 'debounce-promise';
 
 export const empyFn = () => { };
