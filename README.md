@@ -10,6 +10,10 @@ ___
 
 This will set The network Id for all of the ads.
 
+**setTargetomg {Object}**
+
+Sets page level targeting for all slots. This targeting will apply to all slots.
+
 **chunkSize {Number}**
 
 This will fetch ads in chunks of the specified number.

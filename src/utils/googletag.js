@@ -155,6 +155,20 @@ export const enableServices = () => {
 };
 
 /**
+ * Will set page level targeting for all slots.
+ *
+ * @function
+ * @returns {void}
+ */
+export const setTargeting = (targeting = {}) => {
+  window.googletag.cmd.push(() => {
+    Object
+      .entries(targeting)
+      .map(([k, v]) => window.googletag.pubads().setTargeting(k, v));
+  });
+};
+
+/**
  * Will monkey patch the global googletag functions so that we can subscribe to
  * Whenever the function is called.
  *

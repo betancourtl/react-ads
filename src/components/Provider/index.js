@@ -6,7 +6,7 @@ import { AdsContext } from '../context';
 import adCallManager from '../../utils/adCallManager';
 
 import {
-  getVersion,  
+  setTargeting,  
   setCentering,
   enableServices,
   enableVideoAds,
@@ -49,6 +49,7 @@ class Provider extends Component {
     enableAsyncRendering(this.props.enableAsyncRendering);    
     enableSingleRequest(this.props.enableSingleRequest);
     disableInitialLoad(this.props.disableInitialLoad);
+    setTargeting(this.props.targeting);
     enableServices();
   }
 
@@ -81,6 +82,7 @@ class Provider extends Component {
 Provider.defaultProps = {
   networkId: 0,
   chunkSize: 4,
+  targeting: {},
   defineDelay: 100,
   refreshDelay: 200,
   setCentering: true,
@@ -92,6 +94,7 @@ Provider.defaultProps = {
 };
 
 Provider.propTypes = {
+  targeting: PropTypes.object,
   chunkSize: PropTypes.number,
   adUnitPath: PropTypes.string,
   setCentering: PropTypes.bool,
