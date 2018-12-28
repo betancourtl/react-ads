@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-export default (props = {}) => {
+const Nav = () => {
   return (
     <ul>
       <li><NavLink to='/'>Home</NavLink></li>
@@ -10,3 +10,5 @@ export default (props = {}) => {
     </ul>
   );
 };
+
+export default Nav;

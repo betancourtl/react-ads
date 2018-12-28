@@ -157,8 +157,8 @@ const adCallManager = (props = {}) => {
     }
 
     ids.forEach((id, i) => {
-      state.displayFn(id);
-      onDisplayCbs[i]();
+      const callback = onDisplayCbs[i];
+      state.displayFn(id, callback);
     });
   };
 
@@ -190,35 +190,30 @@ const adCallManager = (props = {}) => {
   const processRefreshRequest = debounce(() => {
     return new Promise(resolve => {
       const slots = [];
+      const adUnits = [];
       let count = 0;
 
       // Should take 5
       while (!state.refreshQueue.isEmpty && count < state.chunkSize) {
-        const slot = state.refreshQueue.dequeue();
-        slots.push(slot);
+        const obj = state.refreshQueue.dequeue();
+        slots.push(obj.slot);
+        adUnits.push(obj.bidderCode);
         count++;
       }
 
       if (!state.prebidEnabled) {
-        refreshAds(slots);
+        state.refreshFn(slots);
         resolve();
       }
 
-      // Create the prebid object.
-      const adUnits = [];
-
+      // Create the prebid object.      
       state.getBids(adUnits)
         .then(() => {
-          refreshAds(slots);
-          console.log('refreshing slots', slots);
+          state.refreshFn(slots);
           resolve();
         });
     });
   }, state.refreshDelay, { leading: false });
-
-  const refreshAds = (slots) => {
-    state.refreshFn(slots);
-  };
 
   return {
     refresh,

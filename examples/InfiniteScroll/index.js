@@ -32,8 +32,8 @@ class Page extends React.Component {
       <Provider
         enableVideoAds={false}
         collapseEmptyDivs={false}
-        disableInitialLoad={true}
-        enableSingleRequest={true}
+        adUnitPath="travel"
+        networkId={6355419}
       >
         {Array(this.state.articleQty).fill('').map((x, i) => {
           return <Article key={i + 1} id={'id-' + (i + 1)} />;

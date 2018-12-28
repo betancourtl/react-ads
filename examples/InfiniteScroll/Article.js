@@ -8,7 +8,6 @@ const Article = (props) => {
         <Ad
           id={`${props.id}-div-1`}
           lazy={true}
-          adUnitPath="/6355419/travel"
           targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}
           sizeMapping={[
@@ -19,7 +18,7 @@ const Article = (props) => {
         <Ad
           id={`${props.id}-div-2`}
           lazy={true}
-          adUnitPath="/6355419/travel"
+
           targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}
           sizeMapping={[
@@ -33,7 +32,6 @@ const Article = (props) => {
         <Ad
           id={`${props.id}-div-3`}
           lazy={true}
-          adUnitPath="/6355419/travel"
           targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}
           sizeMapping={[
@@ -47,7 +45,6 @@ const Article = (props) => {
         <Ad
           id={`${props.id}-div-4`}
           lazy={true}
-          adUnitPath="/6355419/travel"
           targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}
           sizeMapping={[

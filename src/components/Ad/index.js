@@ -206,19 +206,20 @@ class Ad extends Component {
    * @returns {void}
    */
   onDefine = () => {
-    // event start
-    this.defineSlot();
-    this.slotOnload();
-    this.slotRenderEnded();
-    this.impressionViewable();
-    this.slotVisibilityChanged();
-    // events end
-    this.setMappingSize();
-    this.setMQListeners();
-    this.setCollapseEmpty();
-    this.addService();
-    this.setTargeting();
-    
+    window.googletag.cmd.push(() => {    
+      // event start
+      this.defineSlot();
+      this.slotOnload();
+      this.slotRenderEnded();
+      this.impressionViewable();
+      this.slotVisibilityChanged();
+      // events end
+      this.setMappingSize();
+      this.setMQListeners();
+      this.setCollapseEmpty();
+      this.addService();
+      this.setTargeting();
+    })    
     return this.slot;
   }
 
@@ -227,10 +228,14 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  onDisplay = () => this.setState({ displayed: true }, () => {
+  onDisplay = () => this.setState({ displayed: true }, () => {  
+    const refreshProps = {
+      bidderCode: this.props.bidderCode,
+      slot: this.slot,
+    };
     this.props.lazy 
     ? this.refreshWhenVisible()
-    : this.props.provider.refresh(this.slot);
+    : this.props.provider.refresh(refreshProps);
   });
 
   /**
@@ -243,7 +248,10 @@ class Ad extends Component {
     if (this.state.displayed) {
       const isVisible = inViewport(ReactDOM.findDOMNode(this));
       if (isVisible) {
-        this.props.provider.refresh(this.slot);
+        this.props.provider.refresh({
+          bidderCode: this.props.bidderCode,
+          slot: this.slot,
+        });
         window.removeEventListener('scroll', this.refreshWhenVisible);
       }      
     }
@@ -268,8 +276,8 @@ class Ad extends Component {
     this.unmounted = true;
     this.destroyAd();
     this.unsetMQListeners();
+    window.removeEventListener('scroll', this.refreshWhenVisible)
   }
-
 
   render() {
     return (
@@ -305,6 +313,7 @@ Ad.propTypes = {
   style: PropTypes.object,
   className: PropTypes.string,
   targeting: PropTypes.object,
+  prebidCode: PropTypes.object,
   onSlotOnLoad: PropTypes.func,
   outOfPageSlot: PropTypes.bool,
   id: PropTypes.string.isRequired,

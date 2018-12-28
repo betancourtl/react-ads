@@ -36,7 +36,12 @@ class Provider extends Component {
       chunkSize: props.chunkSize,
       defineDelay: props.defineDelay,
       refreshDelay: props.defineDelay,
-      displayFn: id =>  window.googletag.cmd.push(() => window.googletag.display(id)),
+      displayFn: (id, cb) =>  {
+        window.googletag.cmd.push(() => {
+          window.googletag.display(id);
+          cb();
+        });
+      },
       refreshFn: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
       getBids: getBids(props.prebidTimeout, props.prebidFailsafeTimeout),
       prebidEnabled: this.props.prebid
@@ -106,7 +111,7 @@ Provider.propTypes = {
   chunkSize: PropTypes.number,
   adUnitPath: PropTypes.string,
   setCentering: PropTypes.bool,
-  prebidTimeout: PropTypes.bool,
+  prebidTimeout: PropTypes.number,
   defineDelay: PropTypes.number,
   refreshDelay: PropTypes.number,
   enableVideoAds: PropTypes.bool,
@@ -114,7 +119,7 @@ Provider.propTypes = {
   disableInitialLoad: PropTypes.bool,
   enableSingleRequest: PropTypes.bool,
   enableAsyncRendering: PropTypes.bool,
-  prebidFailsafeTimeout: PropTypes.bool,
+  prebidFailsafeTimeout: PropTypes.number,
   networkId: PropTypes.number.isRequired,
   children: PropTypes.oneOfType([
     PropTypes.node,
