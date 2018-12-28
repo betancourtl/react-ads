@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
 import adCallManager from '../../utils/adCallManager';
-import { startPrebidQueue } from '../../utils/prebid';
+import { startPrebidQueue, getBids } from '../../utils/prebid';
 import {
   setTargeting,  
   setCentering,
@@ -37,7 +37,9 @@ class Provider extends Component {
       defineDelay: props.defineDelay,
       refreshDelay: props.defineDelay,
       displayFn: id =>  window.googletag.cmd.push(() => window.googletag.display(id)),
-      refreshFn: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),      
+      refreshFn: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
+      getBids: getBids(props.prebidTimeout, props.prebidFailsafeTimeout),
+      prebidEnabled: this.props.prebid
     });
 
     this.pubSub.on('refresh', () => {});
@@ -85,21 +87,26 @@ Provider.defaultProps = {
   networkId: 0,
   chunkSize: 4,
   targeting: {},
+  prebid:  false,
   defineDelay: 100,
   refreshDelay: 200,
   setCentering: true,
+  prebidTimeout: 1000,
   enableVideoAds: false,
   collapseEmptyDivs: false,
   disableInitialLoad: true,
   enableSingleRequest: true,
   enableAsyncRendering: true,
+  prebidFailsafeTimeout: 3000,
 };
 
 Provider.propTypes = {
+  prebid: PropTypes.bool,
   targeting: PropTypes.object,
   chunkSize: PropTypes.number,
   adUnitPath: PropTypes.string,
   setCentering: PropTypes.bool,
+  prebidTimeout: PropTypes.bool,
   defineDelay: PropTypes.number,
   refreshDelay: PropTypes.number,
   enableVideoAds: PropTypes.bool,
@@ -107,6 +114,7 @@ Provider.propTypes = {
   disableInitialLoad: PropTypes.bool,
   enableSingleRequest: PropTypes.bool,
   enableAsyncRendering: PropTypes.bool,
+  prebidFailsafeTimeout: PropTypes.bool,
   networkId: PropTypes.number.isRequired,
   children: PropTypes.oneOfType([
     PropTypes.node,

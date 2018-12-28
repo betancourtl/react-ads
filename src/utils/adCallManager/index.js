@@ -1,10 +1,6 @@
 import MinHeap from '../../lib/MinHeap';
 import Queue from '../../lib/Queue';
 import debounce from 'debounce-promise';
-import {
-  getBids,
-  initAdserver,
-} from '../../utils/prebid';
 /**
  * Empty function.
  * 
@@ -87,6 +83,8 @@ const adCallManager = (props = {}) => {
     //testing
     processInitialAds: props.processInitialAds || true,
     processLazyAds: props.processLazyAds || true,
+    getBids:  props.getBids || Promise.resolve,
+    prebidEnabled: props.prebidEnabled || false,
   };
 
   /**
@@ -189,11 +187,11 @@ const adCallManager = (props = {}) => {
    * @function
    * @param {Slot} slot - googletag slot.
    */
-  const processRefreshRequest = debounce(() => {       
+  const processRefreshRequest = debounce(() => {
     return new Promise(resolve => {
       const slots = [];
       let count = 0;
-      
+
       // Should take 5
       while (!state.refreshQueue.isEmpty && count < state.chunkSize) {
         const slot = state.refreshQueue.dequeue();
@@ -201,16 +199,27 @@ const adCallManager = (props = {}) => {
         count++;
       }
 
-      refreshAds(slots);
-      console.log('refreshing slots', slots);
-      resolve();
+      if (!state.prebidEnabled) {
+        refreshAds(slots);
+        resolve();
+      }
+
+      // Create the prebid object.
+      const adUnits = [];
+
+      state.getBids(adUnits)
+        .then(() => {
+          refreshAds(slots);
+          console.log('refreshing slots', slots);
+          resolve();
+        });
     });
   }, state.refreshDelay, { leading: false });
 
   const refreshAds = (slots) => {
     state.refreshFn(slots);
   };
-  
+
   return {
     refresh,
     define,
