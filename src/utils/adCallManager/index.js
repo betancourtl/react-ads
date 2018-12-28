@@ -51,7 +51,7 @@ export const comparisonFn = (msg1, msg2) => {
   if (msg1.type === types.LAZY && msg2.type === types.INITIAL) return true;
 
   // priority comparisons
-  return msg1.priority > msg2.priority;
+  return msg1.level > msg2.level;
 };
 
 /**
@@ -125,12 +125,12 @@ const adCallManager = (props = {}) => {
       const queue = new Queue();
       let count = 0;
       // Should take 5
-      while (!state.heap.isEmpty && count < state.chunkSize) {
+      while (!state.heap.isEmpty && count < state.chunkSize) {        
         const message = state.heap.extract();
         queue.enqueue(message);
         count++;
-      }
-
+      }      
+      
       displayAds(queue);
       resolve();
     });
@@ -198,6 +198,11 @@ const adCallManager = (props = {}) => {
       }
 
       // Create the prebid object.      
+      if (!adUnits) {
+        state.refreshFn(slots);
+        return resolve();
+      }
+
       state.getBids(adUnits)
         .then(() => {
           state.refreshFn(slots);

@@ -3,31 +3,38 @@ export const startPrebidQueue = () => {
   pbjs.que = pbjs.que || [];
 };
 
-export const initAdserver = (resolve, codeArr = [], timeoutFnRef) => () => {
+export const initAdserver = (resolve, adUnitCodes = [], timeoutFnRef) => () => {
   var pbjs = window.pbjs || {};
   var googletag = window.googletag || {};
   googletag.cmd.push(function () {
     pbjs.que.push(function () {
       console.log('bids ', pbjs.getBidResponses());
-      console.log('codeArr', codeArr);
-      clearTimeout(timeoutFnRef);
-      pbjs.setTargetingForGPTAsync(codeArr);
+      if (timeoutFnRef) clearTimeout(timeoutFnRef);
+      pbjs.setTargetingForGPTAsync(adUnitCodes);
       resolve();
     });
   });
 };
 
-export const getBids = (timeout, failSafeTimeout,) => adUnits => new Promise(resolve => {
-  // in case PBJS doesn't load
-  const timeoutFn = setTimeout(function () {
-    bidsBackHandler();
-    console.log('Timed out');
-  }, failSafeTimeout);
-  const codeArr = adUnits.map(x => x.code);
-  const bidsBackHandler = initAdserver(resolve, codeArr, timeoutFn);
+export const getBids = (timeout, failSafeTimeout) => adUnits => new Promise(resolve => {
   var pbjs = window.pbjs || {};
   pbjs.que.push(function () {
+
+    // in case PBJS doesn't load
+    const timeoutFn = setTimeout(function () {
+      initAdserver(resolve, adUnitCodes);
+      console.log('Timed out');
+    }, failSafeTimeout);
+
+    const adUnitCodes = adUnits.map(x => x.code);
+    const bidsBackHandler = initAdserver(resolve, adUnitCodes, timeoutFn);
+    console.log('adUnits', adUnits);
+    console.log('adUnitCodes', adUnitCodes);
     pbjs.addAdUnits(adUnits);
-    pbjs.requestBids({ bidsBackHandler, timeout });
+    pbjs.requestBids({
+      bidsBackHandler,
+      adUnitCodes,
+      timeout
+    });
   });
 });
