@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider, Ad } from '../../src';
-import prebid from '../../prebid';
+import prebid from '@webdeveloperpr/prebid';
 
 const bidderCode = (id, sizes) => ({
   code: id,

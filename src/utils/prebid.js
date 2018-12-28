@@ -7,13 +7,10 @@ export const initAdserver = resolve => () => {
   var pbjs = window.pbjs || {};
   var googletag = window.googletag || {};
 
-  if (pbjs.initAdserverSet) return;
-
-  pbjs.initAdserverSet = true;
-
   googletag.cmd.push(function () {
     pbjs.que.push(function () {
       pbjs.setTargetingForGPTAsync();
+      console.log('bids ', pbjs.getBidResponses());
       resolve();
     });
   });
@@ -29,6 +26,7 @@ export const getBids = (timeout, failSafeTimeout) => adUnits => new Promise(reso
 
   // in case PBJS doesn't load
   setTimeout(function () {
+    console.log('timed out');
     bidsBackHandler();
   }, failSafeTimeout);
 });

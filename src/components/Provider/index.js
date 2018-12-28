@@ -31,7 +31,6 @@ class Provider extends Component {
     createGPTScript();
     startGoogleTagQue();
     startPrebidQueue();
-    console.log(props.prebid);
     if (props.prebid) props.prebid();
     createGoogleTagEvents(this.pubSub);  
     this.adCallManager = adCallManager({
@@ -46,10 +45,12 @@ class Provider extends Component {
       },
       refreshFn: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
       getBids: getBids(props.prebidTimeout, props.prebidFailsafeTimeout),
-      prebidEnabled: !!props.prebid
+      prebidEnabled: typeof props.prebid === 'function',
     });
 
-    this.pubSub.on('refresh', () => {});
+    this.pubSub.on('refresh', () => {
+
+    });
     this.pubSub.on('display', () => {});
     this.pubSub.on('destroySlots', () => {});
     this.pubSub.on('defineSlot', () => {});

@@ -83,7 +83,7 @@ const adCallManager = (props = {}) => {
     //testing
     processInitialAds: props.processInitialAds || true,
     processLazyAds: props.processLazyAds || true,
-    getBids:  props.getBids || Promise.resolve,
+    getBids: props.getBids || Promise.resolve,
     prebidEnabled: props.prebidEnabled || false,
   };
 
@@ -146,20 +146,16 @@ const adCallManager = (props = {}) => {
   const displayAds = queue => {
     const ids = [];
     const onDisplayCbs = [];
-    const slots = [];
     if (queue.isEmpty) return;
 
     while (!queue.isEmpty) {
       const { id, onDefine, onDisplay } = queue.dequeue().data;
-      ids.push(id);
-      onDisplayCbs.push(onDisplay);
-      slots.push(onDefine());
+      onDefine();
+      ids.push(id);      
+      onDisplayCbs.push(onDisplay);      
     }
 
-    ids.forEach((id, i) => {
-      const callback = onDisplayCbs[i];
-      state.displayFn(id, callback);
-    });
+    ids.forEach((id, i) => state.displayFn(id, onDisplayCbs[i]));
   };
 
   /**
@@ -195,21 +191,21 @@ const adCallManager = (props = {}) => {
 
       // Should take 5
       while (!state.refreshQueue.isEmpty && count < state.chunkSize) {
-        const obj = state.refreshQueue.dequeue();
-        slots.push(obj.slot);
-        adUnits.push(obj.bidderCode);
+        const { slot, bidderCode } = state.refreshQueue.dequeue();
+        slots.push(slot);
+        if (bidderCode) adUnits.push(bidderCode);
         count++;
       }
 
-      if (!state.prebidEnabled) {
-        state.refreshFn(slots);
-        return resolve();
-      }
-
+      console.log('bidders', adUnits);
       // Create the prebid object.      
       state.getBids(adUnits)
         .then(() => {
           state.refreshFn(slots);
+        }).catch(err => {
+          console.log('error', err);
+        }).finally(() => {
+          console.log('resolved');
           resolve();
         });
     });

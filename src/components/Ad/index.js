@@ -107,7 +107,6 @@ class Ad extends Component {
   setTargeting = this.cmdPush(() => Object.entries(this.props.targeting)
     .map(([k, v]) => this.slot.setTargeting(k, v)));
 
-
   /**
    * Will listen to mediaQueries for hiding/refreshing ads on the page.
    * @function   
@@ -219,8 +218,7 @@ class Ad extends Component {
       this.setCollapseEmpty();
       this.addService();
       this.setTargeting();
-    })    
-    return this.slot;
+    });
   }
 
   /**
@@ -234,8 +232,8 @@ class Ad extends Component {
       slot: this.slot,
     };
     this.props.lazy 
-    ? this.refreshWhenVisible()
-    : this.props.provider.refresh(refreshProps);
+      ? this.refreshWhenVisible()
+      : this.props.provider.refresh(refreshProps);
   });
 
   /**
