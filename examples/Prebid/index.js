@@ -1,5 +1,6 @@
 import React from 'react';
 import { Provider, Ad } from '../../src';
+import prebid from '../../prebid';
 
 const bidderCode = (id, sizes) => ({
   code: id,
@@ -20,7 +21,7 @@ class Page extends React.Component {
   render() {
     return (
       <Provider
-        prebid
+        prebid={prebid}
         prebidTimeout={1000}
         prebidFailsafeTimeout={1200}
         adUnitPath="header-bid-tag-0"

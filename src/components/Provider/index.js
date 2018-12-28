@@ -5,6 +5,7 @@ import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
 import adCallManager from '../../utils/adCallManager';
 import { startPrebidQueue, getBids } from '../../utils/prebid';
+
 import {
   setTargeting,  
   setCentering,
@@ -19,7 +20,6 @@ import {
   createGoogleTagEvents,
 } from '../../utils/googletag';
 
-
 class Provider extends Component {
   constructor(props) {
     super(props);    
@@ -31,6 +31,8 @@ class Provider extends Component {
     createGPTScript();
     startGoogleTagQue();
     startPrebidQueue();
+    console.log(props.prebid);
+    if (props.prebid) props.prebid();
     createGoogleTagEvents(this.pubSub);  
     this.adCallManager = adCallManager({
       chunkSize: props.chunkSize,
@@ -44,7 +46,7 @@ class Provider extends Component {
       },
       refreshFn: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
       getBids: getBids(props.prebidTimeout, props.prebidFailsafeTimeout),
-      prebidEnabled: this.props.prebid
+      prebidEnabled: !!props.prebid
     });
 
     this.pubSub.on('refresh', () => {});
@@ -90,9 +92,9 @@ class Provider extends Component {
 
 Provider.defaultProps = {
   networkId: 0,
+  prebid: null,
   chunkSize: 4,
   targeting: {},
-  prebid:  false,
   defineDelay: 100,
   refreshDelay: 200,
   setCentering: true,
@@ -106,7 +108,7 @@ Provider.defaultProps = {
 };
 
 Provider.propTypes = {
-  prebid: PropTypes.bool,
+  prebid: PropTypes.func,
   targeting: PropTypes.object,
   chunkSize: PropTypes.number,
   adUnitPath: PropTypes.string,

@@ -203,7 +203,7 @@ const adCallManager = (props = {}) => {
 
       if (!state.prebidEnabled) {
         state.refreshFn(slots);
-        resolve();
+        return resolve();
       }
 
       // Create the prebid object.      
