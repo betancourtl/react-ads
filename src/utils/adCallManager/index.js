@@ -197,7 +197,6 @@ const adCallManager = (props = {}) => {
         count++;
       }
 
-      console.log('bidders', adUnits);
       // Create the prebid object.      
       state.getBids(adUnits)
         .then(() => {
@@ -205,7 +204,6 @@ const adCallManager = (props = {}) => {
         }).catch(err => {
           console.log('error', err);
         }).finally(() => {
-          console.log('resolved');
           resolve();
         });
     });
