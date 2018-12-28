@@ -227,7 +227,11 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  onDisplay = () => this.setState({ displayed: true }, this.refreshWhenVisible);
+  onDisplay = () => this.setState({ displayed: true }, () => {
+    this.props.lazy 
+    ? this.refreshWhenVisible()
+    : this.props.provider.refresh(this.slot);
+  });
 
   /**
    * Event listener for lazy loaded ads that triggers the refresh function when

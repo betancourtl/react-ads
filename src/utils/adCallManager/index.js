@@ -1,7 +1,10 @@
 import MinHeap from '../../lib/MinHeap';
 import Queue from '../../lib/Queue';
 import debounce from 'debounce-promise';
-
+import {
+  getBids,
+  initAdserver,
+} from '../../utils/prebid';
 /**
  * Empty function.
  * 
@@ -73,15 +76,14 @@ export const comparisonFn = (msg1, msg2) => {
 const adCallManager = (props = {}) => {
   const state = {
     heap: new MinHeap(comparisonFn),
-    initialQueue: new Queue(),
-    lazyQueue: new Queue(),
-    lazyRefreshQueue: new Queue(),
+    refreshQueue: new Queue(),
     chunkSize: props.chunkSize || 5,
     defineDelay: props.defineDelay || 150,
     refreshDelay: props.refreshDelay || 100,
     displayFn: props.displayFn || empyFn,
     refreshFn: props.refreshFn || empyFn,
     isProcessing: false,
+    isRefreshing: false,
     //testing
     processInitialAds: props.processInitialAds || true,
     processLazyAds: props.processLazyAds || true,
@@ -102,11 +104,11 @@ const adCallManager = (props = {}) => {
   const define = (props = {}) => {
     const message = createMessage(props);
     state.heap.insert(message);
-    
+
     if (state.isProcessing) return;
-    
+
     state.isProcessing = true;
-    
+
     processDefinitions()
       .then(() => {
         if (!state.heap.isEmpty) processDefinitions();
@@ -122,17 +124,16 @@ const adCallManager = (props = {}) => {
    */
   const processDefinitions = debounce(() => {
     return new Promise(resolve => {
+      const queue = new Queue();
       let count = 0;
       // Should take 5
       while (!state.heap.isEmpty && count < state.chunkSize) {
         const message = state.heap.extract();
-        if (message.type === types.INITIAL) state.initialQueue.enqueue(message);
-        else if (message.type === types.LAZY) state.lazyQueue.enqueue(message);
+        queue.enqueue(message);
         count++;
       }
 
-      if (state.processInitialAds) processInitialAds(state.initialQueue);
-      if (state.processLazyAds) processLazyAds(state.lazyQueue);
+      displayAds(queue);
       resolve();
     });
   }, state.defineDelay, { leading: false });
@@ -144,7 +145,7 @@ const adCallManager = (props = {}) => {
    * @function
    * @param {Queue} queue - Initial ads queue.
    */
-  const processInitialAds = queue => {
+  const displayAds = queue => {
     const ids = [];
     const onDisplayCbs = [];
     const slots = [];
@@ -161,45 +162,26 @@ const adCallManager = (props = {}) => {
       state.displayFn(id);
       onDisplayCbs[i]();
     });
-
-    state.refreshFn(slots);
   };
 
   /**
-   * These will process ads that are lazy-loaded. It calls the display fn.
-   * @function
-   * @param {Queue} queue - Lazy ads queue.
-   */
-  const processLazyAds = queue => {    
-    const ids = [];
-    const onDisplayCbs = [];
-    const slots = [];
-
-    if (queue.isEmpty) return;
-
-    while (!queue.isEmpty) {
-      const { id, onDefine, onDisplay } = queue.dequeue().data;
-      ids.push(id);
-      slots.push(onDefine());
-      onDisplayCbs.push(onDisplay);
-    }
-
-    ids.forEach((id, i) => {
-      state.displayFn(id);
-      onDisplayCbs[i]();
-    });
-  };
-
-  /**
-   * Will refres the googletag slots.
+   * Will refresh the googletag slots.
    * @function
    * @param {Slot} slot - googletag slot.
    */
   const refresh = slot => {
-    state.lazyRefreshQueue.enqueue(slot);
-    processRefreshRequest(state.lazyRefreshQueue);
-  };
+    state.refreshQueue.enqueue(slot);
 
+    if (state.isRefreshing) return;
+
+    state.isRefreshing = true;
+
+    processRefreshRequest()
+      .then(() => {
+        if (!state.refreshQueue.isEmpty) processRefreshRequest();
+        else state.isRefreshing = false;
+      });
+  };
 
   /**
    * Will wait a certain ammount of ms to allow additional ads that called refresh to be 
@@ -207,18 +189,28 @@ const adCallManager = (props = {}) => {
    * @function
    * @param {Slot} slot - googletag slot.
    */
-  const processRefreshRequest = debounce(queue => {
-    const slots = [];
-    if (queue.isEmpty) return;
+  const processRefreshRequest = debounce(() => {       
+    return new Promise(resolve => {
+      const slots = [];
+      let count = 0;
+      
+      // Should take 5
+      while (!state.refreshQueue.isEmpty && count < state.chunkSize) {
+        const slot = state.refreshQueue.dequeue();
+        slots.push(slot);
+        count++;
+      }
 
-    while (!queue.isEmpty) {
-      const slot = queue.dequeue();
-      slots.push(slot);
-    }
-
-    state.refreshFn(slots);
+      refreshAds(slots);
+      console.log('refreshing slots', slots);
+      resolve();
+    });
   }, state.refreshDelay, { leading: false });
 
+  const refreshAds = (slots) => {
+    state.refreshFn(slots);
+  };
+  
   return {
     refresh,
     define,

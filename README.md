@@ -313,17 +313,17 @@ service.
  ## Future Features
 ___
 
-| Features                                            | Status | Expected By   |
-|-----------------------------------------------------|--------|---------------|
-| 1. Create initial ads Heap                             | ok  |               |
-| 2. Create Lazy Loaded Ads Heap                         | ok  |               |
-| 3. Create Custom Lazy Loading functionality            | ok  |               |
-| 4. Create Heap extraction/fetching/re-extraction logic | ok  |               |
-| 5. Integrate Prebid.JS                                 | x   |               |
-| 6. Add Unit Testing Framework                          | x   |               |
-| 7. Add Line Item Generator Utils                       | x   |               |
-| 8. Lazy wrapper function to set make sections lazy.    | x   |               |
-| 9. Add provider gpt event hooks                        | x   |               |
+| Features                                            | Status |
+|-----------------------------------------------------|--------|
+| 1. Create initial ads Heap                             | ok  |
+| 2. Create Lazy Loaded Ads Heap                         | ok  |
+| 3. Create Custom Lazy Loading functionality            | ok  |
+| 4. Create Heap extraction/fetching/re-extraction logic | ok  |
+| 5. Integrate Prebid.JS                                 | x   |
+| 6. Add Unit Testing Framework                          | x   |
+| 7. Add Line Item Generator Utils                       | x   |
+| 8. Lazy wrapper function to set make sections lazy.    | x   |
+| 9. Add provider gpt event hooks                        | x   |
 
 ## AdCallManager
 
@@ -402,9 +402,129 @@ initial ads are refreshed in bulk.
 
 If the ad is of initial type it will be added to a new initial heap. Initial ads will be iterated over and then it will call the `googletag.refresh([id,id,id, ...])` fn(). This will refresh the ads.
 
-## Processing extracted lazy ads.
+### Processing extracted lazy ads.
 
 Lazy Ads are in charge of asking to display and asking to refresh. The display part is ran  The refresh fn call should then add the refresh calls to a new Refresh Queue so that they can call the `googletag.refresh([id,id,id, ...])` fn(). in bulk and bennefit from the SRA architecture.
+
+## Prebid.js
+
+**What is prebid.js**
+
+Prebid.js is a library that implements headerbidding. This library will provide 
+us with with their bidder adapters. These adapters are mostly created by 
+vendors. 
+
+**Why prebid.js**
+
+Prebid.js has almost all of the bidders that we currently use. It also provides
+additional bidders that we can swap out without us having to create their
+implementation from srcratch.
+
+**How does a bidder work?**
+
+A bidder requests bids from exchange servers. It will then set the bids as
+targeting data on the ad slots. Whenever the ad slots render, it will make a
+request to DFP with the bid information.
+
+**How to implement prebis.js?**
+
+1. Define the PREBID_TIMEOUT
+2. Define the FAILSAFE_TIMEOUT
+
+```javascript
+<html>
+
+    <head>
+        <link rel="icon" type="image/png" href="/favicon.png">
+        <script async src="//www.googletagservices.com/tag/js/gpt.js"></script>
+        <script async src="//acdn.adnxs.com/prebid/not-for-prod/1/prebid.js"></script>
+        <script>
+            var sizes = [
+                [300, 250]
+            ];
+            var PREBID_TIMEOUT = 1000;
+            var FAILSAFE_TIMEOUT = 3000;
+
+            var adUnits = [{
+                code: '/19968336/header-bid-tag-1',
+                mediaTypes: {
+                    banner: {
+                        sizes: sizes
+                    }
+                },
+                bids: [{
+                    bidder: 'appnexus',
+                    params: {
+                        placementId: 13144370
+                    }
+                }]
+            }];
+
+            // ======== DO NOT EDIT BELOW THIS LINE =========== //
+            var googletag = googletag || {};
+            googletag.cmd = googletag.cmd || [];
+            googletag.cmd.push(function() {
+                googletag.pubads().disableInitialLoad();
+            });
+
+            var pbjs = pbjs || {};
+            pbjs.que = pbjs.que || [];
+
+            pbjs.que.push(function() {
+                pbjs.addAdUnits(adUnits);
+                pbjs.requestBids({
+                    bidsBackHandler: initAdserver,
+                    timeout: PREBID_TIMEOUT
+                });
+            });
+
+            function initAdserver() {
+                if (pbjs.initAdserverSet) return;
+                pbjs.initAdserverSet = true;
+                googletag.cmd.push(function() {
+                    pbjs.que.push(function() {
+                        pbjs.setTargetingForGPTAsync();
+                        googletag.pubads().refresh();
+                    });
+                });
+            }
+            
+            // in case PBJS doesn't load
+            setTimeout(function() {
+                initAdserver();
+            }, FAILSAFE_TIMEOUT);
+
+            googletag.cmd.push(function() {
+                googletag.defineSlot('/19968336/header-bid-tag-1', sizes, 'div-1')
+                	.addService(googletag.pubads());
+                googletag.pubads().enableSingleRequest();
+                googletag.enableServices();
+            });
+
+        </script>
+
+    </head>
+
+    <body>
+        <h2>Basic Prebid.js Example</h2>
+        <h5>Div-1</h5>
+        <div id='div-1'>
+            <script type='text/javascript'>
+                googletag.cmd.push(function() {
+                    googletag.display('div-1');
+                });
+
+            </script>
+        </div>
+    </body>
+
+</html>
+```
+
+
+
+
+
 
 
 Tables created with: https://www.tablesgenerator.com/markdown_tables
