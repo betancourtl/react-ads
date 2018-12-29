@@ -45,12 +45,9 @@ class Provider extends Component {
       },
       refreshFn: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
       getBids: getBids(props.prebidTimeout, props.prebidFailsafeTimeout),
-      prebidEnabled: typeof props.prebid === 'function',
     });
 
-    this.pubSub.on('refresh', () => {
-
-    });
+    this.pubSub.on('refresh', () => {});
     this.pubSub.on('display', () => {});
     this.pubSub.on('destroySlots', () => {});
     this.pubSub.on('defineSlot', () => {});
@@ -58,9 +55,9 @@ class Provider extends Component {
     setCentering(this.props.setCentering);
     enableVideoAds(this.props.enableVideoAds);
     collapseEmptyDivs(this.props.collapseEmptyDivs);  
-    enableAsyncRendering(this.props.enableAsyncRendering);    
-    enableSingleRequest(this.props.enableSingleRequest);
-    disableInitialLoad(this.props.disableInitialLoad);
+    enableAsyncRendering(true);    
+    enableSingleRequest(true);
+    disableInitialLoad(true);
     setTargeting(this.props.targeting);
     enableServices();
   }
@@ -102,9 +99,6 @@ Provider.defaultProps = {
   prebidTimeout: 1000,
   enableVideoAds: false,
   collapseEmptyDivs: false,
-  disableInitialLoad: true,
-  enableSingleRequest: true,
-  enableAsyncRendering: true,
   prebidFailsafeTimeout: 3000,
 };
 
@@ -119,9 +113,6 @@ Provider.propTypes = {
   refreshDelay: PropTypes.number,
   enableVideoAds: PropTypes.bool,
   collapseEmptyDivs: PropTypes.bool,
-  disableInitialLoad: PropTypes.bool,
-  enableSingleRequest: PropTypes.bool,
-  enableAsyncRendering: PropTypes.bool,
   prebidFailsafeTimeout: PropTypes.number,
   networkId: PropTypes.number.isRequired,
   children: PropTypes.oneOfType([

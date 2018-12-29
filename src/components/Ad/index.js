@@ -226,7 +226,7 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  onDisplay = () => this.setState({ displayed: true }, () => {  
+  onDisplay = () => this._setState({ displayed: true }, () => {  
     this.props.lazy 
       ? this.refreshWhenVisible()
       : this.props.provider.refresh({
@@ -278,7 +278,7 @@ class Ad extends Component {
     this.unmounted = true;
     this.destroyAd();
     this.unsetMQListeners();
-    window.removeEventListener('scroll', this.refreshWhenVisible)
+    window.removeEventListener('scroll', this.refreshWhenVisible);
   }
 
   render() {
