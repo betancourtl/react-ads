@@ -227,13 +227,15 @@ class Ad extends Component {
    * @returns {void}
    */
   onDisplay = () => this.setState({ displayed: true }, () => {  
-    const refreshProps = {
-      bidderCode: this.props.bidderCode,
-      slot: this.slot,
-    };
     this.props.lazy 
       ? this.refreshWhenVisible()
-      : this.props.provider.refresh(refreshProps);
+      : this.props.provider.refresh({
+        priority: this.props.priority,
+        data: {
+          bidderCode: this.props.bidderCode,
+          slot: this.slot,
+        }
+      });
   });
 
   /**
@@ -247,8 +249,11 @@ class Ad extends Component {
       const isVisible = inViewport(ReactDOM.findDOMNode(this));
       if (isVisible) {
         this.props.provider.refresh({
-          bidderCode: this.props.bidderCode,
-          slot: this.slot,
+          priority: this.props.priority,
+          data: {
+            bidderCode: this.props.bidderCode,
+            slot: this.slot,
+          }
         });
         window.removeEventListener('scroll', this.refreshWhenVisible);
       }      
@@ -257,8 +262,7 @@ class Ad extends Component {
 
   componentDidMount() {
     const message = {
-      type: this.props.lazy ? 'LAZY' : 'INITIAL',
-      level: this.props.priority,
+      priority: this.props.priority,
       data: {
         onDefine: this.onDefine,
         onDisplay: this.onDisplay,
