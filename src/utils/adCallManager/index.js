@@ -64,8 +64,6 @@ export const comparisonFn = (msg1, msg2) => {
  * lazyRefreshQueue gets processed.
  * @param {Number} props.displayFn - Googletag display fn.
  * @param {Number} props.refreshFn - Googletag refresh fn.
- * @param {Boolean} props.processInitialAds - Enables processing initial ads.
- * @param {Boolean} props.processLazyAds - Enables processing lazy ads.
  * @returns {Object} - Returns the debounced refresh/define functions, that wrap
  *  the googletag.define and googletag.refresh functions.
  */
@@ -81,11 +79,11 @@ const adCallManager = (props = {}) => {
     isProcessing: false,
     isRefreshing: false,
     //testing
-    processInitialAds: props.processInitialAds || true,
-    processLazyAds: props.processLazyAds || true,
     getBids: props.getBids || Promise.resolve,
     prebidEnabled: props.prebidEnabled || false,
   };
+
+  window.managerState = () => state;
 
   /**
    * Gets the sate of the adCallManager.
@@ -104,14 +102,17 @@ const adCallManager = (props = {}) => {
     state.heap.insert(message);
 
     if (state.isProcessing) return;
-
-    state.isProcessing = true;
-
-    processDefinitions()
-      .then(() => {
-        if (!state.heap.isEmpty) processDefinitions();
-        else state.isProcessing = false;
-      });
+    
+    const work = () => {
+      state.isProcessing = true;
+      processDefinitions()
+        .then(() => {
+          console.log('processing definitions', state.isProcessing);
+          if (!state.heap.isEmpty) work();
+          else state.isProcessing = false;
+        });
+    };
+    work();
   };
 
   /**
@@ -125,14 +126,13 @@ const adCallManager = (props = {}) => {
       const queue = new Queue();
       let count = 0;
       // Should take 5
-      while (!state.heap.isEmpty && count < state.chunkSize) {        
+      while (!state.heap.isEmpty && count < state.chunkSize) {
         const message = state.heap.extract();
         queue.enqueue(message);
         count++;
-      }      
-      
-      displayAds(queue);
-      resolve();
+      }
+
+      displayAds(queue, resolve);
     });
   }, state.defineDelay, { leading: false });
 
@@ -143,19 +143,20 @@ const adCallManager = (props = {}) => {
    * @function
    * @param {Queue} queue - Initial ads queue.
    */
-  const displayAds = queue => {
+  const displayAds = (queue, resolve) => {
     const ids = [];
     const onDisplayCbs = [];
-    if (queue.isEmpty) return;
+    if (queue.isEmpty) return resolve();
 
     while (!queue.isEmpty) {
       const { id, onDefine, onDisplay } = queue.dequeue().data;
       onDefine();
-      ids.push(id);      
-      onDisplayCbs.push(onDisplay);      
+      ids.push(id);
+      onDisplayCbs.push(onDisplay);
     }
 
     ids.forEach((id, i) => state.displayFn(id, onDisplayCbs[i]));
+    resolve();
   };
 
   /**
@@ -168,13 +169,15 @@ const adCallManager = (props = {}) => {
 
     if (state.isRefreshing) return;
 
-    state.isRefreshing = true;
-
-    processRefreshRequest()
-      .then(() => {
-        if (!state.refreshQueue.isEmpty) processRefreshRequest();
-        else state.isRefreshing = false;
-      });
+    const work = () => {
+      state.isRefreshing = true;
+      processRefreshRequest()
+        .then(() => {
+          if (!state.refreshQueue.isEmpty) work();
+          else state.isRefreshing = false;
+        });
+    };
+    work();
   };
 
   /**
