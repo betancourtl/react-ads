@@ -51,6 +51,8 @@ class Provider extends Component {
     disableInitialLoad(true);
     setTargeting(this.props.targeting);
     enableServices();
+    // This call to destroy all slots.
+    window.googletag.cmd.push(window.googletag.destroySlots)
   }
 
   componentWillUnmount() {
@@ -58,7 +60,7 @@ class Provider extends Component {
     // Clears the event listener.
     this.pubSub.clear();
   }
-  
+
   generateId = (type = 'ad') => {
     const count = this.slotCount[type]
       ? this.slotCount[type]++

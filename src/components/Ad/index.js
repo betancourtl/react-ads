@@ -28,9 +28,7 @@ class Ad extends Component {
       if (this.unmounted) return;
       this.setState(props, cb);
     };
-    console.log('id', props.provider.generateId(props.type));
-    console.log('sizes', props.size);
-    console.log('adUnitPath', this.adUnitPath);
+    
     this.id = props.provider.generateId(props.type);
   }
 
@@ -309,7 +307,7 @@ Ad.propTypes = {
     enableAds: PropTypes.bool,
     adUnitPath: PropTypes.string,
     generateId: PropTypes.func.isRequired,
-    networkId: PropTypes.string.isRequired,
+    networkId: PropTypes.number.isRequired,
   })
 };
 

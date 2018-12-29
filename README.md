@@ -205,6 +205,7 @@ ___
 | 9. Add provider gpt event hooks                        | x   |
 | 10. Disable loading ads                                | ok  |
 | 11. Create dynamic ids                                 | ok  |
+| 12. Add sizes dynamically on pregid bid request        |     |
 
 #### AdCallManager
 
@@ -232,95 +233,192 @@ A bidder requests bids from exchange servers. It will then set the bids as
 targeting data on the ad slots. Whenever the ad slots render, it will make a
 request to DFP with the bid information.
 
-**How to implement prebis.js?**
+#### prebid.js sizeConfig
+
+The prebid.js size config defines the allowed slot sizes on the page. Below is
+an example of how prebid.js defines the sizes. The media queries specify which
+sizes to bid on. 
+
+**adSlot**
+
+Here we define the sizes that this add will have.
 
 ```javascript
-<html>
-
-    <head>
-        <link rel="icon" type="image/png" href="/favicon.png">
-        <script async src="//www.googletagservices.com/tag/js/gpt.js"></script>
-        <script async src="//acdn.adnxs.com/prebid/not-for-prod/1/prebid.js"></script>
-        <script>
-            var sizes = [
-                [300, 250]
-            ];
-            var PREBID_TIMEOUT = 1000;
-            var FAILSAFE_TIMEOUT = 3000;
-
-            var adUnits = [{
-                code: '/19968336/header-bid-tag-1',
-                mediaTypes: {
-                    banner: {
-                        sizes: sizes
-                    }
-                },
-                bids: [{
-                    bidder: 'appnexus',
-                    params: {
-                        placementId: 13144370
-                    }
-                }]
-            }];
-
-            // ======== DO NOT EDIT BELOW THIS LINE =========== //
-            var googletag = googletag || {};
-            googletag.cmd = googletag.cmd || [];
-            googletag.cmd.push(function() {
-                googletag.pubads().disableInitialLoad();
-            });
-
-            var pbjs = pbjs || {};
-            pbjs.que = pbjs.que || [];
-
-            pbjs.que.push(function() {
-                pbjs.addAdUnits(adUnits);
-                pbjs.requestBids({
-                    bidsBackHandler: initAdserver,
-                    timeout: PREBID_TIMEOUT
-                });
-            });
-
-            function initAdserver() {
-                if (pbjs.initAdserverSet) return;
-                pbjs.initAdserverSet = true;
-                googletag.cmd.push(function() {
-                    pbjs.que.push(function() {
-                        pbjs.setTargetingForGPTAsync();
-                        googletag.pubads().refresh();
-                    });
-                });
+pbjs.addAdUnits([{
+    code: "ad-slot-1",
+    mediaTypes: {
+        banner: {
+            sizes: [
+                [970, 90],
+                [728, 90],
+                [300, 250],
+                [300, 100]
+            ]
+        }
+    },
+    labelAny: ["visitor-uk"]
+    /* The full set of bids, not all of which are relevant on all devices */
+    bids: [{
+            bidder: "pulsepoint",
+            /* Labels flag this bid as relevant only on these screen sizes. */
+            labelAny: ["desktop", "tablet"],
+            params: {
+                "cf": "728X90",
+                "cp": 123456,
+                "ct": 123456
             }
-            
-            // in case PBJS doesn't load
-            setTimeout(function() {
-                initAdserver();
-            }, FAILSAFE_TIMEOUT);
-
-            googletag.cmd.push(function() {
-                googletag.defineSlot('/19968336/header-bid-tag-1', sizes, 'div-1')
-                	.addService(googletag.pubads());
-                googletag.pubads().enableSingleRequest();
-                googletag.enableServices();
-            });
-
-        </script>
-    </head>
-
-    <body>
-        <h2>Basic Prebid.js Example</h2>
-        <h5>Div-1</h5>
-        <div id='div-1'>
-            <script type='text/javascript'>
-                googletag.cmd.push(function() {
-                    googletag.display('div-1');
-                });
-
-            </script>
-        </div>
-    </body>
-
-</html>
+        },
+    ]
+}]);
 ```
+
+**Size Config**
+
+Here we define the sizes that prebid will bid on, based on the media query,
+and the sizes defined in the adSlot. This size config is GLOBAL!! which means
+that it could result in many edge cases.
+
+```javascript
+pbjs.setConfig({
+    sizeConfig: [{
+        'mediaQuery': '(min-width: 1600px)',
+        'sizesSupported': [
+            [1000, 300],
+            [970, 90],
+            [728, 90],
+            [300, 250]
+        ],
+        'labels': ['desktop-hd']
+    }, {
+        'mediaQuery': '(min-width: 1200px)',
+        'sizesSupported': [
+            [970, 90],
+            [728, 90],
+            [300, 250]
+        ],
+        'labels': ['desktop']
+    }, {
+        'mediaQuery': '(min-width: 768px) and (max-width: 1199px)',
+        'sizesSupported': [
+            [728, 90],
+            [300, 250]
+        ],
+        'labels': ['tablet']
+    }, {
+        'mediaQuery': '(min-width: 0px)',
+        'sizesSupported': [
+            [300, 250],
+            [300, 100]
+        ],
+        'labels': ['phone']
+    }]
+});
+```
+
+#### googletag sizeMapping without using sizeConfig
+
+googletag provides a way to show/hide ads based on media queries and it 
+specifies the adSizes to display on the specific media query.
+
+We need to tell prebid which ads to fetch based on the sizes defined on the 
+slot without using the sizeConfig.
+
+**Why not use the sizeConfig?**
+
+The size config defined global settings for requesting bids. We want to bid on 
+the exact sizes defined in the googletag sizeMap.
+
+case 1:
+
+- window width is 1000px
+
+In this we only want to fetch bids for the **large** ad slot. So we tell prebid
+the sizes that we want to bid on by setting the `metiaTypes.banner.sizes` 
+property.
+
+**sizeMapping**
+
+```javascript
+var mapping1 = googletag.sizeMapping().
+    addSize([1024, 768], [970, 250]). // large  <- current breakpoint
+    addSize([980, 690], [728, 90]). // medium
+    addSize([640, 480], 'fluid'). //sm
+    addSize([0, 0], [88, 31]). // xs
+    build();
+```
+
+We define the sizes in `metdiaTypes.banner.sizes` from the large size above.
+
+**prebid adUnit**
+
+```javascript
+pbjs.addAdUnits([{
+    code: "ad-slot-1",
+    mediaTypes: {
+        banner: {
+            sizes: [
+                [970, 250],
+            ]
+        }
+    },
+    bids: [{
+            bidder: "pulsepoint",
+            params: {
+                "cf": "728X90",
+                "cp": 123456,
+                "ct": 123456
+            }
+        },
+    ]
+}]);
+```
+
+case 2:
+
+- window width is 1000px (large) breakpoint
+- We move down to 980px (medium) breakpoint
+
+The window width is (large) and the (medium) breakpoint was triggered. Now
+we have to update the prebid adUnit config to fetch the new bids.
+
+**sizeMapping**
+
+```javascript
+var mapping1 = googletag.sizeMapping().
+    addSize([1024, 768], [970, 250]). // large <----- old breakpoint
+    addSize([980, 690], [728, 90]). // medium <------ new breakpoint
+    addSize([640, 480], 'fluid'). //sm
+    addSize([0, 0], [88, 31]). // xs
+    build();
+```
+
+We define the (medium) sizes in `mediaTypes.banner.sizes` property before
+requesting bids.
+
+**prebid adUnit**
+
+```javascript
+pbjs.addAdUnits([{
+    code: "ad-slot-1",
+    mediaTypes: {
+        banner: {
+            sizes: [
+                [728, 90], // medium <----- Replaced [970, 250]
+            ]
+        }
+    },
+    bids: [{
+            bidder: "pulsepoint",
+            params: {
+                "cf": "728X90",
+                "cp": 123456,
+                "ct": 123456
+            }
+        },
+    ]
+}]);
+```
+
+Would this solution work for requesting bids when using googletags?
 
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)
