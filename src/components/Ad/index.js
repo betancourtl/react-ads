@@ -64,7 +64,7 @@ class Ad extends Component {
   refresh = () => this.props.provider.refresh({
     priority: this.props.priority,
     data: {
-      bidderCode: this.props.bidderCode(this.id, this.props.size),
+      bidderCode: this.props.bidderCode ? this.props.bidderCode(this.id, this.props.size) : null,
       slot: this.slot,
     }
   });
@@ -294,7 +294,7 @@ Ad.propTypes = {
   sizeMapping: PropTypes.arrayOf(
     PropTypes.shape({
       viewPort: PropTypes.arrayOf(PropTypes.number),
-      slots: PropTypes.oneOf([
+      slots: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.number),
         PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))
       ])

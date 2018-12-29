@@ -31,7 +31,7 @@ class Page extends React.Component {
           id="div-1"
           adUnitPath="header-bid-tag-0"
           lazy
-          bidderCode={bidderCode('header-bid-tag-0', [300, 250])}
+          bidderCode={bidderCode}
           size={[300, 250]}
           sizeMapping={[
             { viewPort: [0, 0], slots: [300, 250] },
@@ -42,7 +42,7 @@ class Page extends React.Component {
           id="div-2"
           adUnitPath="header-bid-tag-1"
           lazy
-          bidderCode={bidderCode('header-bid-tag-1', [[728, 90], [70, 250]])}
+          bidderCode={bidderCode}
           size={[728, 90]}
           sizeMapping={[
             { viewPort: [0, 0], slots: [[728, 90], [70, 250]] },
