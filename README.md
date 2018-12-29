@@ -319,11 +319,12 @@ ___
 | 2. Create Lazy Loaded Ads Heap                         | ok  |
 | 3. Create Custom Lazy Loading functionality            | ok  |
 | 4. Create Heap extraction/fetching/re-extraction logic | ok  |
-| 5. Integrate Prebid.JS                                 | x   |
+| 5. Integrate Prebid.JS                                 | ok  |
 | 6. Add Unit Testing Framework                          | x   |
 | 7. Add Line Item Generator Utils                       | x   |
 | 8. Lazy wrapper function to set make sections lazy.    | x   |
 | 9. Add provider gpt event hooks                        | x   |
+| 10. setAdIframeTitle(title)
 
 ## AdCallManager
 

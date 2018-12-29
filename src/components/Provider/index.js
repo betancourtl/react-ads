@@ -33,9 +33,8 @@ class Provider extends Component {
     if (props.prebid) props.prebid();
     createGoogleTagEvents(this.pubSub);
     this.adManager = adManager({
-      getBids: this.getBids,
-      displayFn: this.display,
-      refreshFn: this.refresh,
+      getBids: getBids(this.props.prebidTimeout, this.props.prebidFailsafeTimeout),
+      refresh: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
       chunkSize: props.chunkSize,
       defineDelay: props.defineDelay,
       refreshDelay: props.defineDelay,
@@ -57,19 +56,6 @@ class Provider extends Component {
     enableServices();
   }
 
-  display = (id, cb) => {
-    window.googletag.cmd.push(() => {
-      window.googletag.display(id);
-      cb();
-    });
-  }
-
-  refresh = ids => {
-    window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids));
-  }
-
-  getBids = getBids(this.props.prebidTimeout, this.props.prebidFailsafeTimeout);
-
   componentWillUnmount() {
     // Clears the event listener.
     this.pubSub.clear();
@@ -81,7 +67,6 @@ class Provider extends Component {
         ...this.state,
         networkId: this.props.networkId,
         adUnitPath: this.props.adUnitPath,
-        define: this.adManager.define,
         refresh: this.adManager.refresh,
       }}>
         {this.props.children}

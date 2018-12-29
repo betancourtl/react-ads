@@ -10,64 +10,46 @@ import JobQueue from '../../lib/JobQueue';
  * @returns {Object}
  */
 const adManager = (props = {}) => {
-
-  const displayFn = display => (q, done) => {
-    const ids = [];
-    const onDisplayCbs = [];
-    if (q.isEmpty) return done();
-
-    while (!q.isEmpty) {
-      const { id, onDefine, onDisplay } = q.dequeue().data;
-      onDefine();
-      ids.push(id);
-      onDisplayCbs.push(onDisplay);
-    }
-
-    ids.forEach((id, i) => display(id, onDisplayCbs[i]));
-    done();
-  };
-
-  const refreshFn = (refresh, getBids, prebidEnabled) => (q, done) => {
-    const slots = [];
-    const adUnits = [];
-
-    while (!q.isEmpty) {
-      const { slot, bidderCode } = q.dequeue().data;
-      slots.push(slot);
-      if (bidderCode) adUnits.push(bidderCode);
-    }
-
-    // Create the prebid object.      
-    if (!prebidEnabled || !adUnits) {
-      refresh(slots);
-      return done();
-    }
-
-    getBids(adUnits)
-      .then(() => {
-        refresh(slots);
-      }).catch(err => {
-        console.log('error', err);
-      }).finally(() => {
-        done();
-      });
-  };
-
-  const displayJob = new JobQueue({
-    chunkSize: props.chunkSize || 5,
-    delay: props.defineDelay || 100,
-    processFn: displayFn(props.displayFn),
-  });
+  const { 
+    getBids, 
+    refresh, 
+    prebidEnabled,
+    chunkSize = 5,
+    refreshDelay = 100,
+  } = props;
 
   const refreshJob = new JobQueue({
-    chunkSize: props.chunkSize || 5,
-    delay: props.refreshDelay || 100,
-    processFn: refreshFn(props.refreshFn, props.getBids, props.prebidEnabled),
+    chunkSize: chunkSize,
+    delay: refreshDelay,
+    processFn: (q, done) => {
+      const slots = [];
+      const adUnits = [];
+  
+      while (!q.isEmpty) {
+        const { slot, bidderCode } = q.dequeue().data;
+        slots.push(slot);
+        if (bidderCode) adUnits.push(bidderCode);
+      }
+  
+      // Create the prebid object.      
+      if (!prebidEnabled || !adUnits) {
+        refresh(slots);
+        return done();
+      }
+  
+      getBids(adUnits)
+        .then(() => {
+          refresh(slots);
+        }).catch(err => {
+          console.log('error', err);
+        }).finally(() => {
+          done();
+        });
+    }
   });
 
   return {
     refresh: refreshJob.add,
-    define: displayJob.add,
   };
 };
 

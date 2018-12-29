@@ -9,10 +9,10 @@ class Ad extends Component {
   constructor(props) {
     super(props);
     this.state = {
-    /** 
-     * Will return true when the ad gets defined.
-     * @type {Boolean} 
-     */ 
+      /** 
+       * Will return true when the ad gets defined.
+       * @type {Boolean} 
+       */
       displayed: false,
     };
     /**
@@ -42,18 +42,11 @@ class Ad extends Component {
    */
   get adUnitPath() {
     const networkId = this.props.provider.networkId;
-    
+
     return this.props.adUnitPath
       ? ['', networkId, this.props.adUnitPath].join('/')
       : ['', networkId, this.props.provider.adUnitPath].join('/');
   }
-
-  /**
-   * google command queue wrapper fn.
-   * @function
-   * @callback cb - Callback to be pushed to the queue.
-   */
-  cmdPush = (cb) => () => window.googletag.cmd.push(cb);
 
   /**
    * Will define this slot on the page.
@@ -61,58 +54,64 @@ class Ad extends Component {
    * @returns {void}
    */
   defineSlot = () => {
-    window.googletag.cmd.push(() => {
-      this.slot = this.props.outOfPageSlot
-        ? window.googletag.defineOutOfPageSlot(this.adUnitPath, this.props.id)
-        : window.googletag.defineSlot(this.adUnitPath, this.props.size, this.props.id);
-    });
+    this.slot = this.props.outOfPageSlot
+      ? window.googletag.defineOutOfPageSlot(this.adUnitPath, this.props.id)
+      : window.googletag.defineSlot(this.adUnitPath, this.props.size, this.props.id);
   };
+
+  display = () => window.googletag.display(this.props.id);
 
   /**
    * Will refresh this slot.
    * @function   
    * @returns {void}
    */
-  refresh = this.cmdPush(() => window.googletag.pubads().refresh([this.slot]));
+  refresh = () => this.props.provider.refresh({
+    priority: this.props.priority,
+    data: {
+      bidderCode: this.props.bidderCode,
+      slot: this.slot,
+    }
+  });
 
   /**
    * Will destroy this slot from the page.
    * @function   
    * @returns {void}
    */
-  destroyAd = this.cmdPush(() => window.googletag.destroySlots([this.slot]));
+  destroyAd = () => window.googletag.destroySlots([this.slot]);
 
   /**
    * Will enable the pubads service.
    * @function   
    * @returns {void}
    */
-  addService = this.cmdPush(() => this.slot.addService(window.googletag.pubads()));
+  addService = () => this.slot.addService(window.googletag.pubads());
 
   /**
    * Will collapse this ad wheneverit is empty.
    * @function   
    * @returns {void}
    */
-  setCollapseEmpty = this.cmdPush(() => {
+  setCollapseEmpty = () => {
     if (!this.props.setCollapseEmpty) return;
     this.slot.setCollapseEmptyDiv(true, true)
-  });
+  };
 
   /**
    * Will set the targeting parameters for this ad.
    * @function   
    * @returns {void}
    */
-  setTargeting = this.cmdPush(() => Object.entries(this.props.targeting)
-    .map(([k, v]) => this.slot.setTargeting(k, v)));
+  setTargeting = () => Object.entries(this.props.targeting)
+    .map(([k, v]) => this.slot.setTargeting(k, v));
 
   /**
    * Will listen to mediaQueries for hiding/refreshing ads on the page.
    * @function   
    * @returns {void}
    */
-  setMQListeners = this.cmdPush(() => {
+  setMQListeners = () => {
     if (!this.props.sizeMapping) return;
     this.props.sizeMapping.forEach(({ viewPort: [width] }) => {
       const mq = window.matchMedia(`(max-width: ${width}px)`);
@@ -120,16 +119,16 @@ class Ad extends Component {
 
       this.listeners.push(() => mq.removeListener(this.refresh));
     });
-  });
+  };
 
   /**
    * Will remove the listener from the page.
    * @function   
    * @returns {void}
    */
-  unsetMQListeners = this.cmdPush(() => {
+  unsetMQListeners = () => {
     this.listeners.forEach(fn => fn());
-  });
+  };
 
   /**
    * Will create the sizeMaps that will show the different ads depending on the
@@ -137,11 +136,11 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  setMappingSize = this.cmdPush(() => {
+  setMappingSize = () => {
     if (!this.props.sizeMapping) return;
     const mapping = this.props.sizeMapping.reduce((acc, x) => acc.addSize(x.viewPort, x.slots), window.googletag.sizeMapping());
     this.slot.defineSizeMapping(mapping.build());
-  });
+  };
 
   withAdProps = (props) => ({
     id: this.props.id,
@@ -154,58 +153,67 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  slotRenderEnded = this.cmdPush(() => {   
+  slotRenderEnded = () => {
     if (typeof this.props.onSlotRenderEnded !== 'function') return;
 
     window.googletag.pubads().addEventListener('slotRenderEnded', e => {
       if (e.slot === this.slot) this.props.onSlotRenderEnded(this.withAdProps(e));
     });
-  });
+  };
 
   /**
    * Will listen to the impressionViewable event and then call the passed function.
    * @function   
    * @returns {void}
    */
-  impressionViewable = this.cmdPush(() => {
+  impressionViewable = () => {
     if (typeof this.props.onImpressionViewable !== 'function') return;
     window.googletag.pubads().addEventListener('impressionViewable', e => {
       if (e.slot === this.slot) this.props.onImpressionViewable(this.withAdProps(e));
     });
-  });
+  };
 
   /**
    * Will listen to the slotVisibilityChanged event and then call the passed function.
    * @function   
    * @returns {void}
    */
-  slotVisibilityChanged = this.cmdPush(() => {
+  slotVisibilityChanged = () => {
     if (typeof this.props.onSlotVisibilityChanged !== 'function') return;
     window.googletag.pubads().addEventListener('slotVisibilityChanged', e => {
       if (e.slot === this.slot) this.props.onSlotVisibilityChanged(this.withAdProps(e));
     });
-  });
+  };
 
   /**
    * Will listen to the slotOnload event and then call the passed function.
    * @function   
    * @returns {void}
    */
-  slotOnload = this.cmdPush(() => {
+  slotOnload = () => {
     window.googletag.pubads().addEventListener('slotOnload', e => {
       if (typeof this.props.onSlotOnLoad === 'function') {
         if (e.slot === this.slot) this.props.onSlotOnLoad(this.withAdProps(e));
       }
     });
-  });
+  };
 
   /**
-   * Callback that handles defining/configuring this ad.
+   * Event listener for lazy loaded ads that triggers the refresh function when
+   * the ad becomes visible.
    * @function   
    * @returns {void}
    */
-  onDefine = () => {
-    window.googletag.cmd.push(() => {    
+  refreshWhenVisible = () => {
+    const isVisible = inViewport(ReactDOM.findDOMNode(this));
+    if (isVisible) {
+      this.refresh();
+      window.removeEventListener('scroll', this.refreshWhenVisible);
+    }
+  };
+
+  componentDidMount() {
+    window.googletag.cmd.push(() => {
       // event start
       this.defineSlot();
       this.slotOnload();
@@ -218,77 +226,31 @@ class Ad extends Component {
       this.setCollapseEmpty();
       this.addService();
       this.setTargeting();
-    });
-  }
-
-  /**
-   * Callback that gets triggered whenever this ad gets displayed.
-   * @function   
-   * @returns {void}
-   */
-  onDisplay = () => this._setState({ displayed: true }, () => {  
-    this.props.lazy 
-      ? this.refreshWhenVisible()
-      : this.props.provider.refresh({
-        priority: this.props.priority,
-        data: {
-          bidderCode: this.props.bidderCode,
-          slot: this.slot,
-        }
-      });
-  });
-
-  /**
-   * Event listener for lazy loaded ads that triggers the refresh function when
-   * the ad becomes visible.
-   * @function   
-   * @returns {void}
-   */
-  refreshWhenVisible = () => {
-    if (this.state.displayed) {
-      const isVisible = inViewport(ReactDOM.findDOMNode(this));
-      if (isVisible) {
-        this.props.provider.refresh({
-          priority: this.props.priority,
-          data: {
-            bidderCode: this.props.bidderCode,
-            slot: this.slot,
-          }
-        });
-        window.removeEventListener('scroll', this.refreshWhenVisible);
-      }      
-    }
-  };
-
-  componentDidMount() {
-    const message = {
-      priority: this.props.priority,
-      data: {
-        onDefine: this.onDefine,
-        onDisplay: this.onDisplay,
-        id: this.props.id,
+      this.display();
+      if (this.props.lazy) {        
+        window.addEventListener('scroll', this.refreshWhenVisible);
+        this.refreshWhenVisible();
+      } else {
+        this.refresh();
       }
-    };
-    
-    this.props.provider.define(message);
-    if (this.props.lazy) window.addEventListener('scroll', this.refreshWhenVisible);
+    });
   }
 
   componentWillUnmount() {
     this.unmounted = true;
-    this.destroyAd();
     this.unsetMQListeners();
     window.removeEventListener('scroll', this.refreshWhenVisible);
+    window.googletag.cmd.push(this.destroyAd);
   }
 
   render() {
     return (
-        <div
-          id={this.props.id}
-          ref={ref => this.ref = ref}
-          className={this.props.className}
-          style={{ ...this.props.style }}
-        />
+      <div
+        id={this.props.id}
+        ref={ref => this.ref = ref}
+        className={this.props.className}
+        style={{ ...this.props.style }}
+      />
     );
   }
 }
