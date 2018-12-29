@@ -1,20 +1,13 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
-import { AdsContext } from '../context';
 import connect from '../connector';
 import inViewport from './inViewport';
+import { AdsContext } from '../context';
 
 class Ad extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      /** 
-       * Will return true when the ad gets defined.
-       * @type {Boolean} 
-       */
-      displayed: false,
-    };
     /**
      * Reference the the googletag GPT slot.
      * @type {object}
@@ -34,6 +27,8 @@ class Ad extends Component {
       if (this.unmounted) return;
       this.setState(props, cb);
     };
+
+    this.id = props.id || props.provider.generateId(props.type);
   }
 
   /**
@@ -55,11 +50,11 @@ class Ad extends Component {
    */
   defineSlot = () => {
     this.slot = this.props.outOfPageSlot
-      ? window.googletag.defineOutOfPageSlot(this.adUnitPath, this.props.id)
-      : window.googletag.defineSlot(this.adUnitPath, this.props.size, this.props.id);
+      ? window.googletag.defineOutOfPageSlot(this.adUnitPath, this.id)
+      : window.googletag.defineSlot(this.adUnitPath, this.props.size, this.id);
   };
 
-  display = () => window.googletag.display(this.props.id);
+  display = () => window.googletag.display(this.id);
 
   /**
    * Will refresh this slot.
@@ -69,7 +64,7 @@ class Ad extends Component {
   refresh = () => this.props.provider.refresh({
     priority: this.props.priority,
     data: {
-      bidderCode: this.props.bidderCode,
+      bidderCode: this.props.bidderCode(this.id, this.props.size),
       slot: this.slot,
     }
   });
@@ -143,7 +138,7 @@ class Ad extends Component {
   };
 
   withAdProps = (props) => ({
-    id: this.props.id,
+    id: this.id,
     ref: this.ref,
     ...props,
   });
@@ -213,6 +208,7 @@ class Ad extends Component {
   };
 
   componentDidMount() {
+    if (!this.props.provider.enableAds) return;
     window.googletag.cmd.push(() => {
       // event start
       this.defineSlot();
@@ -227,7 +223,7 @@ class Ad extends Component {
       this.addService();
       this.setTargeting();
       this.display();
-      if (this.props.lazy) {        
+      if (this.props.lazy) {
         window.addEventListener('scroll', this.refreshWhenVisible);
         this.refreshWhenVisible();
       } else {
@@ -237,6 +233,7 @@ class Ad extends Component {
   }
 
   componentWillUnmount() {
+    if (!this.props.provider.enableAds) return;
     this.unmounted = true;
     this.unsetMQListeners();
     window.removeEventListener('scroll', this.refreshWhenVisible);
@@ -244,9 +241,10 @@ class Ad extends Component {
   }
 
   render() {
+    if (!this.props.provider.enableAds) return null;
     return (
       <div
-        id={this.props.id}
+        id={this.id}
         ref={ref => this.ref = ref}
         className={this.props.className}
         style={{ ...this.props.style }}
@@ -256,13 +254,14 @@ class Ad extends Component {
 }
 
 Ad.defaultProps = {
-  id: 'id',
+  id: '',
   style: {},
   lazy: false,
   priority: 1,
   targeting: {},
   adUnitPath: '',
   className: null,
+  type: 'default',
   size: [300, 250],
   onSlotOnLoad: null,
   outOfPageSlot: false,
@@ -274,6 +273,7 @@ Ad.defaultProps = {
 
 Ad.propTypes = {
   lazy: PropTypes.bool,
+  type: PropTypes.string,
   style: PropTypes.object,
   className: PropTypes.string,
   targeting: PropTypes.object,
@@ -294,7 +294,10 @@ Ad.propTypes = {
   sizeMapping: PropTypes.arrayOf(
     PropTypes.shape({
       viewPort: PropTypes.arrayOf(PropTypes.number),
-      slots: PropTypes.arrayOf(PropTypes.number)
+      slots: PropTypes.oneOf([
+        PropTypes.arrayOf(PropTypes.number),
+        PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))
+      ])
     })
   ),
 };

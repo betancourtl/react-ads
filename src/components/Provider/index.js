@@ -22,10 +22,8 @@ import {
 class Provider extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isMounted: false,
-    };
-
+    if (!props.enableAds) return;
+    this.slotCount = {};
     this.pubSub = new PubSub();
     createGPTScript();
     startGoogleTagQue();
@@ -56,7 +54,15 @@ class Provider extends Component {
     enableServices();
   }
 
+  generateId = (type = 'ad') => {
+    const count = this.slotCount[type]
+      ? this.slotCount[type]++
+      : this.slotCount[type] = 1;
+      return `${type}-${count}`;
+  }
+
   componentWillUnmount() {
+    if (!this.props.enableAds) return;
     // Clears the event listener.
     this.pubSub.clear();
   }
@@ -66,8 +72,10 @@ class Provider extends Component {
       <AdsContext.Provider value={{
         ...this.state,
         networkId: this.props.networkId,
+        refresh: !this.props.enableAds ? null : this.adManager.refresh,
         adUnitPath: this.props.adUnitPath,
-        refresh: this.adManager.refresh,
+        enableAds: this.props.enableAds,
+        generateId: this.generateId,
       }}>
         {this.props.children}
       </AdsContext.Provider>
@@ -82,6 +90,7 @@ Provider.defaultProps = {
   targeting: {},
   defineDelay: 100,
   refreshDelay: 200,
+  enableAds: true,
   setCentering: true,
   prebidTimeout: 1000,
   enableVideoAds: false,
@@ -93,6 +102,7 @@ Provider.propTypes = {
   prebid: PropTypes.func,
   targeting: PropTypes.object,
   chunkSize: PropTypes.number,
+  enableAds: PropTypes.bool,
   adUnitPath: PropTypes.string,
   setCentering: PropTypes.bool,
   prebidTimeout: PropTypes.number,
