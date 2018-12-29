@@ -3,11 +3,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
-import adCallManager from '../../utils/adCallManager';
-import { startPrebidQueue, getBids } from '../../utils/prebid';
-
+import adManager from './adManager';
+import { startPrebidQueue, getBids } from './prebid';
 import {
-  setTargeting,  
+  setTargeting,
   setCentering,
   enableServices,
   enableVideoAds,
@@ -18,55 +17,58 @@ import {
   enableSingleRequest,
   enableAsyncRendering,
   createGoogleTagEvents,
-} from '../../utils/googletag';
+} from './googletag';
 
 class Provider extends Component {
   constructor(props) {
-    super(props);    
-    this.state = {  
+    super(props);
+    this.state = {
       isMounted: false,
     };
-    
+
     this.pubSub = new PubSub();
     createGPTScript();
     startGoogleTagQue();
     startPrebidQueue();
     if (props.prebid) props.prebid();
-    createGoogleTagEvents(this.pubSub);  
-    this.adCallManager = adCallManager({
+    createGoogleTagEvents(this.pubSub);
+    this.adManager = adManager({
+      getBids: this.getBids,
+      displayFn: this.display,
+      refreshFn: this.refresh,
       chunkSize: props.chunkSize,
       defineDelay: props.defineDelay,
       refreshDelay: props.defineDelay,
-      displayFn: (id, cb) =>  {
-        window.googletag.cmd.push(() => {
-          window.googletag.display(id);
-          cb();
-        });
-      },
-      refreshFn: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
-      getBids: getBids(props.prebidTimeout, props.prebidFailsafeTimeout),
+      prebidEnabled: typeof props.prebid === 'function',
     });
 
-    this.pubSub.on('refresh', () => {});
-    this.pubSub.on('display', () => {});
-    this.pubSub.on('destroySlots', () => {});
-    this.pubSub.on('defineSlot', () => {});
+    this.pubSub.on('refresh', () => { });
+    this.pubSub.on('display', () => { });
+    this.pubSub.on('destroySlots', () => { });
+    this.pubSub.on('defineSlot', () => { });
 
     setCentering(this.props.setCentering);
     enableVideoAds(this.props.enableVideoAds);
-    collapseEmptyDivs(this.props.collapseEmptyDivs);  
-    enableAsyncRendering(true);    
+    collapseEmptyDivs(this.props.collapseEmptyDivs);
+    enableAsyncRendering(true);
     enableSingleRequest(true);
     disableInitialLoad(true);
     setTargeting(this.props.targeting);
     enableServices();
   }
 
-  componentDidMount() {
-    // The event listener triggers setState before the component is fully mounted
-    // This triggers an error in react.
-    this.setState({ isMounted: true });    
+  display = (id, cb) => {
+    window.googletag.cmd.push(() => {
+      window.googletag.display(id);
+      cb();
+    });
   }
+
+  refresh = ids => {
+    window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids));
+  }
+
+  getBids = getBids(this.props.prebidTimeout, this.props.prebidFailsafeTimeout);
 
   componentWillUnmount() {
     // Clears the event listener.
@@ -75,16 +77,16 @@ class Provider extends Component {
 
   render() {
     return (
-      <AdsContext.Provider value={{        
+      <AdsContext.Provider value={{
         ...this.state,
         networkId: this.props.networkId,
         adUnitPath: this.props.adUnitPath,
-        define: this.adCallManager.define,
-        refresh: this.adCallManager.refresh,   
+        define: this.adManager.define,
+        refresh: this.adManager.refresh,
       }}>
         {this.props.children}
       </AdsContext.Provider>
-    );    
+    );
   }
 }
 

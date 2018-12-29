@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { AdsContext } from '../context';
 import connect from '../connector';
-import inViewport from '../../utils/inViewport';
+import inViewport from './inViewport';
 
 class Ad extends Component {
   constructor(props) {
@@ -30,9 +30,9 @@ class Ad extends Component {
      * Will call setState if the component is not unmounted.
      * @type {Function}
      */
-    this._setState = (props) => {
+    this._setState = (props, cb) => {
       if (this.unmounted) return;
-      this.setState(props);
+      this.setState(props, cb);
     };
   }
 

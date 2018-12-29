@@ -9,7 +9,7 @@ import JobQueue from '../../lib/JobQueue';
  * @param {Number} props.refreshFn - Googletag refresh fn.
  * @returns {Object}
  */
-const adCallManager = (props = {}) => {
+const adManager = (props = {}) => {
 
   const displayFn = display => (q, done) => {
     const ids = [];
@@ -27,7 +27,7 @@ const adCallManager = (props = {}) => {
     done();
   };
 
-  const refreshFn = (refresh, getBids) => (q, done) => {
+  const refreshFn = (refresh, getBids, prebidEnabled) => (q, done) => {
     const slots = [];
     const adUnits = [];
 
@@ -38,7 +38,7 @@ const adCallManager = (props = {}) => {
     }
 
     // Create the prebid object.      
-    if (!adUnits) {
+    if (!prebidEnabled || !adUnits) {
       refresh(slots);
       return done();
     }
@@ -62,7 +62,7 @@ const adCallManager = (props = {}) => {
   const refreshJob = new JobQueue({
     chunkSize: props.chunkSize || 5,
     delay: props.refreshDelay || 100,
-    processFn: refreshFn(props.refreshFn, props.getBids),
+    processFn: refreshFn(props.refreshFn, props.getBids, props.prebidEnabled),
   });
 
   return {
@@ -71,4 +71,4 @@ const adCallManager = (props = {}) => {
   };
 };
 
-export default adCallManager;
+export default adManager;
