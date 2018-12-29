@@ -34,8 +34,7 @@ class Provider extends Component {
       getBids: getBids(this.props.prebidTimeout, this.props.prebidFailsafeTimeout),
       refresh: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
       chunkSize: props.chunkSize,
-      defineDelay: props.defineDelay,
-      refreshDelay: props.defineDelay,
+      refreshDelay: props.refreshDelay,
       prebidEnabled: typeof props.prebid === 'function',
     });
 
@@ -54,23 +53,22 @@ class Provider extends Component {
     enableServices();
   }
 
-  generateId = (type = 'ad') => {
-    const count = this.slotCount[type]
-      ? this.slotCount[type]++
-      : this.slotCount[type] = 1;
-      return `${type}-${count}`;
-  }
-
   componentWillUnmount() {
     if (!this.props.enableAds) return;
     // Clears the event listener.
     this.pubSub.clear();
   }
+  
+  generateId = (type = 'ad') => {
+    const count = this.slotCount[type]
+      ? this.slotCount[type]++
+      : this.slotCount[type] = 1;
+    return `${type}-${count}`;
+  };
 
   render() {
     return (
       <AdsContext.Provider value={{
-        ...this.state,
         networkId: this.props.networkId,
         refresh: !this.props.enableAds ? null : this.adManager.refresh,
         adUnitPath: this.props.adUnitPath,

@@ -8,6 +8,7 @@ import { AdsContext } from '../context';
 class Ad extends Component {
   constructor(props) {
     super(props);
+    if (!props.provider.enableAds) return;
     /**
      * Reference the the googletag GPT slot.
      * @type {object}
@@ -27,8 +28,10 @@ class Ad extends Component {
       if (this.unmounted) return;
       this.setState(props, cb);
     };
-
-    this.id = props.id || props.provider.generateId(props.type);
+    console.log('id', props.provider.generateId(props.type));
+    console.log('sizes', props.size);
+    console.log('adUnitPath', this.adUnitPath);
+    this.id = props.provider.generateId(props.type);
   }
 
   /**
@@ -133,7 +136,8 @@ class Ad extends Component {
    */
   setMappingSize = () => {
     if (!this.props.sizeMapping) return;
-    const mapping = this.props.sizeMapping.reduce((acc, x) => acc.addSize(x.viewPort, x.slots), window.googletag.sizeMapping());
+    const mapping = this
+    .props.sizeMapping.reduce((acc, x) => acc.addSize(x.viewPort, x.slots), window.googletag.sizeMapping());
     this.slot.defineSizeMapping(mapping.build());
   };
 
@@ -300,6 +304,13 @@ Ad.propTypes = {
       ])
     })
   ),
+  provider: PropTypes.shape({
+    refresh: PropTypes.func,
+    enableAds: PropTypes.bool,
+    adUnitPath: PropTypes.string,
+    generateId: PropTypes.func.isRequired,
+    networkId: PropTypes.string.isRequired,
+  })
 };
 
 const AdWithProvider = connect(AdsContext, Ad, 'provider');
