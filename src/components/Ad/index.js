@@ -38,7 +38,7 @@ class Ad extends Component {
     };
 
     /**
-     * The generated slotId
+     * The generated slotId.
      * @type {String}
      */
     this.id = props.id || props.provider.generateId(props.type);
@@ -46,7 +46,8 @@ class Ad extends Component {
 
   /**
    * Will get the adUnitPath from the Provider by default.
-   * If the Ad has an unit path then it will override the parent.
+   * If the Ad has an unit path then it will override the providers adUnitPath
+   * for this slot.
    * @function
    * @returns {String}
    */
@@ -71,6 +72,8 @@ class Ad extends Component {
 
   /**
    * Will display this slot. With SRA disabled display will not fetch the ad.
+   * @function
+   * @returns {void}
    */
   display = () => window.googletag.display(this.id);
 
@@ -79,7 +82,7 @@ class Ad extends Component {
    * @function
    * @returns {Array}
    */
-  get mapSize() {    
+  get mapSize() {
     if (!this.props.sizeMapping) return this.props.size;
     try {
       return this.props.sizeMapping
@@ -93,7 +96,8 @@ class Ad extends Component {
   }
 
   /**
-   * Will refresh this slot.
+   * Will refresh this slot using the refresh funtion passed bythe provider
+   * component.
    * @function   
    * @returns {void}
    */
@@ -108,17 +112,19 @@ class Ad extends Component {
   }
 
   /**
-   * Will trigger a refresh whenever it falls into a new breakpoint.
+   * Will trigger a refresh whenever it this slots enters in a new breakpoint
+   * specified on the sizeMappings.
    * @funtion
    * @returns {void}
    */
-  breakPointRefresh = (e) => {
+  breakPointRefresh = () => {
     if (!this.displayed) return;
     this.refresh();
   }
 
   /**
-   * Return true if the slot is visible on the page
+   * Return true if the slot is visible on the page. This is used for refreshing
+   * lazy loaded ads.
    * @funtion
    * @returns {Boolean}
    */
@@ -127,11 +133,11 @@ class Ad extends Component {
   }
 
   /**
- * Event listener for lazy loaded ads that triggers the refresh function when
- * the ad becomes visible.
- * @function   
- * @returns {void}
- */
+  * Event listener for lazy loaded ads that triggers the refresh function when
+  * the ad becomes visible.
+  * @function   
+  * @returns {void}
+  */
   refreshWhenVisible = () => {
     if (this.isVisible) {
       this.refresh();
@@ -147,14 +153,14 @@ class Ad extends Component {
   destroyAd = () => window.googletag.destroySlots([this.slot]);
 
   /**
-   * Will enable the pubads service.
+   * Will enable the pubads service for this slot.
    * @function   
    * @returns {void}
    */
   addService = () => this.slot.addService(window.googletag.pubads());
 
   /**
-   * Will collapse this ad wheneverit is empty.
+   * Will collapse this ad whenever it is empty.
    * @function   
    * @returns {void}
    */
@@ -168,7 +174,8 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  setTargeting = () => Object.entries(this.props.targeting)
+  setTargeting = () => Object
+    .entries(this.props.targeting)
     .map(([k, v]) => this.slot.setTargeting(k, v));
 
   /**
@@ -208,6 +215,11 @@ class Ad extends Component {
     this.listeners.forEach(fn => fn());
   };
 
+  /**
+   * Returns the id and the reference to this slot.
+   * @function
+   * @returns {void}
+   */
   withAdProps = (props) => ({
     id: this.id,
     ref: this.ref,
@@ -228,7 +240,8 @@ class Ad extends Component {
   };
 
   /**
-   * Will listen to the impressionViewable event and then call the passed function.
+   * Will listen to the impressionViewable event and then call the passed 
+   * function.
    * @function   
    * @returns {void}
    */
@@ -240,7 +253,8 @@ class Ad extends Component {
   };
 
   /**
-   * Will listen to the slotVisibilityChanged event and then call the passed function.
+   * Will listen to the slotVisibilityChanged event and then call the passed 
+   * function.
    * @function   
    * @returns {void}
    */

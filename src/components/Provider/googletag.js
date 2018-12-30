@@ -4,7 +4,6 @@
 
 /**
  * Will create the google tag scripts and load the googletag library.
- *
  * @function
  * @returns {void}
  */
@@ -26,7 +25,6 @@ export const createGPTScript = () => {
 
 /**
  * Will create the googleTag queue for handling asynchronous calls.
- *
  * @function
  * @returns {void}
  */
@@ -38,7 +36,6 @@ export const startGoogleTagQue = () => {
 /**
  * Will enable singleRequests so that multiple ads can be fetched from a single
  * HTTP request.
- *
  * @function
  * @param {Boolean} enabled
  * @returns {void}
@@ -51,10 +48,9 @@ export const enableSingleRequest = enabled => {
 };
 
 /**
- * Will stop the initial ad load.
- *
+ * Will prevent the googletag.display fn from fetching all the ad when called.
  * @function
- * @param {Boolean} disabled
+ * @param {Boolean} disabled - Will stop the initial ad load.
  */
 export const disableInitialLoad = (disabled) => {
   if (!disabled) return;
@@ -65,7 +61,6 @@ export const disableInitialLoad = (disabled) => {
 
 /**
  * Will center the ads automatically.
- *
  * @function
  * @param {Boolean} isCentered
  * @returns {void}
@@ -79,7 +74,6 @@ export const setCentering = (isCentered = false) => {
 /**
  * Will enable Async rendering. By default this is true, only use this
  * to override a previous setting.
- *
  * @function
  * @param {Boolean} isEnabled
  * @returns {void}
@@ -93,7 +87,6 @@ export const enableAsyncRendering = (isEnabled = false) => {
 
 /**
  * Will enable video ads.
- *
  * @function
  * @param {Boolean} isEnabled
  * @returns {void}
@@ -107,7 +100,6 @@ export const enableVideoAds = (isEnabled = false) => {
 
 /**
  * Will collapse empty divs. Enabling this might cause issues with SRA.
- *
  * @function
  * @param {bool} isEnabled
  * @returns {void}
@@ -120,7 +112,6 @@ export const collapseEmptyDivs = (isEnabled = false) => {
 
 /**
  * Will get the googletag version.
- *
  * @function
  * @returns {void}
  */
@@ -131,10 +122,10 @@ export const getVersion = () => {
 };
 
 /**
- * Will fetch the google ad from DFP. When SRA is inabled this will
+ * Will fetch the google ad from DFP. When SRA is enabled this will
  * fetch ALL the ads that called the defineSlot function, but have
  * not been displayed.
- * @param {String|Slot} id - The slotElementId or the Slot Object.
+ * @param {String |  Slot} id - The slotElementId or the Slot Object.
  */
 export const display = id => {
   window.googletag.cmd.push(() => {
@@ -144,7 +135,6 @@ export const display = id => {
 
 /**
  * Will enable googletag services.
- *
  * @function
  * @returns {void}
  */
@@ -156,7 +146,6 @@ export const enableServices = () => {
 
 /**
  * Will set page level targeting for all slots.
- *
  * @function
  * @returns {void}
  */
@@ -170,8 +159,7 @@ export const setTargeting = (targeting = {}) => {
 
 /**
  * Will monkey patch the global googletag functions so that we can subscribe to
- * Whenever the function is called.
- *
+ * events whenever a GPT fn is called.
  * @function
  * @param {callback} pubSub - PubSub instance used to emit events.
  * @returns {void}

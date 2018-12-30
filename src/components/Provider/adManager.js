@@ -1,12 +1,12 @@
 import JobQueue from '../../lib/JobQueue';
 
-/**
- * @function
+/** 
  * @param {Number} props.chunkSize - Max ads to process.
- * @param {Number} props.defineDelay - Display delay
  * @param {Number} props.refreshDelay - Refresh delay.
- * @param {Number} props.displayFn - Googletag display fn.
- * @param {Number} props.refreshFn - Googletag refresh fn.
+ * @param {Function} props.refresh - Googletag refresh fn.
+ * @param {Function} props.getBids - Prebid function used to fetch bids.
+ * @param {Boolean} props.prebidEnabled - Function to used to fetch prebid bids.
+ * @function
  * @returns {Object}
  */
 const adManager = (props = {}) => {
@@ -32,8 +32,7 @@ const adManager = (props = {}) => {
           adUnits.push(bidderCode);
         }
       }
-  
-      // Create the prebid object.      
+    
       if (!prebidEnabled || !adUnits) {
         refresh(slots);
         return done();

@@ -22,6 +22,7 @@ class Page extends React.Component {
     return (
       <Provider
         prebid={prebid}
+        chunkSize={5}
         prebidTimeout={1000}
         prebidFailsafeTimeout={1200}
         adUnitPath="header-bid-tag-0"

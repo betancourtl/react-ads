@@ -206,7 +206,8 @@ ___
 | 10. Disable loading ads                                | ok  |
 | 11. Create dynamic ids                                 | ok  |
 | 12. Add sizes dynamically on pregid bid request        | ok  |
-| 12. Update prebid.js bidder to use the new config size | ok  |
+| 13. Update prebid.js bidder to use the new config size | ok  |
+| 14. Update the visibility function to use offsets      | x   |
 
 #### AdCallManager
 
@@ -428,5 +429,15 @@ How to implement the proposed solution?
 2. When the media query refresh function gets called. Trigger the 
 refresh function and pass the new sizes. Clear the targeting and request 
 new bids.
+
+
+
+
+
+
+
+
+
+
 
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)
