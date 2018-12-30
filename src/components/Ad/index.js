@@ -110,7 +110,6 @@ class Ad extends Component {
    * @returns {void}
    */
   breakPointRefresh = (e) => {
-    if (!e.match) return;
     if (!this.displayed) return;
     this.refresh();
   }
