@@ -421,4 +421,11 @@ pbjs.addAdUnits([{
 
 Would this solution work for requesting bids when using googletags?
 
+How to implement the proposed solution?
+
+1. save the current ad sizes on the components state.
+2. When the media query refresh function gets called. Trigger the 
+refresh function and pass the new sizes. Clear the targeting and request 
+new bids.
+
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)

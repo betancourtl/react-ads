@@ -9,11 +9,19 @@ class Ad extends Component {
   constructor(props) {
     super(props);
     if (!props.provider.enableAds) return;
+
     /**
      * Reference the the googletag GPT slot.
-     * @type {object}
+     * @type {Object}
      */
     this.slot = null;
+
+    /**
+     * Reference the the googletag GPT slot.
+     * @type {Boolean}
+     */
+    this.displayed = false;
+
     /**
      * List of event listener removing functions.
      * @type {Array}
@@ -28,13 +36,19 @@ class Ad extends Component {
       if (this.unmounted) return;
       this.setState(props, cb);
     };
-    
-    this.id = props.provider.generateId(props.type);
+
+    /**
+     * The generated slotId
+     * @type {String}
+     */
+    this.id = props.id || props.provider.generateId(props.type);
   }
 
   /**
    * Will get the adUnitPath from the Provider by default.
    * If the Ad has an unit path then it will override the parent.
+   * @function
+   * @returns {String}
    */
   get adUnitPath() {
     const networkId = this.props.provider.networkId;
@@ -52,23 +66,76 @@ class Ad extends Component {
   defineSlot = () => {
     this.slot = this.props.outOfPageSlot
       ? window.googletag.defineOutOfPageSlot(this.adUnitPath, this.id)
-      : window.googletag.defineSlot(this.adUnitPath, this.props.size, this.id);
+      : window.googletag.defineSlot(this.adUnitPath, this.mapSize, this.id);
   };
 
   display = () => window.googletag.display(this.id);
+
+  /**
+   * Get the slot map sizes based on the media query breakpoints
+   * @function
+   * @returns {Array}
+   */
+  get mapSize() {    
+    if (!this.props.sizeMapping) return this.props.size;
+    try {
+      return this.props.sizeMapping
+        .filter(({ viewPort: [width] }) => width <= window.innerWidth)
+        .sort((a, b) => a > b)
+        .slice(0, 1)[0].slots;
+    } catch (err) {
+      console.log('Could not get the correct sizes from the sizeMapping array');
+      return this.props.size;
+    }
+  }
 
   /**
    * Will refresh this slot.
    * @function   
    * @returns {void}
    */
-  refresh = () => this.props.provider.refresh({
-    priority: this.props.priority,
-    data: {
-      bidderCode: this.props.bidderCode ? this.props.bidderCode(this.id, this.props.size) : null,
-      slot: this.slot,
+  refresh = () => {
+    this.props.provider.refresh({
+      priority: this.props.priority,
+      data: {
+        bidderCode: this.props.bidderCode ? this.props.bidderCode(this.id, this.mapSize) : null,
+        slot: this.slot,
+      }
+    });
+  }
+
+  /**
+   * Will trigger a refresh whenever it falls into a new breakpoint.
+   * @funtion
+   * @returns {void}
+   */
+  breakPointRefresh = (e) => {
+    if (!e.match) return;
+    if (!this.displayed) return;
+    this.refresh();
+  }
+
+  /**
+   * Return true if the slot is visible on the page
+   * @funtion
+   * @returns {Boolean}
+   */
+  get isVisible() {
+    return inViewport(ReactDOM.findDOMNode(this))
+  }
+
+  /**
+ * Event listener for lazy loaded ads that triggers the refresh function when
+ * the ad becomes visible.
+ * @function   
+ * @returns {void}
+ */
+  refreshWhenVisible = () => {
+    if (this.isVisible) {
+      this.refresh();
+      window.removeEventListener('scroll', this.refreshWhenVisible);
     }
-  });
+  };
 
   /**
    * Will destroy this slot from the page.
@@ -103,6 +170,19 @@ class Ad extends Component {
     .map(([k, v]) => this.slot.setTargeting(k, v));
 
   /**
+   * Will create the sizeMaps that will show the different ads depending on the
+   * viewport size.
+   * @function   
+   * @returns {void}
+   */
+  setMappingSize = () => {
+    if (!this.props.sizeMapping) return;
+    const mapping = this
+      .props.sizeMapping.reduce((acc, x) => acc.addSize(x.viewPort, x.slots), window.googletag.sizeMapping());
+    this.slot.defineSizeMapping(mapping.build());
+  };
+
+  /**
    * Will listen to mediaQueries for hiding/refreshing ads on the page.
    * @function   
    * @returns {void}
@@ -111,9 +191,9 @@ class Ad extends Component {
     if (!this.props.sizeMapping) return;
     this.props.sizeMapping.forEach(({ viewPort: [width] }) => {
       const mq = window.matchMedia(`(max-width: ${width}px)`);
-      mq.addListener(this.refresh);
+      mq.addListener(this.breakPointRefresh);
 
-      this.listeners.push(() => mq.removeListener(this.refresh));
+      this.listeners.push(() => mq.removeListener(this.breakPointRefresh));
     });
   };
 
@@ -124,19 +204,6 @@ class Ad extends Component {
    */
   unsetMQListeners = () => {
     this.listeners.forEach(fn => fn());
-  };
-
-  /**
-   * Will create the sizeMaps that will show the different ads depending on the
-   * viewport size.
-   * @function   
-   * @returns {void}
-   */
-  setMappingSize = () => {
-    if (!this.props.sizeMapping) return;
-    const mapping = this
-    .props.sizeMapping.reduce((acc, x) => acc.addSize(x.viewPort, x.slots), window.googletag.sizeMapping());
-    this.slot.defineSizeMapping(mapping.build());
   };
 
   withAdProps = (props) => ({
@@ -195,20 +262,6 @@ class Ad extends Component {
     });
   };
 
-  /**
-   * Event listener for lazy loaded ads that triggers the refresh function when
-   * the ad becomes visible.
-   * @function   
-   * @returns {void}
-   */
-  refreshWhenVisible = () => {
-    const isVisible = inViewport(ReactDOM.findDOMNode(this));
-    if (isVisible) {
-      this.refresh();
-      window.removeEventListener('scroll', this.refreshWhenVisible);
-    }
-  };
-
   componentDidMount() {
     if (!this.props.provider.enableAds) return;
     window.googletag.cmd.push(() => {
@@ -225,6 +278,8 @@ class Ad extends Component {
       this.addService();
       this.setTargeting();
       this.display();
+      this.displayed = true;
+
       if (this.props.lazy) {
         window.addEventListener('scroll', this.refreshWhenVisible);
         this.refreshWhenVisible();

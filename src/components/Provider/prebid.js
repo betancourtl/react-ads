@@ -8,7 +8,7 @@ export const initAdserver = (resolve, adUnitCodes = [], timeoutFnRef) => () => {
   var googletag = window.googletag || {};
   googletag.cmd.push(function () {
     pbjs.que.push(function () {
-      console.log('bids ', pbjs.getBidResponses());
+      // console.log('bids ', pbjs.getBidResponses());
       if (timeoutFnRef) clearTimeout(timeoutFnRef);
       pbjs.setTargetingForGPTAsync(adUnitCodes);
       resolve();
@@ -23,13 +23,12 @@ export const getBids = (timeout, failSafeTimeout) => adUnits => new Promise(reso
     // in case PBJS doesn't load
     const timeoutFn = setTimeout(function () {
       initAdserver(resolve, adUnitCodes);
-      console.log('Timed out');
     }, failSafeTimeout);
 
     const adUnitCodes = adUnits.map(x => x.code);
     const bidsBackHandler = initAdserver(resolve, adUnitCodes, timeoutFn);
-    console.log('adUnits', adUnits);
-    console.log('adUnitCodes', adUnitCodes);
+    // console.log('adUnits', adUnits);
+    // console.log('adUnitCodes', adUnitCodes);
     pbjs.addAdUnits(adUnits);
     pbjs.requestBids({
       bidsBackHandler,
