@@ -205,7 +205,8 @@ ___
 | 9. Add provider gpt event hooks                        | x   |
 | 10. Disable loading ads                                | ok  |
 | 11. Create dynamic ids                                 | ok  |
-| 12. Add sizes dynamically on pregid bid request        |     |
+| 12. Add sizes dynamically on pregid bid request        | ok  |
+| 12. Update prebid.js bidder to use the new config size | ok  |
 
 #### AdCallManager
 

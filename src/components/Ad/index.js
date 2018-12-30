@@ -69,6 +69,9 @@ class Ad extends Component {
       : window.googletag.defineSlot(this.adUnitPath, this.mapSize, this.id);
   };
 
+  /**
+   * Will display this slot. With SRA disabled display will not fetch the ad.
+   */
   display = () => window.googletag.display(this.id);
 
   /**
