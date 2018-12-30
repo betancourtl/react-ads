@@ -9,12 +9,10 @@ describe('JobQueue', () => {
   it('Should create a job', (done) => {
     let results = [];
 
-    const processFn = (arr, resolve) => {
+    const processFn = (q, resolve) => {
 
       setTimeout(() => {
-        arr.forEach(x => {
-          results.push(x.priority);
-        });
+        while (!q.isEmpty) results.push(q.dequeue().priority);
         resolve();
       }, 100);
     };

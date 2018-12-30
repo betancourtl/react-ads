@@ -7,6 +7,7 @@ const Nav = () => {
       <li><NavLink to='/'>Home</NavLink></li>
       <li><NavLink to='/InfiniteScroll'>InfiniteScroll</NavLink></li>
       <li><NavLink to='/Prebid'>Prebid</NavLink></li>
+      <li><NavLink to='/Lazy'>Lazy</NavLink></li>
     </ul>
   );
 };

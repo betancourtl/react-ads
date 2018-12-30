@@ -129,7 +129,7 @@ class Ad extends Component {
    * @returns {Boolean}
    */
   get isVisible() {
-    return inViewport(ReactDOM.findDOMNode(this))
+    return inViewport(ReactDOM.findDOMNode(this), this.props.lazyOffset);
   }
 
   /**
@@ -139,6 +139,7 @@ class Ad extends Component {
   * @returns {void}
   */
   refreshWhenVisible = () => {
+    console.log('isVisible', this.isVisible);
     if (this.isVisible) {
       this.refresh();
       window.removeEventListener('scroll', this.refreshWhenVisible);
@@ -334,6 +335,7 @@ Ad.defaultProps = {
   targeting: {},
   adUnitPath: '',
   className: null,
+  lazyOffset: 300,
   type: 'default',
   size: [300, 250],
   onSlotOnLoad: null,
@@ -348,6 +350,7 @@ Ad.propTypes = {
   lazy: PropTypes.bool,
   type: PropTypes.string,
   style: PropTypes.object,
+  lazyOffset: PropTypes.number,
   className: PropTypes.string,
   targeting: PropTypes.object,
   prebidCode: PropTypes.object,

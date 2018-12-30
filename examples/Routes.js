@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Nav from './Nav';
 import InfiniteScroll from './InfiniteScroll';
 import Prebid from './Prebid';
+import Lazy from './Lazy';
 
 const styles = {
   main: {
@@ -31,6 +32,7 @@ const Routes = () => {
           <Switch>
             <Route exact path="/InfiniteScroll" component={InfiniteScroll} />
             <Route exact path="/Prebid" component={Prebid} />
+            <Route exact path="/lazy" component={Lazy} />
           </Switch>
         </section>
       </main>
