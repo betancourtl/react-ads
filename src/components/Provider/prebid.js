@@ -16,6 +16,10 @@ export const initAdserver = (resolve, adUnitCodes = [], timeoutFnRef) => () => {
   });
 };
 
+const removeFromAdUnits = (arr) =>  {
+  arr.forEach(adUnitCode => window.pbjs.removeAdUnit(adUnitCode));
+};
+
 export const getBids = (timeout, failSafeTimeout) => adUnits => new Promise(resolve => {
   var pbjs = window.pbjs || {};
   pbjs.que.push(function () {
@@ -25,10 +29,11 @@ export const getBids = (timeout, failSafeTimeout) => adUnits => new Promise(reso
       initAdserver(resolve, adUnitCodes);
     }, failSafeTimeout);
 
-    const adUnitCodes = adUnits.map(x => x.code);
+    const adUnitCodes = adUnits.map(x => x.code);    
     const bidsBackHandler = initAdserver(resolve, adUnitCodes, timeoutFn);
-    // console.log('adUnits', adUnits);
-    // console.log('adUnitCodes', adUnitCodes);
+    // Remove old adUnit settings.
+    removeFromAdUnits(adUnitCodes);    
+    // Set new adUnit settings.
     pbjs.addAdUnits(adUnits);
     pbjs.requestBids({
       bidsBackHandler,

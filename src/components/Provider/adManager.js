@@ -24,11 +24,13 @@ const adManager = (props = {}) => {
     processFn: (q, done) => {
       const slots = [];
       const adUnits = [];
-  
+      
       while (!q.isEmpty) {
         const { slot, bidderCode } = q.dequeue().data;
         slots.push(slot);
-        if (bidderCode) adUnits.push(bidderCode);
+        if (bidderCode) {
+          adUnits.push(bidderCode);
+        }
       }
   
       // Create the prebid object.      
