@@ -11,9 +11,8 @@ const indx = {
   }
 };
 
-describe.only('ixBidder helper', () => {
+describe('ixBidder helper', () => {
   it('should map adUnit name to sizes', () => {
     const bids = ixBids(indx)('rect_1', [[300, 250], [300, 600]]);
-    console.log(bids);
   });
 });

@@ -22,7 +22,7 @@ export const ixBids = indx => (adUnitId, sizes) => {
     return acc;
   }, []);
 
-  console.log(`idx - ${adUnitId}`, JSON.stringify(bidderSizes, null, 2));
+  // console.log(`idx - ${adUnitId}`, JSON.stringify(bidderSizes, null, 2));
 
   return bidderSizes;
 };
