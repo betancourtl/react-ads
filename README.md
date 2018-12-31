@@ -208,7 +208,8 @@ ___
 | 11. Create dynamic ids                                 | ok  |
 | 12. Add sizes dynamically on pregid bid request        | ok  |
 | 13. Update prebid.js bidder to use the new config size | ok  |
-| 14. Update the visibility function to use offsets      | x   |
+| 14. Update the visibility function to use offsets      | ok  |
+| 15. Add ix bidder helper                               | ok  |
 
 #### AdCallManager
 
@@ -431,8 +432,87 @@ How to implement the proposed solution?
 refresh function and pass the new sizes. Clear the targeting and request 
 new bids.
 
+### bidder helpers.
+
+Making idx bids is somewhat tedious whenever ceratin adUnits have to be mapped to certain sizes.
+
+**idx**
+
+Working iwth index is relatively easy. Once you have a copy of your map slots, you can use the idxBids helper to generate the bid code for you.
 
 
+```javascript
+import { ixBids } from './';
+
+const indx = {
+  xSlots: {
+    14: { siteId: '211035', size: [300, 250] },
+    15: { siteId: '211036', size: [300, 600] },
+    16: { siteId: '211037', size: [300, 1050] },
+  },
+  mapping: {
+    rect_1: ['14', '15', '16'],
+  }
+};
+
+const yourAdUnitSizes = [[300, 250], [300, 600]];
+const adUnitName = 'rect_1';
+
+describe.only('ixBidder helper', () => {
+  it('should map adUnit name to sizes', () => {
+    const bids = ixBids(indx)(adUnitName, yourAdUnitSizes);
+  });
+});
+
+// generates
+
+// [
+//   {
+//     "bidder": "ix",
+//     "params": {
+//       "siteId": "211035",
+//       "size": [
+//         300,
+//         250
+//       ]
+//     }
+//   },
+//   {
+//     "bidder": "ix",
+//     "params": {
+//       "siteId": "211036",
+//       "size": [
+//         300,
+//         600
+//       ]
+//     }
+//   }
+// ]
+```
+
+Use it in your bidder code like this:
+
+```javascript
+const bidderCode = (adUnitId, sizes) => ({
+    code: adUnitId,
+    mediaTypes: {
+        banner: {
+            sizes: sizes,
+        },
+    },
+    bids: [
+        // other bidder
+        {
+            bidder: 'criteo',
+            params: {
+                zoneId: 1234567,
+            },
+        },
+        // ixBidder
+        ...ixBids(adUnitId, sizes),
+    ],
+});
+```
 
 
 
