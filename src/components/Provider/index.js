@@ -71,11 +71,12 @@ class Provider extends Component {
   render() {
     return (
       <AdsContext.Provider value={{
-        networkId: this.props.networkId,
-        refresh: !this.props.enableAds ? null : this.adManager.refresh,
-        adUnitPath: this.props.adUnitPath,
-        enableAds: this.props.enableAds,
         generateId: this.generateId,
+        enableAds: this.props.enableAds,
+        networkId: this.props.networkId,
+        adUnitPath: this.props.adUnitPath,
+        lazyOffset: this.props.lazyOffset,
+        refresh: !this.props.enableAds ? null : this.adManager.refresh,
       }}>
         {this.props.children}
       </AdsContext.Provider>
@@ -88,8 +89,9 @@ Provider.defaultProps = {
   prebid: null,
   chunkSize: 4,
   targeting: {},
-  refreshDelay: 200,
   enableAds: true,
+  lazyOffset: 400,
+  refreshDelay: 200,
   setCentering: true,
   prebidTimeout: 1000,
   enableVideoAds: false,
@@ -103,6 +105,7 @@ Provider.propTypes = {
   chunkSize: PropTypes.number,
   enableAds: PropTypes.bool,
   adUnitPath: PropTypes.string,
+  lazyOffset: PropTypes.number,
   setCentering: PropTypes.bool,
   prebidTimeout: PropTypes.number,
   refreshDelay: PropTypes.number,

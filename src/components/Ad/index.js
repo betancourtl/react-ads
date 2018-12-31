@@ -60,6 +60,18 @@ class Ad extends Component {
   }
 
   /**
+   * Gets the offset defined by the provider. If this ad receives a lazyOffset
+   * prop then it will override the providers value.
+   * @function
+   * @returns {Number}
+   */
+  get lazyOffset() {
+    return this.props.lazyOffset && this.props.lazyOffset >= 0 
+      ? this.props.lazyOffset
+      : this.props.provider.lazyOffset;
+  }
+
+  /**
    * Will define this slot on the page.
    * @function   
    * @returns {void}
@@ -129,7 +141,7 @@ class Ad extends Component {
    * @returns {Boolean}
    */
   get isVisible() {
-    return inViewport(ReactDOM.findDOMNode(this), this.props.lazyOffset);
+    return inViewport(ReactDOM.findDOMNode(this), this.lazyOffset);
   }
 
   /**
@@ -139,9 +151,8 @@ class Ad extends Component {
   * @returns {void}
   */
   refreshWhenVisible = () => {
-    console.log('isVisible', this.isVisible);
     if (this.isVisible) {
-      this.refresh();
+      this.define();
       window.removeEventListener('scroll', this.refreshWhenVisible);
     }
   };
@@ -279,8 +290,7 @@ class Ad extends Component {
     });
   };
 
-  componentDidMount() {
-    if (!this.props.provider.enableAds) return;
+  define = () => {
     window.googletag.cmd.push(() => {
       // event start
       this.defineSlot();
@@ -296,14 +306,18 @@ class Ad extends Component {
       this.setTargeting();
       this.display();
       this.displayed = true;
-
-      if (this.props.lazy) {
-        window.addEventListener('scroll', this.refreshWhenVisible);
-        this.refreshWhenVisible();
-      } else {
-        this.refresh();
-      }
+      this.refresh();
     });
+  }
+
+  componentDidMount() {
+    if (!this.props.provider.enableAds) return;
+    if (!this.props.lazy) {
+      this.define();
+    } else {            
+      window.addEventListener('scroll', this.refreshWhenVisible);
+      this.refreshWhenVisible();
+    }
   }
 
   componentWillUnmount() {
@@ -335,11 +349,11 @@ Ad.defaultProps = {
   targeting: {},
   adUnitPath: '',
   className: null,
-  lazyOffset: 300,
   type: 'default',
   size: [300, 250],
   onSlotOnLoad: null,
   outOfPageSlot: false,
+  lazyOffset: -1,
   setCollapseEmpty: false,
   onSlotRenderEnded: null,
   onImpressionViewable: null,

@@ -1,5 +1,5 @@
 /**
- * 
+ * Will return true if the element is in view.
  * @param {HTMLElement} el - Ad HTML element.
  */
 const elementInViewport = (el, offset = 0) => {
@@ -19,15 +19,21 @@ const elementInViewport = (el, offset = 0) => {
   });
 };
 
-const inView = ({ windowInnerHeight, windowPageYOffset, elementYOffset, elementHeight, offset }) => {
+const inView = ({ 
+  windowInnerHeight,
+  windowPageYOffset, 
+  elementYOffset, 
+  elementHeight, 
+  offset 
+}) => {
   let visibleRect = {
-    top: windowPageYOffset, // 50
-    bottom: windowPageYOffset + windowInnerHeight, // 100
+    top: windowPageYOffset,
+    bottom: windowPageYOffset + windowInnerHeight,
   };
 
   let elRect = {
-    top: elementYOffset - offset, // 50
-    bottom: elementYOffset + elementHeight + offset, // 60
+    top: elementYOffset - offset,
+    bottom: elementYOffset + elementHeight + offset,
   };
 
   return elRect.bottom >= visibleRect.top && elRect.top <= visibleRect.bottom;

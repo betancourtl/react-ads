@@ -1,18 +1,6 @@
+import elementInView from './inViewport';
+
 describe('inViewport', () => {
-  const elementInView = ({ windowInnerHeight, windowPageYOffset, elementYOffset, elementHeight, offset }) => {
-    let visibleRect = {
-      top: windowPageYOffset, // 50
-      bottom: windowPageYOffset + windowInnerHeight, // 100
-    };
-
-    let elRect = {
-      top: elementYOffset - offset, // 50
-      bottom: elementYOffset + elementHeight + offset, // 60
-    };
-
-    return elRect.bottom >= visibleRect.top && elRect.top <= visibleRect.bottom;
-  };
-
   it('should return true when in element is in view', () => {    
     const inView = elementInView({
       // 50 - 100
