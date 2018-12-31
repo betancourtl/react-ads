@@ -65,7 +65,7 @@ class Provider extends Component {
     const count = this.slotCount[type]
       ? this.slotCount[type]++
       : this.slotCount[type] = 1;
-    return `${type}-${count}`;
+    return `${type}${this.props.divider}${count}`;
   };
 
   render() {
@@ -85,6 +85,7 @@ class Provider extends Component {
 }
 
 Provider.defaultProps = {
+  divider: '_',
   networkId: 0,
   prebid: null,
   chunkSize: 4,
@@ -101,6 +102,7 @@ Provider.defaultProps = {
 
 Provider.propTypes = {
   prebid: PropTypes.func,
+  divider: PropTypes.string,
   targeting: PropTypes.object,
   chunkSize: PropTypes.number,
   enableAds: PropTypes.bool,

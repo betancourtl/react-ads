@@ -19,7 +19,7 @@ const elementInViewport = (el, offset = 0) => {
   });
 };
 
-const inView = ({ 
+export const inView = ({ 
   windowInnerHeight,
   windowPageYOffset, 
   elementYOffset, 

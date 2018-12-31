@@ -1,8 +1,8 @@
-import elementInView from './inViewport';
+import { inView } from './inViewport';
 
 describe('inViewport', () => {
   it('should return true when in element is in view', () => {    
-    const inView = elementInView({
+    const visible = inView({
       // 50 - 100
       windowInnerHeight: 50,
       windowPageYOffset: 50,
@@ -11,11 +11,11 @@ describe('inViewport', () => {
       elementHeight: 10,
       offset: 0,
     });
-    expect(inView).to.equal(true);
+    expect(visible).to.equal(true);
   });
 
   it('should return false when in element bottom is greather than the pageYOffset', () => {    
-    const inView = elementInView({
+    const visible = inView({
       // 50 - 100
       windowInnerHeight: 50,
       windowPageYOffset: 50,
@@ -24,11 +24,11 @@ describe('inViewport', () => {
       elementHeight: 9,
       offset: 0,
     });
-    expect(inView).to.equal(false);
+    expect(visible).to.equal(false);
   });
 
   it('should return false when in element top is greater than the bottom of the window.', () => {    
-    const inView = elementInView({
+    const visible = inView({
       // 50 - 100
       windowInnerHeight: 50,
       windowPageYOffset: 50,
@@ -37,11 +37,11 @@ describe('inViewport', () => {
       elementHeight: 10,
       offset: 0,
     });
-    expect(inView).to.equal(false);
+    expect(visible).to.equal(false);
   });
 
   it('should return true when the element is not in view when using offset', () => {    
-    const inView = elementInView({
+    const visible = inView({
       // 50 - 100
       windowInnerHeight: 50,
       windowPageYOffset: 50,
@@ -50,11 +50,11 @@ describe('inViewport', () => {
       elementHeight: 10,
       offset: 5,
     });
-    expect(inView).to.equal(true);
+    expect(visible).to.equal(true);
   });
 
   it('should return true when the element is not in view when using offset', () => {    
-    const inView = elementInView({
+    const visible = inView({
       // 50 - 100
       windowInnerHeight: 50,
       windowPageYOffset: 50,
@@ -63,6 +63,6 @@ describe('inViewport', () => {
       elementHeight: 10,
       offset: 20,
     });
-    expect(inView).to.equal(true);
+    expect(visible).to.equal(true);
   });
 });
