@@ -438,7 +438,7 @@ Making idx bids is somewhat tedious whenever ceratin adUnits have to be mapped t
 
 **idx**
 
-Working iwth index is relatively easy. Once you have a copy of your map slots, you can use the idxBids helper to generate the bid code for you.
+Working with index is relatively easy. Once you have a copy of your map slots, you can use the idxBids helper to generate the bid code for you.
 
 
 ```javascript
@@ -510,6 +510,47 @@ const bidderCode = (adUnitId, sizes) => ({
         },
         // ixBidder
         ...ixBids(adUnitId, sizes),
+    ],
+});
+```
+
+**rubicon**
+
+ Once you have a copy of your map slots, you can use the rubiconBids helper to generate the bid code for you.
+
+
+```javascript
+import { _rubiconBids as rubiconBids } from './';
+
+const accountId = 1090;
+
+const screen = {
+  mobile: 'mobile',
+  desktop: 'desktop',
+};
+
+const rubiconMap = [
+  // mobile
+  { zoneId: 705194, siteId: 65531, mq: screen.mobile, size: [300, 250], accountId },
+  { zoneId: 706194, siteId: 85531, mq: screen.mobile, size: [320, 50], accountId },
+];
+
+// curry the map to avoid doing this every time.
+export default curriedRubiconBids(rubiconMap);
+```
+
+Use it in your bidder code like this:
+
+```javascript
+const bidderCode = (adUnitId, sizes) => ({
+    code: adUnitId,
+    mediaTypes: {
+        banner: {
+            sizes: sizes,
+        },
+    },
+    bids: [        
+        ...curriedRubiconBids('mobile', sizes),
     ],
 });
 ```

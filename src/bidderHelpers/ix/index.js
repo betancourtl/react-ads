@@ -1,24 +1,41 @@
+import { formatSizes } from '../utils';
+
+export const createBid = ({ siteId, size }) => ({
+  bidder: 'ix',
+  params: {
+    siteId,
+    size,
+  },
+});
+
+
 export const ixBids = indx => (adUnitId, sizes) => {
   const adMap = indx.mapping[adUnitId];
+
   if (!adMap) return [];
-  const adUnitSizes = adMap.reduce((acc, sizeId) => {
-    acc.push(indx.xSlots[sizeId]);
-    return acc;
-  }, []);
 
-  const bidderSizes = sizes.reduce((acc, size) => {
+  const adUnitSizes = adMap.map(sizeId => indx.xSlots[sizeId]);
+
+  if (typeof sizes === 'string') return [];
+
+  let _sizes = formatSizes(sizes);
+
+  const bidderSizes = _sizes.reduce((acc, size) => {
     if (typeof size === 'string') return acc;
-    const [width1, height1] = size;
 
-    const params = adUnitSizes.find(({ size: [width2, height2] }) => {
-      return width1 === width2 && height1 === height2;
-    });
+    const [w1, h1] = size;
+
+    const params = adUnitSizes
+      .find(({ size: [w2, h2] }) => w1 === w2 && h1 === h2);
+
 
     if (!params) return acc;
-    acc.push({
-      bidder: 'ix',
-      params,
-    });
+
+    acc.push(createBid({
+      siteId: params.siteId,
+      size: params.size,
+    }));
+
     return acc;
   }, []);
 

@@ -1,3 +1,5 @@
+import { formatSizes } from '../utils';
+
 const createBid = ({ siteId, zoneId, accountId }) => ({
   bidder: 'rubicon',
   params: {
@@ -8,19 +10,16 @@ const createBid = ({ siteId, zoneId, accountId }) => ({
 });
 
 export const rubiconBids = maps => (screen, sizes) => {   
-  if (typeof sizes === 'string') return [];
-  const isArray = Array.isArray(sizes);
-  const isArrayOfArrays = isArray && sizes.every(x => Array.isArray(x));
-
-  let _sizes = isArray && !isArrayOfArrays ? [sizes] : sizes;
-
-  const options = maps.filter(({ mq }) => mq === screen);
-  if (!options) return [];
+  const _sizes = formatSizes(sizes);
+  const options = maps.filter(({ mq }) => mq === screen);  
   
-  const bids = _sizes.reduce((acc, [width, height]) => {
-    const params = options.find(({size: [width2, height2]}) => width2 === width && height2 === height);    
+  if (!options) return [];  
+  const bids = _sizes.reduce((acc, [w1, h1]) => {
+    const params = options.find(({size: [w2, h2]}) => w1 === w2 && h1 === h2);      
+  
     if (!params) return acc;    
     acc.push(createBid(params));
+  
     return acc;
   }, []);
 
