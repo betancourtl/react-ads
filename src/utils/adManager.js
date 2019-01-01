@@ -1,4 +1,4 @@
-import JobQueue from '../../lib/JobQueue';
+import JobQueue from '../lib/JobQueue';
 
 /** 
  * @param {Number} props.chunkSize - Max ads to process.

@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import connect from '../connector';
-import inViewport from './inViewport';
 import { AdsContext } from '../context';
+import inViewport from '../../utils/inViewport';
 
 class Ad extends Component {
   constructor(props) {
@@ -399,6 +399,5 @@ Ad.propTypes = {
   })
 };
 
-const AdWithProvider = connect(AdsContext, Ad, 'provider');
-
-export default AdWithProvider;
+export { Ad };
+export default connect(AdsContext, Ad, 'provider');

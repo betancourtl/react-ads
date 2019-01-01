@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import adManager from './adManager';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
-import adManager from './adManager';
-import { startPrebidQueue, getBids } from './prebid';
+import { startPrebidQueue, getBids } from '../../utils/prebid';
 import {
   setTargeting,
   setCentering,
@@ -17,7 +17,7 @@ import {
   enableSingleRequest,
   enableAsyncRendering,
   createGoogleTagEvents,
-} from './googletag';
+} from '../../utils/googletag';
 
 class Provider extends Component {
   constructor(props) {

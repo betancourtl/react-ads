@@ -8,6 +8,9 @@ module.exports = {
   },
   "globals": {
     "expect": true,
+    "React": true,
+    "spy": true,
+    "shallow": true,
   },
   "extends":[
     "eslint:recommended",
