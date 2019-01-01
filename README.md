@@ -1,4 +1,4 @@
-# @webdeveloperpr/react-gpt-prebid
+# react-gpt-prebid-ads
 
 This package allows you to render ads with DFP and Prebid using React components.
 
