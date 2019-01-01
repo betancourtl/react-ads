@@ -6,20 +6,20 @@ describe('Queue', () => {
       const q = new Queue();
       q.enqueue({ name: 'Luis' });
       q.enqueue({ name: 'Luis' });
-      expect(q.size).to.equal(2);
+      expect(q.size).toEqual(2);
     });
   });
 
   describe('isEmpty', () => {
     it('should return true', () => {
       const q = new Queue();
-      expect(q.isEmpty).to.equal(true);
+      expect(q.isEmpty).toEqual(true);
     });
 
     it('should return false', () => {
       const q = new Queue();
       q.enqueue({ name: 'Luis' });
-      expect(q.isEmpty).to.equal(false);
+      expect(q.isEmpty).toEqual(false);
     });
   });
 
@@ -29,9 +29,9 @@ describe('Queue', () => {
       q.enqueue('Luis');
       q.enqueue('Javier');
       q.enqueue('Betancourt');
-      expect(q.items[0]).to.equal('Luis');
-      expect(q.items[1]).to.equal('Javier');
-      expect(q.items[2]).to.equal('Betancourt');
+      expect(q.items[0]).toEqual('Luis');
+      expect(q.items[1]).toEqual('Javier');
+      expect(q.items[2]).toEqual('Betancourt');
     });
   });
 
@@ -42,19 +42,19 @@ describe('Queue', () => {
       q.enqueue('Javier');
       q.enqueue('Betancourt');
       const item1 = q.dequeue();
-      expect(item1).to.equal('Luis');
-      expect(q.lowestCount).to.deep.equal(1);
-      expect(q.count).to.deep.equal(3);
+      expect(item1).toEqual('Luis');
+      expect(q.lowestCount).toEqual(1);
+      expect(q.count).toEqual(3);
       const item2 = q.dequeue();
-      expect(item2).to.equal('Javier');
-      expect(q.lowestCount).to.deep.equal(2);
-      expect(q.count).to.deep.equal(3);
+      expect(item2).toEqual('Javier');
+      expect(q.lowestCount).toEqual(2);
+      expect(q.count).toEqual(3);
       const item3 = q.dequeue();
-      expect(item3).to.equal('Betancourt');
+      expect(item3).toEqual('Betancourt');
       const item4 = q.dequeue();
-      expect(q.lowestCount).to.deep.equal(3);
-      expect(q.count).to.deep.equal(3);
-      expect(item4).to.equal(undefined);
+      expect(q.lowestCount).toEqual(3);
+      expect(q.count).toEqual(3);
+      expect(item4).toEqual(undefined);
     });
   });
 
@@ -65,9 +65,9 @@ describe('Queue', () => {
       q.enqueue('Javier');
       q.enqueue('Betancourt');
       q.clear();
-      expect(q.items).to.deep.equal({});
-      expect(q.lowestCount).to.deep.equal(0);
-      expect(q.count).to.deep.equal(0);
+      expect(q.items).toEqual({});
+      expect(q.lowestCount).toEqual(0);
+      expect(q.count).toEqual(0);
     });
   });
 
@@ -77,7 +77,7 @@ describe('Queue', () => {
       q.enqueue('Luis');
       q.enqueue('Javier');
       q.enqueue('Betancourt');
-      expect(q.peek()).to.equal('Luis');
+      expect(q.peek()).toEqual('Luis');
     });
   });
 
@@ -87,7 +87,7 @@ describe('Queue', () => {
       q.enqueue('Luis');
       q.enqueue('Javier');
       q.enqueue('Betancourt');
-      expect(q.toString()).to.equal('Luis, Javier, Betancourt');
+      expect(q.toString()).toEqual('Luis, Javier, Betancourt');
     });
   });
 });

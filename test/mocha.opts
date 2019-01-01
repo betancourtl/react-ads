@@ -1,5 +1,0 @@
-./src/**/*.spec.js
---compilers js:@babel/register
---file ./test/test-setup.js
---recursive
--R min

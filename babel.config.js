@@ -2,8 +2,8 @@ module.exports = (api) => {
   api.cache(true);
 
   const presets = [
-    '@babel/preset-react',
     '@babel/preset-env',
+    '@babel/preset-react',
   ];
 
   const plugins = [
@@ -12,6 +12,12 @@ module.exports = (api) => {
 
   return {
     presets,
-    plugins
+    plugins,
+    env: {
+      test: {
+        presets,
+        plugins,
+      }
+    }
   };
 };

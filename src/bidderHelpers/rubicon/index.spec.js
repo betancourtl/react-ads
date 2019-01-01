@@ -16,7 +16,7 @@ const options = [
 describe('rubiconBids', () => {
   it('should create the rubicon bids', () => {
     const result = rubiconBids(options)(screen.mobile, [[300, 250], [320, 50]]);
-    expect(result).to.deep.equal([
+    expect(result).toEqual([
       {
         bidder: 'rubicon',
         params: {
@@ -38,7 +38,7 @@ describe('rubiconBids', () => {
 
   it('should create the rubicon bids when size is not an array of arrays', () => {
     const result = rubiconBids(options)(screen.mobile, [320, 50]);
-    expect(result).to.deep.equal([
+    expect(result).toEqual([
       {
         bidder: 'rubicon',
         params: {

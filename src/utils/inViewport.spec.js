@@ -11,7 +11,7 @@ describe('inViewport', () => {
       elementHeight: 10,
       offset: 0,
     });
-    expect(visible).to.equal(true);
+    expect(visible).toEqual(true);
   });
 
   it('should return false when in element bottom is greather than the pageYOffset', () => {    
@@ -24,7 +24,7 @@ describe('inViewport', () => {
       elementHeight: 9,
       offset: 0,
     });
-    expect(visible).to.equal(false);
+    expect(visible).toEqual(false);
   });
 
   it('should return false when in element top is greater than the bottom of the window.', () => {    
@@ -37,7 +37,7 @@ describe('inViewport', () => {
       elementHeight: 10,
       offset: 0,
     });
-    expect(visible).to.equal(false);
+    expect(visible).toEqual(false);
   });
 
   it('should return true when the element is not in view when using offset', () => {    
@@ -50,7 +50,7 @@ describe('inViewport', () => {
       elementHeight: 10,
       offset: 5,
     });
-    expect(visible).to.equal(true);
+    expect(visible).toEqual(true);
   });
 
   it('should return true when the element is not in view when using offset', () => {    
@@ -63,6 +63,6 @@ describe('inViewport', () => {
       elementHeight: 10,
       offset: 20,
     });
-    expect(visible).to.equal(true);
+    expect(visible).toEqual(true);
   });
 });
