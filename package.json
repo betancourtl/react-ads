@@ -22,7 +22,6 @@
     "eslint": "^5.7.0",
     "eslint-plugin-react": "^7.11.1",
     "gulp-cli": "^2.0.1",
-    "husky": "^1.2.1",
     "jsdoc": "^3.5.5",
     "mocha": "^5.2.0",
     "np": "^3.0.4",
@@ -31,7 +30,6 @@
     "react-dom": "^16.5.2",
     "react-hot-loader": "^4.3.11",
     "react-router-dom": "^4.3.1",
-    "simple-git": "^1.107.0",
     "webpack": "^4.21.0",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.9"
