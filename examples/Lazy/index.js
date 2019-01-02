@@ -8,11 +8,11 @@ class Page extends React.Component {
         adUnitPath="travel"
         networkId={6355419}
       >
-        <div style={{ height: '150vh' }} /> 
+        <div style={{ height: '250vh' }} /> 
         <Ad
           id="div-1"
           lazy={true}
-          lazyOffset={0}
+          lazyOffset={1}
           targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}
           sizeMap={[

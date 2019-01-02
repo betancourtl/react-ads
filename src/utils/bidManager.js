@@ -26,10 +26,10 @@ const bidManager = (props = {}) => {
       const adUnits = [];
       
       while (!q.isEmpty) {
-        const { slot, bidderCode } = q.dequeue().data;
+        const { slot, bids } = q.dequeue().data;
         slots.push(slot);
-        if (bidderCode) {
-          adUnits.push(bidderCode);
+        if (bids) {
+          adUnits.push(bids);
         }
       }
     

@@ -44,6 +44,12 @@ class Ad extends Component {
      */
     this.listeners = [];
 
+    /**
+     * Will refresh the Ad when it is visible on the window.
+     * @type {Function}
+     */
+    this.refreshWhenVisible = this.refreshWhenVisible.bind(this);
+
   }
   /**
    * Get the slot map sizes based on the media query breakpoints
@@ -68,9 +74,9 @@ class Ad extends Component {
    * @funtion
    * @returns {Function | Object}
    */
-  get bidderCode() {
-    return this.props.bidderCode
-      ? this.props.bidderCode({
+  get bidHandler() {
+    return this.props.bidHandler
+      ? this.props.bidHandler({
         id: this.props.id,
         sizes: this.mapSize,
       })
@@ -131,7 +137,7 @@ class Ad extends Component {
     this.props.refresh({
       priority: this.props.priority,
       data: {
-        bidderCode: this.bidderCode,
+        bids: this.bidHandler,
         slot: this.slot,
       }
     });
@@ -349,8 +355,10 @@ Ad.defaultProps = {
   lazyOffset: -1,
   className: '',
   type: 'default',
+  bidHandler: null,
   onSlotOnLoad: null,
   outOfPageSlot: false,
+  networkId: undefined,
   setCollapseEmpty: false,
   onSlotRenderEnded: null,
   onImpressionViewable: null,
@@ -368,13 +376,14 @@ Ad.defaultProps = {
 Ad.propTypes = {
   lazy: PropTypes.bool,
   type: PropTypes.string,
+  networkId: PropTypes.number,
   style: PropTypes.object,
   lazyOffset: PropTypes.number,
   className: PropTypes.string,
   targeting: PropTypes.object,
-  prebidCode: PropTypes.object,
   onSlotOnLoad: PropTypes.func,
   outOfPageSlot: PropTypes.bool,
+  bidHandler: PropTypes.func,
   id: PropTypes.string.isRequired,
   setCollapseEmpty: PropTypes.bool,
   onSlotRenderEnded: PropTypes.func,
@@ -419,7 +428,7 @@ export {
 export default connect(
   AdsContext,
   MaybeHiddenAd,
-  ({ adUnitPath, generateId, lazyOffset, networkId, ...rest }, props) => {
+  ({ adUnitPath, generateId, lazyOffset, networkId, bidHandler, ...rest }, props) => {
     const _networkId = props.networkId || networkId;
     const _adUnitPath = adUnitPath
       ? ['', _networkId, adUnitPath].join('/')
@@ -429,11 +438,19 @@ export default connect(
       ? props.lazyOffset
       : lazyOffset;
 
-    return {
+    const results = {
       adUnitPath: _adUnitPath,
       networkId: _networkId,
       lazyOffset: _lazyOffset,
       id: _id,
       ...rest
+    };
+
+    if (bidHandler && props.bidHandler) {
+      results.bidHandler = x => props.bidHandler(x, bidHandler(x));
     }
+    else if (bidHandler) results.bidHandler = x => bidHandler(x, []);
+    else if (props.bidHandler) results.bidHandler = x => props.bidHandler(x, []);
+
+    return results;
   });

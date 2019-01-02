@@ -201,7 +201,7 @@ ___
 | 3. Create Custom Lazy Loading functionality            | ok  |
 | 4. Create Heap extraction/fetching/re-extraction logic | ok  |
 | 5. Integrate Prebid.JS                                 | ok  |
-| 6. Add Unit Testing Framework                          | x   |
+| 6. Add Unit Testing Framework                          | ok  |
 | 7. Add Line Item Generator Utils                       | x   |
 | 9. Add provider gpt event hooks                        | x   |
 | 10. Disable loading ads                                | ok  |
@@ -210,6 +210,9 @@ ___
 | 13. Update prebid.js bidder to use the new config size | ok  |
 | 14. Update the visibility function to use offsets      | ok  |
 | 15. Add ix bidder helper                               | ok  |
+| 16. Add a way to handle custom bids (amazon)           | x   |
+| 17. Create a prebid Handler configuration              | x   |
+
 
 #### AdCallManager
 
@@ -555,6 +558,39 @@ const bidderCode = (adUnitId, sizes) => ({
 });
 ```
 
+## Custom prebid bid handlers.
 
+There are a lot of bidders that we can use with prebid. This is good but,
+it ends up adding a little bit of complexity because now we need to create
+different bidder configurations. 
+
+It would be nice to have a convention for creating and defining bidders to use.
+That way once the configuration is done you could apply default bidders or 
+overwrite them.
+
+The provider could define the bidders to use by default, for every Ad slot.
+The Ad could use defaults or select the bidders that they want.
+
+**Provider**
+
+The provider would receive the bidder configuration which should be a 
+a function like the current bidderCode Fn from the <Ad \/> component.
+
+This configuration will be passed to the children via context.
+
+```javascript
+    const bidderCode = (props) => {},
+```
+
+**Ad**
+
+The children component can also define a bidderCode fn which will get the 
+result of the parents bidderCode fn. 
+
+```javascript
+    const bidderCode = (props, code) => {},
+```
+
+This would enable a composible way to decorate the bidder configuration.
 
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)
