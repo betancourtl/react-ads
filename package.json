@@ -45,7 +45,7 @@
     "clean-dir": "rm -rf ./dist",
     "build": "NODE_ENV=production npm run clean-dir && babel src --out-dir dist --ignore '**/*.spec.js'",
     "build:prod": "NODE_ENV=production npm run clean-dir && babel src --out-dir dist --ignore '**/*.spec.js' --presets minify",
-    "build:watch": "NODE_ENV=production npm run clean-dir && babel --watch src --out-dir dist --ignore '**/*.spec.js'",
+    "build:watch": "NODE_ENV=production npm run clean-dir && babel --watch src --out-dir dist",
     "release": "np"
   },
   "keywords": [

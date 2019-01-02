@@ -317,6 +317,11 @@ class Ad extends Component {
     });
   }
 
+
+  componentWillMount() {
+
+  }
+
   componentDidMount() {
     if (!this.props.lazy) {
       this.define();
