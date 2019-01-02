@@ -1,5 +1,5 @@
 describe('connector', () => {
-  it('Should test', () => {
+  test('Should test', () => {
     expect(true).toBe(true);
   });
 });

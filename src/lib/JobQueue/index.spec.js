@@ -1,12 +1,12 @@
 import JobQueue from './';
 
-xdescribe('JobQueue', () => {
+describe('JobQueue', () => {
   const createMessage = priority => ({
     priority,
     data: {},
   });
 
-  it('Should create a job', (done) => {
+  test('Should create a job', (done) => {
     let results = [];
 
     const processFn = (q, resolve) => {

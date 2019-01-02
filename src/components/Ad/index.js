@@ -44,16 +44,7 @@ class Ad extends Component {
      */
     this.listeners = [];
 
-    /**
-     * Will call setState if the component is not unmounted.
-     * @type {Function}
-     */
-    this._setState = (props, cb) => {
-      if (this.unmounted) return;
-      this.setState(props, cb);
-    };
   }
-
   /**
    * Get the slot map sizes based on the media query breakpoints
    * @function
@@ -79,7 +70,10 @@ class Ad extends Component {
    */
   get bidderCode() {
     return this.props.bidderCode
-      ? this.props.bidderCode(this.id, this.mapSize)
+      ? this.props.bidderCode({
+        id: this.props.id,
+        size: this.mapSize,
+      })
       : null;
   }
 
@@ -326,7 +320,6 @@ class Ad extends Component {
   }
 
   componentWillUnmount() {
-    this.unmounted = true;
     this.unsetMQListeners();
     window.removeEventListener('scroll', this.refreshWhenVisible);
     this.props.destroyAd(this.slot);

@@ -63,8 +63,6 @@ export const addEventListener = (e, cb) => {
   return window.googletag.pubads().addEventListener(e, cb);
 };
 
-// ------
-
 /**
  * Will create the google tag scripts and load the googletag library.
  * @function

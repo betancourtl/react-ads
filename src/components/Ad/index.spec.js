@@ -68,14 +68,14 @@ describe('<Ad />', () => {
 
   test('non-lazy', () => {
     const props = createProps({ lazy: true });
-    const refreshWhenVisible = jest.spyOn(Ad.prototype, 'refreshWhenVisible');    
+    const refreshWhenVisible = jest.spyOn(Ad.prototype, 'refreshWhenVisible');
     mount(<Ad {...props} />);
     expect(props.cmdPush).toBeCalledTimes(0);
     expect(refreshWhenVisible).toBeCalledTimes(1);
   });
 
   test('calls correct functions in componentWillMount', () => {
-    const props = createProps({ 
+    const props = createProps({
       cmdPush: (fn) => fn(),
       onSlotOnLoad: jest.fn(),
       onSlotRenderEnded: jest.fn(),
@@ -83,48 +83,64 @@ describe('<Ad />', () => {
       onSlotVisibilityChanged: jest.fn(),
       lazy: false,
     });
-    
-    const handleGPTEvent = jest.spyOn(Ad.prototype, 'handleGPTEvent');    
-    const setMappingSize = jest.spyOn(Ad.prototype, 'setMappingSize');    
-    const setMQListeners = jest.spyOn(Ad.prototype, 'setMQListeners');    
-    const setCollapseEmpty = jest.spyOn(Ad.prototype, 'setCollapseEmpty');    
-    const setTargeting = jest.spyOn(Ad.prototype, 'setTargeting');    
-    const display = jest.spyOn(Ad.prototype, 'display');    
-    const refresh = jest.spyOn(Ad.prototype, 'refresh');    
+
+    const handleGPTEvent = jest.spyOn(Ad.prototype, 'handleGPTEvent');
+    const setMappingSize = jest.spyOn(Ad.prototype, 'setMappingSize');
+    const setMQListeners = jest.spyOn(Ad.prototype, 'setMQListeners');
+    const setCollapseEmpty = jest.spyOn(Ad.prototype, 'setCollapseEmpty');
+    const setTargeting = jest.spyOn(Ad.prototype, 'setTargeting');
+    const display = jest.spyOn(Ad.prototype, 'display');
+    const refresh = jest.spyOn(Ad.prototype, 'refresh');
     const wrapper = mount(<Ad {...props} />);
     expect(props.define).toBeCalledTimes(1);
-    expect(handleGPTEvent).toBeCalledTimes(4);    
+    expect(handleGPTEvent).toBeCalledTimes(4);
     expect(setMappingSize).toBeCalledTimes(1);
     expect(setMQListeners).toBeCalledTimes(1);
     expect(setCollapseEmpty).toBeCalledTimes(1);
     expect(setTargeting).toBeCalledTimes(1);
     expect(display).toBeCalledTimes(1);
     expect(wrapper.instance().displayed).toBe(true);
-    expect(refresh).toBeCalledTimes(1);    
+    expect(refresh).toBeCalledTimes(1);
     expect(props.refresh).toBeCalledTimes(1);
-    expect(wrapper.instance().refreshed).toBe(true);    
+    expect(wrapper.instance().refreshed).toBe(true);
   });
 
   test('componentWillUnmount', () => {
-    const props = createProps({ 
-      cmdPush: (fn) => fn(),
-      onSlotOnLoad: jest.fn(),
-      onSlotRenderEnded: jest.fn(),
-      onImpressionViewable: jest.fn(),
-      onSlotVisibilityChanged: jest.fn(),
-      lazy: false,
-    });
-    
+    const props = createProps({ lazy: false });
     const wrapper = mount(<Ad {...props} />);
-    const componentWillUnmount = jest.spyOn(Ad.prototype, 'componentWillUnmount');    
-    const unsetMQListeners = jest.spyOn(Ad.prototype, 'unsetMQListeners');    
-    
-    const instance = wrapper.instance();  
+    const componentWillUnmount = jest.spyOn(Ad.prototype, 'componentWillUnmount');
+    const unsetMQListeners = jest.spyOn(Ad.prototype, 'unsetMQListeners');
     wrapper.unmount();
     expect(componentWillUnmount).toBeCalledTimes(1);
     expect(unsetMQListeners).toBeCalledTimes(1);
-    expect(unsetMQListeners).toBeCalledTimes(1);
     expect(props.destroyAd).toBeCalledTimes(1);
-    expect(instance.unmounted).toBe(true);
+  });
+
+  test('refresh', () => {
+    const props = createProps({
+      lazy: false,
+      id: 'ad-1',
+      sizeMap: [
+        { viewPort: [850, 200], slots: [728, 90] },
+        { viewPort: [0, 0], slots: [] },
+      ],
+      bidderCode: ({id, size}) => ({ id, size }),
+      getWindowWidth: () => 1000,
+      priority: 10,
+    });
+    const wrapper = mount(<Ad {...props} />);
+    wrapper.instance().slot = 'Im a slot';
+    expect(wrapper.props().id).toBe('ad-1');
+    wrapper.instance().refresh();
+    expect(props.refresh).toBeCalledWith({
+      priority: 10,
+      data: {
+        bidderCode: {
+          id: 'ad-1',
+          size: [728, 90],
+        },
+        slot: 'Im a slot',
+      }
+    });
   });
 });

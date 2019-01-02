@@ -2,7 +2,7 @@ import Queue from './';
 
 describe('Queue', () => {
   describe('size', () => {
-    it('size', () => {
+    test('size', () => {
       const q = new Queue();
       q.enqueue({ name: 'Luis' });
       q.enqueue({ name: 'Luis' });
@@ -11,12 +11,12 @@ describe('Queue', () => {
   });
 
   describe('isEmpty', () => {
-    it('should return true', () => {
+    test('should return true', () => {
       const q = new Queue();
       expect(q.isEmpty).toEqual(true);
     });
 
-    it('should return false', () => {
+    test('should return false', () => {
       const q = new Queue();
       q.enqueue({ name: 'Luis' });
       expect(q.isEmpty).toEqual(false);
@@ -24,7 +24,7 @@ describe('Queue', () => {
   });
 
   describe('enqueue', () => {
-    it('should add an item to the queue', () => {
+    test('should add an item to the queue', () => {
       const q = new Queue();
       q.enqueue('Luis');
       q.enqueue('Javier');
@@ -36,7 +36,7 @@ describe('Queue', () => {
   });
 
   describe('dequeue', () => {
-    it('should remove an item to the queue', () => {
+    test('should remove an item to the queue', () => {
       const q = new Queue();
       q.enqueue('Luis');
       q.enqueue('Javier');
@@ -59,7 +59,7 @@ describe('Queue', () => {
   });
 
   describe('clear', () => {
-    it('should clear the queue', () => {
+    test('should clear the queue', () => {
       const q = new Queue();
       q.enqueue('Luis');
       q.enqueue('Javier');
@@ -72,7 +72,7 @@ describe('Queue', () => {
   });
 
   describe('peek', () => {
-    it('should return the next value', () => {
+    test('should return the next value', () => {
       const q = new Queue();
       q.enqueue('Luis');
       q.enqueue('Javier');
@@ -82,7 +82,7 @@ describe('Queue', () => {
   });
 
   describe('toString', () => {
-    it('should return a string', () => {
+    test('should return a string', () => {
       const q = new Queue();
       q.enqueue('Luis');
       q.enqueue('Javier');

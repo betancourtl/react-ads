@@ -3,7 +3,7 @@ import Heap from './';
 describe('Heap', () => {
 
   describe('swap', () => {
-    it('Should swap values.', () => {
+    test('Should swap values.', () => {
       const h = new Heap();
       const arr = [1, 2, 3, 4];
       h.swap(arr, 0, 1);
@@ -12,7 +12,7 @@ describe('Heap', () => {
   });
 
   describe('size', () => {
-    it('Should return the size.', () => {
+    test('Should return the size.', () => {
       const h = new Heap();
       h.insert(10);
       h.insert(5);
@@ -23,14 +23,14 @@ describe('Heap', () => {
   });
 
   describe('isEmpty', () => {
-    it('Should return true.', () => {
+    test('Should return true.', () => {
       const h = new Heap();
       expect(h.isEmpty).toEqual(true);
     });
   });
 
   describe('min', () => {
-    it('Should return the minimum number.', () => {
+    test('Should return the minimum number.', () => {
       const h = new Heap();
       h.insert(10);
       h.insert(5);
@@ -41,7 +41,7 @@ describe('Heap', () => {
   });
 
   describe('insert', () => {
-    it('Should insert into the heap.', () => {
+    test('Should insert into the heap.', () => {
       const h = new Heap();
       h.insert(10);
       h.insert(5);
@@ -50,7 +50,7 @@ describe('Heap', () => {
       expect(h.min).toBe(4);
       expect(h.heap).toEqual([4, 5, 8, 10]);
     });
-    it('Should insert the same numbers into the heap.', () => {
+    test('Should insert the same numbers into the heap.', () => {
       const h = new Heap();
       h.insert(10);
       h.insert(4);

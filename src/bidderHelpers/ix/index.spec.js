@@ -12,7 +12,7 @@ const indx = {
 };
 
 describe('ixBidder helper', () => {
-  it('should map adUnit name when using many an array of arrays with numbers', () => {
+  test('should map adUnit name when using many an array of arrays with numbers', () => {
     const bids = ixBids(indx)('rect_1', [[300, 250], [300, 600]]);
     expect(bids).toEqual([
       createBid({siteId: 211035,size: [300, 250]}),
@@ -20,7 +20,7 @@ describe('ixBidder helper', () => {
     ]);
   });
 
-  it('should map adUnit name when using only an array', () => {
+  test('should map adUnit name when using only an array', () => {
     const bids = ixBids(indx)('rect_1', [300, 250]);
     expect(bids).toEqual([
       createBid({siteId: 211035,size: [300, 250]}),
