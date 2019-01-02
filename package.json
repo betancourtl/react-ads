@@ -20,6 +20,7 @@
     "babel-core": "^7.0.0-bridge",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.4",
+    "babel-preset-minify": "^0.5.0",
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.7.1",
     "eslint": "^5.7.0",
@@ -42,9 +43,9 @@
     "test": "jest",
     "test:watch": "jest --watch --verbose",
     "clean-dir": "rm -rf ./dist",
-    "build": "npm run clean-dir && NODE_ENV=production babel src --out-dir dist --ignore ./src/**/*.spec.js",
-    "build:prod": "npm run clean-dir && NODE_ENV=production babel src --out-dir dist --ignore ./src/**/*.spec.js --presets minify",
-    "build:watch": "npm run clean-dir && NODE_ENV=production babel --watch src --out-dir dist --ignore ./src/**/*.spec.js",
+    "build": "NODE_ENV=production npm run clean-dir && babel src --out-dir dist --ignore '**/*.spec.js'",
+    "build:prod": "NODE_ENV=production npm run clean-dir && babel src --out-dir dist --ignore '**/*.spec.js' --presets minify",
+    "build:watch": "NODE_ENV=production npm run clean-dir && babel --watch src --out-dir dist --ignore '**/*.spec.js'",
     "release": "np"
   },
   "keywords": [
