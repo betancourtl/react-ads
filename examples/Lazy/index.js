@@ -15,7 +15,7 @@ class Page extends React.Component {
           lazyOffset={0}
           targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}
-          sizeMapping={[
+          sizeMap={[
             { viewPort: [750, 200], slots: [728, 90] },
             { viewPort: [0, 0], slots: [] }
           ]}

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import adManager from './adManager';
+import bidManager from '../../utils/bidManager';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
 import { startPrebidQueue, getBids } from '../../utils/prebid';
@@ -30,7 +30,7 @@ class Provider extends Component {
     startPrebidQueue();
     if (props.prebid) props.prebid();
     createGoogleTagEvents(this.pubSub);
-    this.adManager = adManager({
+    this.bidManager = bidManager({
       getBids: getBids(this.props.prebidTimeout, this.props.prebidFailsafeTimeout),
       refresh: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
       chunkSize: props.chunkSize,
@@ -76,7 +76,7 @@ class Provider extends Component {
         networkId: this.props.networkId,
         adUnitPath: this.props.adUnitPath,
         lazyOffset: this.props.lazyOffset,
-        refresh: !this.props.enableAds ? null : this.adManager.refresh,
+        refresh: !this.props.enableAds ? null : this.bidManager.refresh,
       }}>
         {this.props.children}
       </AdsContext.Provider>

@@ -1,5 +1,6 @@
 import Heap from '../MinHeap';
 import Queue from '../Queue';
+import debounce from 'lodash.debounce';
 
 class JobQueue {
   constructor(props) {
@@ -23,18 +24,17 @@ class JobQueue {
 
     if (this.isProcessing) return this;
     this.isProcessing = true;
-    if (this.delay === 0) this.work();
-    else setTimeout(this.work, this.delay);
+    this.work();
     return this;
   };
 
-  work = () => {   
+  work = debounce(() => {   
     this.process(this.q)
       .then(() => {
         if (!this.heap.isEmpty) this.work();
         else this.isProcessing = false;
       });
-  };
+  }, this.delay);
 
   grab = () => {
     let count = 0;

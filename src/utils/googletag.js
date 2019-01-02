@@ -2,6 +2,74 @@
  * @module googletag
  */
 
+export const events = {
+  slotOnload: 'slotOnload',
+  slotRenderEnded: 'slotRenderEnded',
+  impressionViewable: 'impressionViewable',
+  slotVisibilityChanged: 'slotVisibilityChanged',
+};
+
+export const getWindowWidth = () => window.innerWidth;
+
+/**
+ * Pushes a function to the googletag queue. 
+ * @param {cb}
+ * @returns {void}
+ */
+export const cmdPush = cb => window.googletag.cmd.push(cb);
+
+/**
+ * Add the pubads service to the slot.
+ * @param {Boolean} outOfPageSlot
+ * @param {String} adUnitPath
+ * @param {Array | Array[Array[Number]] | String } mapSize
+ * @param {String} id
+ * @returns {void}
+ */
+export const define = (outOfPageSlot, adUnitPath, mapSize, id) => {
+  return outOfPageSlot
+    ? window.googletag.defineOutOfPageSlot(adUnitPath, id)
+    : window.googletag.defineSlot(adUnitPath, mapSize, id);
+};
+
+/**
+ * Add the pubads service to the slot.
+ * @param {Slot} slot - Googletag slot.
+ * @returns {void}
+ */
+export const addService = slot => {
+  cmdPush(() => slot.addService(window.googletag.pubads()));
+};
+
+/**
+ * Will destory the googletag slot.
+ * @param {Slot} slot
+ * @returns {void}
+ */
+export const destroyAd = slot => {
+  cmdPush(() => window.googletag.destroySlots([slot]));
+};
+
+/**
+ * Creates a new SizeMappingBuilder. 
+ * @function
+ * @returns {SizeMappingBuilder}
+ */
+export const sizeMapping = () => window.googletag.sizeMapping();
+
+/**
+ * Will create the google tag scripts and load the googletag library.
+ * @function
+ * @param {Event} e - Event object.
+ * @param {Function} cb - Function used to handle the event.
+ * @returns {void}
+ */
+export const addEventListener = (e, cb) => {
+  return window.googletag.pubads().addEventListener(e, cb);
+};
+
+// ------
+
 /**
  * Will create the google tag scripts and load the googletag library.
  * @function
@@ -12,7 +80,8 @@ export const createGPTScript = () => {
   const scriptExists = document.getElementById(id);
 
   if (scriptExists) {
-    console.log('google tag script already exists');
+    // eslint-disable-next-line no-console
+    console.error('google tag script already exists');
     return;
   }
 
@@ -42,7 +111,7 @@ export const startGoogleTagQue = () => {
  */
 export const enableSingleRequest = enabled => {
   if (!enabled) return;
-  window.googletag.cmd.push(() => {
+  cmdPush(() => {
     window.googletag.pubads().enableSingleRequest();
   });
 };
@@ -54,7 +123,7 @@ export const enableSingleRequest = enabled => {
  */
 export const disableInitialLoad = (disabled) => {
   if (!disabled) return;
-  window.googletag.cmd.push(() => {
+  cmdPush(() => {
     window.googletag.pubads().disableInitialLoad();
   });
 };
@@ -66,7 +135,7 @@ export const disableInitialLoad = (disabled) => {
  * @returns {void}
  */
 export const setCentering = (isCentered = false) => {
-  window.googletag.cmd.push(() => {
+  cmdPush(() => {
     window.googletag.pubads().setCentering(isCentered);
   });
 };
@@ -80,7 +149,7 @@ export const setCentering = (isCentered = false) => {
  */
 export const enableAsyncRendering = (isEnabled = false) => {
   if (!isEnabled) return;
-  window.googletag.cmd.push(() => {
+  cmdPush(() => {
     window.googletag.pubads().enableAsyncRendering(isEnabled);
   });
 };
@@ -93,7 +162,7 @@ export const enableAsyncRendering = (isEnabled = false) => {
  */
 export const enableVideoAds = (isEnabled = false) => {
   if (!isEnabled) return;
-  window.googletag.cmd.push(() => {
+  cmdPush(() => {
     window.googletag.pubads().enableVideoAds();
   });
 };
@@ -105,7 +174,7 @@ export const enableVideoAds = (isEnabled = false) => {
  * @returns {void}
  */
 export const collapseEmptyDivs = (isEnabled = false) => {
-  window.googletag.cmd.push(() => {
+  cmdPush(() => {
     window.googletag.pubads().collapseEmptyDivs(isEnabled);
   });
 };
@@ -116,7 +185,7 @@ export const collapseEmptyDivs = (isEnabled = false) => {
  * @returns {void}
  */
 export const getVersion = () => {
-  window.googletag.cmd.push(() => {
+  cmdPush(() => {
     window.googletag.getVersion();
   });
 };
@@ -128,9 +197,9 @@ export const getVersion = () => {
  * @param {String |  Slot} id - The slotElementId or the Slot Object.
  */
 export const display = id => {
-  window.googletag.cmd.push(() => {
+  cmdPush(() => {
     window.googletag.display(id);
-  });  
+  });
 };
 
 /**
@@ -139,7 +208,7 @@ export const display = id => {
  * @returns {void}
  */
 export const enableServices = () => {
-  window.googletag.cmd.push(() => {
+  cmdPush(() => {
     window.googletag.enableServices();
   });
 };
@@ -150,7 +219,7 @@ export const enableServices = () => {
  * @returns {void}
  */
 export const setTargeting = (targeting = {}) => {
-  window.googletag.cmd.push(() => {
+  cmdPush(() => {
     Object
       .entries(targeting)
       .map(([k, v]) => window.googletag.pubads().setTargeting(k, v));
@@ -165,7 +234,7 @@ export const setTargeting = (targeting = {}) => {
  * @returns {void}
  */
 export const createGoogleTagEvents = (pubSub, log = false) => {
-  window.googletag.cmd.push(() => {
+  cmdPush(() => {
 
     // Pass this outside the function. There is no need to know about the inner
     // workings of the pubSub.

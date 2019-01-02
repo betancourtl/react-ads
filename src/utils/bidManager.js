@@ -9,7 +9,7 @@ import JobQueue from '../lib/JobQueue';
  * @function
  * @returns {Object}
  */
-const adManager = (props = {}) => {
+const bidManager = (props = {}) => {
   const { 
     getBids, 
     refresh, 
@@ -54,4 +54,4 @@ const adManager = (props = {}) => {
   };
 };
 
-export default adManager;
+export default bidManager;

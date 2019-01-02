@@ -3,15 +3,18 @@ module.exports = {
     "browser": true,
     "commonjs": true,
     "node": true,
-    "es6": true,    
+    "es6": true,
+    "jest": true,    
   },
   "globals": {
     "expect": true,
     "React": true,
     "shallow": true,
-    "jest": true,
+    "mount": true,
+    "render": true,
+    "shallow": true,
   },
-  "extends":[
+  "extends": [
     "eslint:recommended",
     "plugin:react/recommended"
   ],

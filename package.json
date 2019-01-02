@@ -40,7 +40,7 @@
     "lint": "eslint ./src/**/*.js",
     "start": "webpack-dev-server --mode development && npm run build:watch",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watch --verbose",
     "clean-dir": "rm -rf ./dist",
     "build": "npm run clean-dir && NODE_ENV=production babel src --out-dir dist --ignore ./src/**/*.spec.js",
     "build:prod": "npm run clean-dir && NODE_ENV=production babel src --out-dir dist --ignore ./src/**/*.spec.js --presets minify",
@@ -70,5 +70,8 @@
   "bugs": {
     "url": "https://github.com/webdeveloperpr/react-ads/issues"
   },
-  "homepage": "https://github.com/webdeveloperpr/react-ads#readme"
+  "homepage": "https://github.com/webdeveloperpr/react-ads#readme",
+  "dependencies": {
+    "lodash.debounce": "^4.0.8"
+  }
 }

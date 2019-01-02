@@ -3,12 +3,23 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import connect from '../connector';
 import { AdsContext } from '../context';
+import hideHOC from '../Hide';
 import inViewport from '../../utils/inViewport';
+import {
+  events,
+  define,
+  display,
+  cmdPush,
+  destroyAd,
+  addService,
+  sizeMapping,
+  getWindowWidth,
+  addEventListener,
+} from '../../utils/googletag';
 
 class Ad extends Component {
   constructor(props) {
     super(props);
-    if (!props.provider.enableAds) return;
 
     /**
      * Reference the the googletag GPT slot.
@@ -21,6 +32,12 @@ class Ad extends Component {
      * @type {Boolean}
      */
     this.displayed = false;
+
+    /**
+     * Reference the the googletag GPT slot.
+     * @type {Boolean}
+     */
+    this.refreshed = false;
 
     /**
      * List of event listener removing functions.
@@ -66,28 +83,10 @@ class Ad extends Component {
    * @returns {Number}
    */
   get lazyOffset() {
-    return this.props.lazyOffset && this.props.lazyOffset >= 0 
+    return this.props.lazyOffset && this.props.lazyOffset >= 0
       ? this.props.lazyOffset
       : this.props.provider.lazyOffset;
   }
-
-  /**
-   * Will define this slot on the page.
-   * @function   
-   * @returns {void}
-   */
-  defineSlot = () => {
-    this.slot = this.props.outOfPageSlot
-      ? window.googletag.defineOutOfPageSlot(this.adUnitPath, this.id)
-      : window.googletag.defineSlot(this.adUnitPath, this.mapSize, this.id);
-  };
-
-  /**
-   * Will display this slot. With SRA disabled display will not fetch the ad.
-   * @function
-   * @returns {void}
-   */
-  display = () => window.googletag.display(this.id);
 
   /**
    * Get the slot map sizes based on the media query breakpoints
@@ -95,10 +94,10 @@ class Ad extends Component {
    * @returns {Array}
    */
   get mapSize() {
-    if (!this.props.sizeMapping) return this.props.size;
+    if (!this.props.sizeMap) return this.props.size;
     try {
-      return this.props.sizeMapping
-        .filter(({ viewPort: [width] }) => width <= window.innerWidth)
+      return this.props.sizeMap
+        .filter(({ viewPort: [width] }) => width <= this.props.getWindowWidth())
         .sort((a, b) => a > b)
         .slice(0, 1)[0].slots;
     } catch (err) {
@@ -108,7 +107,62 @@ class Ad extends Component {
   }
 
   /**
-   * Will refresh this slot using the refresh funtion passed bythe provider
+   * Will call the bidder function.
+   * @funtion
+   * @returns {Function | Object}
+   */
+  get bidderCode() {
+    return this.props.bidderCode
+      ? this.props.bidderCode(this.id, this.mapSize)
+      : null;
+  }
+
+  /**
+  * Return true if the slot is visible on the page. This is used for refreshing
+  * lazy loaded ads.
+  * @funtion
+  * @returns {Boolean}
+  */
+  get isVisible() {
+    return inViewport(
+      ReactDOM.findDOMNode(this),
+      this.lazyOffset
+    );
+  }
+
+  /**
+   * Returns true when the parameter is a function.
+   * @param {Function} maybeFn
+   * @returns {Boolean}
+   */
+  isFunction = maybeFn => typeof maybeFn === 'function';
+
+  /**
+   * Will define this slot on the page.
+   * @function   
+   * @returns {void}
+   */
+  defineSlot = () => {
+    this.slot = this.props.define(
+      this.props.outOfPageSlot,
+      this.adUnitPath,
+      this.mapSize,
+      this.id
+    );
+  };
+
+  /**
+   * Will display this slot. With SRA disabled display will not fetch the ad.
+   * @function
+   * @returns {void}
+   */
+  display = () => {
+    this.props.display(this.id);
+    this.displayed = true;
+  };
+
+  /**
+   * Will refresh this slot using the refresh function passed by the provider.
    * component.
    * @function   
    * @returns {void}
@@ -117,15 +171,16 @@ class Ad extends Component {
     this.props.provider.refresh({
       priority: this.props.priority,
       data: {
-        bidderCode: this.props.bidderCode ? this.props.bidderCode(this.id, this.mapSize) : null,
+        bidderCode: this.bidderCode,
         slot: this.slot,
       }
     });
+    this.refreshed = true;
   }
 
   /**
    * Will trigger a refresh whenever it this slots enters in a new breakpoint
-   * specified on the sizeMappings.
+   * specified on the sizeMap.
    * @funtion
    * @returns {void}
    */
@@ -135,41 +190,17 @@ class Ad extends Component {
   }
 
   /**
-   * Return true if the slot is visible on the page. This is used for refreshing
-   * lazy loaded ads.
-   * @funtion
-   * @returns {Boolean}
-   */
-  get isVisible() {
-    return inViewport(ReactDOM.findDOMNode(this), this.lazyOffset);
-  }
-
-  /**
   * Event listener for lazy loaded ads that triggers the refresh function when
   * the ad becomes visible.
   * @function   
   * @returns {void}
   */
   refreshWhenVisible = () => {
-    if (this.isVisible) {
-      this.define();
+    if (this.isVisible && !this.refreshed) {
+      this.props.cmdPush(this.define);
       window.removeEventListener('scroll', this.refreshWhenVisible);
     }
   };
-
-  /**
-   * Will destroy this slot from the page.
-   * @function   
-   * @returns {void}
-   */
-  destroyAd = () => window.googletag.destroySlots([this.slot]);
-
-  /**
-   * Will enable the pubads service for this slot.
-   * @function   
-   * @returns {void}
-   */
-  addService = () => this.slot.addService(window.googletag.pubads());
 
   /**
    * Will collapse this ad whenever it is empty.
@@ -178,7 +209,7 @@ class Ad extends Component {
    */
   setCollapseEmpty = () => {
     if (!this.props.setCollapseEmpty) return;
-    this.slot.setCollapseEmptyDiv(true, true)
+    this.slot.setCollapseEmptyDiv(true, true);
   };
 
   /**
@@ -197,9 +228,9 @@ class Ad extends Component {
    * @returns {void}
    */
   setMappingSize = () => {
-    if (!this.props.sizeMapping) return;
-    const mapping = this
-      .props.sizeMapping.reduce((acc, x) => acc.addSize(x.viewPort, x.slots), window.googletag.sizeMapping());
+    if (!this.props.sizeMap) return;
+    const mapping = this.props.sizeMap
+      .reduce((acc, x) => acc.addSize(x.viewPort, x.slots), sizeMapping());
     this.slot.defineSizeMapping(mapping.build());
   };
 
@@ -209,8 +240,8 @@ class Ad extends Component {
    * @returns {void}
    */
   setMQListeners = () => {
-    if (!this.props.sizeMapping) return;
-    this.props.sizeMapping.forEach(({ viewPort: [width] }) => {
+    if (!this.props.sizeMap) return;
+    this.props.sizeMap.forEach(({ viewPort: [width] }) => {
       const mq = window.matchMedia(`(max-width: ${width}px)`);
       mq.addListener(this.breakPointRefresh);
 
@@ -223,113 +254,115 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  unsetMQListeners = () => {
-    this.listeners.forEach(fn => fn());
-  };
+  unsetMQListeners = () => this.listeners.forEach(fn => fn());
 
   /**
    * Returns the id and the reference to this slot.
    * @function
-   * @returns {void}
+   * @returns {Object}
    */
-  withAdProps = (props) => ({
+  withAdProps = props => ({
     id: this.id,
     ref: this.ref,
     ...props,
   });
 
   /**
-   * Will listen to the slotRenderEnded event and then call the passed function.
-   * @function   
+   * Will handle a GPT event for this slot.
+   * @param {String} event
+   * @param {Function} cb - Callback function for the event.
    * @returns {void}
    */
-  slotRenderEnded = () => {
-    if (typeof this.props.onSlotRenderEnded !== 'function') return;
-
-    window.googletag.pubads().addEventListener('slotRenderEnded', e => {
-      if (e.slot === this.slot) this.props.onSlotRenderEnded(this.withAdProps(e));
+  handleGPTEvent = (event, cb) => {
+    if (!this.isFunction(cb)) return;
+    this.props.addEventListener(event, e => {
+      if (e.slot !== this.slot) return;
+      cb(this.withAdProps(e));
     });
-  };
-
-  /**
-   * Will listen to the impressionViewable event and then call the passed 
-   * function.
-   * @function   
-   * @returns {void}
-   */
-  impressionViewable = () => {
-    if (typeof this.props.onImpressionViewable !== 'function') return;
-    window.googletag.pubads().addEventListener('impressionViewable', e => {
-      if (e.slot === this.slot) this.props.onImpressionViewable(this.withAdProps(e));
-    });
-  };
-
-  /**
-   * Will listen to the slotVisibilityChanged event and then call the passed 
-   * function.
-   * @function   
-   * @returns {void}
-   */
-  slotVisibilityChanged = () => {
-    if (typeof this.props.onSlotVisibilityChanged !== 'function') return;
-    window.googletag.pubads().addEventListener('slotVisibilityChanged', e => {
-      if (e.slot === this.slot) this.props.onSlotVisibilityChanged(this.withAdProps(e));
-    });
-  };
+  }
 
   /**
    * Will listen to the slotOnload event and then call the passed function.
    * @function   
    * @returns {void}
    */
-  slotOnload = () => {
-    window.googletag.pubads().addEventListener('slotOnload', e => {
-      if (typeof this.props.onSlotOnLoad === 'function') {
-        if (e.slot === this.slot) this.props.onSlotOnLoad(this.withAdProps(e));
-      }
-    });
-  };
+  onSlotOnload = () => this.handleGPTEvent(
+    events.slotOnLoad,
+    this.props.onSlotOnLoad
+  );
+
+  /**
+   * Will listen to the onSlotRenderEnded event and then call the passed 
+   * function.
+   * @function   
+   * @returns {void}
+   */
+  onSlotRenderEnded = () => this.handleGPTEvent(
+    events.slotRenderEnded,
+    this.props.onSlotRenderEnded
+  );
+
+  /**
+   * Will listen to the onImpressionViewable event and then call the passed 
+   * function.
+   * @function   
+   * @returns {void}
+   */
+  onImpressionViewable = () => this.handleGPTEvent(
+    events.impressionViewable,
+    this.props.onImpressionViewable
+  );
+
+  /**
+   * Will listen to the onSlotVisibilityChanged event and then call the passed 
+   * function.
+   * @function   
+   * @returns {void}
+   */
+  onSlotVisibilityChanged = () => this.handleGPTEvent(
+    events.slotVisibilityChanged,
+    this.props.onSlotVisibilityChanged
+  );
 
   define = () => {
-    window.googletag.cmd.push(() => {
+    this.props.cmdPush(() => {
       // event start
       this.defineSlot();
-      this.slotOnload();
-      this.slotRenderEnded();
-      this.impressionViewable();
-      this.slotVisibilityChanged();
-      // events end
+      this.onSlotOnload();
+      this.onSlotRenderEnded();
+      this.onImpressionViewable();
+      this.onSlotVisibilityChanged();
+
+      //configure slot
       this.setMappingSize();
       this.setMQListeners();
       this.setCollapseEmpty();
-      this.addService();
+      this.props.addService(this.slot);
       this.setTargeting();
+
+      // display & fetch slot
       this.display();
-      this.displayed = true;
       this.refresh();
     });
   }
 
   componentDidMount() {
-    if (!this.props.provider.enableAds) return;
     if (!this.props.lazy) {
       this.define();
-    } else {            
-      window.addEventListener('scroll', this.refreshWhenVisible);
+    } else {
       this.refreshWhenVisible();
+      window.addEventListener('scroll', this.refreshWhenVisible);      
     }
   }
 
   componentWillUnmount() {
-    if (!this.props.provider.enableAds) return;
     this.unmounted = true;
     this.unsetMQListeners();
     window.removeEventListener('scroll', this.refreshWhenVisible);
-    window.googletag.cmd.push(this.destroyAd);
+    this.props.destroyAd(this.slot);
   }
 
   render() {
-    if (!this.props.provider.enableAds) return null;
     return (
       <div
         id={this.id}
@@ -343,21 +376,31 @@ class Ad extends Component {
 
 Ad.defaultProps = {
   id: '',
+  size: [],
   style: {},
   lazy: false,
   priority: 1,
+  sizeMap: null,
   targeting: {},
   adUnitPath: '',
+  lazyOffset: -1,
   className: null,
   type: 'default',
-  size: [300, 250],
   onSlotOnLoad: null,
   outOfPageSlot: false,
-  lazyOffset: -1,
   setCollapseEmpty: false,
   onSlotRenderEnded: null,
   onImpressionViewable: null,
   onSlotVisibilityChanged: null,
+  // gpt events
+  define: define,
+  display: display,
+  cmdPush: cmdPush,
+  destroyAd: destroyAd,
+  addService: addService,
+  sizeMapping: sizeMapping,
+  getWindowWidth: getWindowWidth,
+  addEventListener: addEventListener,
 };
 
 Ad.propTypes = {
@@ -381,7 +424,7 @@ Ad.propTypes = {
     PropTypes.array.isRequired,
     PropTypes.string.isRequired,
   ]),
-  sizeMapping: PropTypes.arrayOf(
+  sizeMap: PropTypes.arrayOf(
     PropTypes.shape({
       viewPort: PropTypes.arrayOf(PropTypes.number),
       slots: PropTypes.oneOfType([
@@ -392,12 +435,27 @@ Ad.propTypes = {
   ),
   provider: PropTypes.shape({
     refresh: PropTypes.func,
-    enableAds: PropTypes.bool,
     adUnitPath: PropTypes.string,
     generateId: PropTypes.func.isRequired,
     networkId: PropTypes.number.isRequired,
-  })
+  }),
+  // gpt events
+  define: PropTypes.func.isRequired,
+  display: PropTypes.func.isRequired,
+  cmdPush: PropTypes.func.isRequired,
+  destroyAd: PropTypes.func.isRequired,
+  addService: PropTypes.func.isRequired,
+  sizeMapping: PropTypes.func.isRequired,
+  getWindowWidth: PropTypes.func.isRequired,
+  addEventListener: PropTypes.func.isRequired,
 };
 
-export { Ad };
-export default connect(AdsContext, Ad, 'provider');
+const MaybeHiddenAd = hideHOC(Ad);
+const defaultProps = Ad.defaultProps;
+export { 
+  Ad,
+  MaybeHiddenAd,
+  defaultProps,
+ };
+ 
+export default connect(AdsContext, MaybeHiddenAd, 'provider');

@@ -34,7 +34,7 @@ class Page extends React.Component {
           lazy
           bidderCode={bidderCode}
           size={[300, 250]}
-          sizeMapping={[
+          sizeMap={[
             { viewPort: [0, 0], slots: [300, 250] },
           ]}
         />
@@ -45,7 +45,7 @@ class Page extends React.Component {
           lazy
           bidderCode={bidderCode}
           size={[728, 90]}
-          sizeMapping={[
+          sizeMap={[
             { viewPort: [0, 0], slots: [[728, 90], [70, 250]] },
           ]}
         />
