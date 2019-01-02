@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider, Ad } from '../../src';
 import prebid from '@webdeveloperpr/prebid';
 
-const bidderCode = (id, sizes) => ({
+const bidderCode = ({ id, sizes }) => ({
   code: id,
   mediaTypes: {
     banner: {

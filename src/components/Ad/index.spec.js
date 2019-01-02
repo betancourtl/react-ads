@@ -124,7 +124,7 @@ describe('<Ad />', () => {
         { viewPort: [850, 200], slots: [728, 90] },
         { viewPort: [0, 0], slots: [] },
       ],
-      bidderCode: ({id, size}) => ({ id, size }),
+      bidderCode: ({id, sizes}) => ({ id, sizes }),
       getWindowWidth: () => 1000,
       priority: 10,
     });

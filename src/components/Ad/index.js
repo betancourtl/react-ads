@@ -72,7 +72,7 @@ class Ad extends Component {
     return this.props.bidderCode
       ? this.props.bidderCode({
         id: this.props.id,
-        size: this.mapSize,
+        sizes: this.mapSize,
       })
       : null;
   }
