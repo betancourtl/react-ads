@@ -19,6 +19,15 @@ const createProps = (props = {}) => ({
 });
 
 describe('<Ad />', () => {
+  // mock RAF
+  beforeEach(() => {
+    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => cb());
+  });
+
+  afterEach(() => {
+    window.requestAnimationFrame.mockRestore();
+  });
+
   test('defaultProps', () => {
     const props = createProps();
     const wrapper = mount(<Ad {...props} />);
@@ -117,6 +126,7 @@ describe('<Ad />', () => {
   });
 
   test('refresh', () => {
+
     const props = createProps({
       lazy: false,
       id: 'ad-1',
@@ -124,7 +134,7 @@ describe('<Ad />', () => {
         { viewPort: [850, 200], slots: [728, 90] },
         { viewPort: [0, 0], slots: [] },
       ],
-      bidHandler: ({id, sizes}) => ({ id, sizes }),
+      bidHandler: ({ id, sizes }) => ({ id, sizes }),
       getWindowWidth: () => 1000,
       priority: 10,
     });

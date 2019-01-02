@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
+import hideHOC from '../Hide';
 import connect from '../connector';
 import { AdsContext } from '../context';
-import hideHOC from '../Hide';
+import withRaf from '../../utils/withRaf';
 import inViewport from '../../utils/inViewport';
 import {
   events,
@@ -48,7 +49,7 @@ class Ad extends Component {
      * Will refresh the Ad when it is visible on the window.
      * @type {Function}
      */
-    this.refreshWhenVisible = this.refreshWhenVisible.bind(this);
+    this.refreshWhenVisible = withRaf(this.refreshWhenVisible.bind(this));
 
   }
   /**
