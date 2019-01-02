@@ -124,7 +124,7 @@ describe('<Ad />', () => {
         { viewPort: [850, 200], slots: [728, 90] },
         { viewPort: [0, 0], slots: [] },
       ],
-      bidderCode: ({id, sizes}) => ({ id, sizes }),
+      bidHandler: ({id, sizes}) => ({ id, sizes }),
       getWindowWidth: () => 1000,
       priority: 10,
     });
@@ -135,9 +135,9 @@ describe('<Ad />', () => {
     expect(props.refresh).toBeCalledWith({
       priority: 10,
       data: {
-        bidderCode: {
+        bids: {
           id: 'ad-1',
-          size: [728, 90],
+          sizes: [728, 90],
         },
         slot: 'Im a slot',
       }

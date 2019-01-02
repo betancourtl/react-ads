@@ -593,4 +593,21 @@ result of the parents bidderCode fn.
 
 This would enable a composible way to decorate the bidder configuration.
 
+### Initial bidQueue
+
+One problem that I see with loading ads is that they start loading way down
+on the component tree on bigger applications. This is bad because we have to 
+wait for components higher up on the tree to finish rendering before we make
+the bid call. This could end up being very slow on SSR apps.
+
+One solution would be to register the <Ad \/> id's in the <Provider \/> on the 
+<Ad \/> componentWillMount fn. This would allow us to save the id's in the 
+provider serverside. Then as soon as the client renders we can then fire the 
+request to fetch the bids before the page loads. We would then save the bids in 
+a map and <Ad \/> makes calls refresh it can first look to see if there is a bid 
+already. If there is a bid then we can call the targeting fn for the Ad and fire 
+the refresh. This would significantly Ad loading speed if it ends up working. 
+Ads that would bennefit from this are initial-loading ads. Lazy loading ads
+would not bennefit from this but that is ok.
+
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)
