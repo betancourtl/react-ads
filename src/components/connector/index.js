@@ -6,7 +6,7 @@ import React from 'react';
  * @param {Component} Component - Component to pass the provider values.
  * @returns {class}
  */
-export const connect = (Context, Component, key = 'provider') => {
+export const connect = (Context, Component, stateToProps) => {
   return class Connector extends React.Component {
     render() {
       return (
@@ -15,7 +15,7 @@ export const connect = (Context, Component, key = 'provider') => {
             return (
               <Component
                 {...this.props}
-                {...{[key]: ctxProps}}
+                {...stateToProps(ctxProps, this.props)}
               />
             );
           }}

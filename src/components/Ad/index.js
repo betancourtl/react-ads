@@ -11,7 +11,6 @@ import {
   display,
   cmdPush,
   destroyAd,
-  addService,
   sizeMapping,
   getWindowWidth,
   addEventListener,
@@ -28,7 +27,7 @@ class Ad extends Component {
     this.slot = null;
 
     /**
-     * Reference the the googletag GPT slot.
+     * Reference the googletag GPT slot.
      * @type {Boolean}
      */
     this.displayed = false;
@@ -53,39 +52,6 @@ class Ad extends Component {
       if (this.unmounted) return;
       this.setState(props, cb);
     };
-
-    /**
-     * The generated slotId.
-     * @type {String}
-     */
-    this.id = props.id || props.provider.generateId(props.type);
-  }
-
-  /**
-   * Will get the adUnitPath from the Provider by default.
-   * If the Ad has an unit path then it will override the providers adUnitPath
-   * for this slot.
-   * @function
-   * @returns {String}
-   */
-  get adUnitPath() {
-    const networkId = this.props.provider.networkId;
-
-    return this.props.adUnitPath
-      ? ['', networkId, this.props.adUnitPath].join('/')
-      : ['', networkId, this.props.provider.adUnitPath].join('/');
-  }
-
-  /**
-   * Gets the offset defined by the provider. If this ad receives a lazyOffset
-   * prop then it will override the providers value.
-   * @function
-   * @returns {Number}
-   */
-  get lazyOffset() {
-    return this.props.lazyOffset && this.props.lazyOffset >= 0
-      ? this.props.lazyOffset
-      : this.props.provider.lazyOffset;
   }
 
   /**
@@ -126,7 +92,7 @@ class Ad extends Component {
   get isVisible() {
     return inViewport(
       ReactDOM.findDOMNode(this),
-      this.lazyOffset
+      this.props.lazyOffset
     );
   }
 
@@ -145,9 +111,9 @@ class Ad extends Component {
   defineSlot = () => {
     this.slot = this.props.define(
       this.props.outOfPageSlot,
-      this.adUnitPath,
+      this.props.adUnitPath,
       this.mapSize,
-      this.id
+      this.props.id
     );
   };
 
@@ -156,8 +122,8 @@ class Ad extends Component {
    * @function
    * @returns {void}
    */
-  display = () => {
-    this.props.display(this.id);
+  display() {
+    this.props.display(this.props.id);
     this.displayed = true;
   };
 
@@ -167,8 +133,8 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  refresh = () => {
-    this.props.provider.refresh({
+  refresh() {
+    this.props.refresh({
       priority: this.props.priority,
       data: {
         bidderCode: this.bidderCode,
@@ -195,7 +161,7 @@ class Ad extends Component {
   * @function   
   * @returns {void}
   */
-  refreshWhenVisible = () => {
+  refreshWhenVisible() {
     if (this.isVisible && !this.refreshed) {
       this.props.cmdPush(this.define);
       window.removeEventListener('scroll', this.refreshWhenVisible);
@@ -207,7 +173,7 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  setCollapseEmpty = () => {
+  setCollapseEmpty() {
     if (!this.props.setCollapseEmpty) return;
     this.slot.setCollapseEmptyDiv(true, true);
   };
@@ -217,9 +183,11 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  setTargeting = () => Object
-    .entries(this.props.targeting)
-    .map(([k, v]) => this.slot.setTargeting(k, v));
+  setTargeting() {
+    Object
+      .entries(this.props.targeting)
+      .map(([k, v]) => this.slot.setTargeting(k, v));
+  }
 
   /**
    * Will create the sizeMaps that will show the different ads depending on the
@@ -227,7 +195,7 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  setMappingSize = () => {
+  setMappingSize() {
     if (!this.props.sizeMap) return;
     const mapping = this.props.sizeMap
       .reduce((acc, x) => acc.addSize(x.viewPort, x.slots), sizeMapping());
@@ -239,7 +207,7 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  setMQListeners = () => {
+  setMQListeners() {
     if (!this.props.sizeMap) return;
     this.props.sizeMap.forEach(({ viewPort: [width] }) => {
       const mq = window.matchMedia(`(max-width: ${width}px)`);
@@ -254,7 +222,9 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  unsetMQListeners = () => this.listeners.forEach(fn => fn());
+  unsetMQListeners() {
+    this.listeners.forEach(fn => fn());
+  }
 
   /**
    * Returns the id and the reference to this slot.
@@ -262,18 +232,19 @@ class Ad extends Component {
    * @returns {Object}
    */
   withAdProps = props => ({
-    id: this.id,
+    id: this.props.id,
     ref: this.ref,
     ...props,
   });
 
   /**
-   * Will handle a GPT event for this slot.
+   * Will handle a GPT event for this slot. This method was not auto-binded for 
+   * testing reases.
    * @param {String} event
    * @param {Function} cb - Callback function for the event.
    * @returns {void}
    */
-  handleGPTEvent = (event, cb) => {
+  handleGPTEvent(event, cb) {
     if (!this.isFunction(cb)) return;
     this.props.addEventListener(event, e => {
       if (e.slot !== this.slot) return;
@@ -337,7 +308,6 @@ class Ad extends Component {
       this.setMappingSize();
       this.setMQListeners();
       this.setCollapseEmpty();
-      this.props.addService(this.slot);
       this.setTargeting();
 
       // display & fetch slot
@@ -351,7 +321,7 @@ class Ad extends Component {
       this.define();
     } else {
       this.refreshWhenVisible();
-      window.addEventListener('scroll', this.refreshWhenVisible);      
+      window.addEventListener('scroll', this.refreshWhenVisible);
     }
   }
 
@@ -365,17 +335,17 @@ class Ad extends Component {
   render() {
     return (
       <div
-        id={this.id}
+        id={this.props.id}
         ref={ref => this.ref = ref}
-        className={this.props.className}
         style={{ ...this.props.style }}
+        className={this.props.className}
       />
     );
   }
 }
 
 Ad.defaultProps = {
-  id: '',
+  id: '', //test
   size: [],
   style: {},
   lazy: false,
@@ -384,7 +354,7 @@ Ad.defaultProps = {
   targeting: {},
   adUnitPath: '',
   lazyOffset: -1,
-  className: null,
+  className: '',
   type: 'default',
   onSlotOnLoad: null,
   outOfPageSlot: false,
@@ -397,7 +367,6 @@ Ad.defaultProps = {
   display: display,
   cmdPush: cmdPush,
   destroyAd: destroyAd,
-  addService: addService,
   sizeMapping: sizeMapping,
   getWindowWidth: getWindowWidth,
   addEventListener: addEventListener,
@@ -433,29 +402,45 @@ Ad.propTypes = {
       ])
     })
   ),
-  provider: PropTypes.shape({
-    refresh: PropTypes.func,
-    adUnitPath: PropTypes.string,
-    generateId: PropTypes.func.isRequired,
-    networkId: PropTypes.number.isRequired,
-  }),
+  // provider
+  refresh: PropTypes.func,
+  adUnitPath: PropTypes.string,
+  networkId: PropTypes.number.isRequired,
   // gpt events
   define: PropTypes.func.isRequired,
   display: PropTypes.func.isRequired,
   cmdPush: PropTypes.func.isRequired,
   destroyAd: PropTypes.func.isRequired,
-  addService: PropTypes.func.isRequired,
   sizeMapping: PropTypes.func.isRequired,
   getWindowWidth: PropTypes.func.isRequired,
   addEventListener: PropTypes.func.isRequired,
 };
 
 const MaybeHiddenAd = hideHOC(Ad);
-const defaultProps = Ad.defaultProps;
-export { 
+
+export {
   Ad,
   MaybeHiddenAd,
-  defaultProps,
- };
- 
-export default connect(AdsContext, MaybeHiddenAd, 'provider');
+};
+
+export default connect(
+  AdsContext,
+  MaybeHiddenAd,
+  ({ adUnitPath, generateId, lazyOffset, networkId, ...rest }, props) => {
+    const _networkId = props.networkId || networkId;
+    const _adUnitPath = adUnitPath
+      ? ['', _networkId, adUnitPath].join('/')
+      : ['', _networkId, props.adUnitPath].join('/');
+    const _id = props.id || generateId(props.type);
+    const _lazyOffset = props.lazyOffset && props.lazyOffset >= 0
+      ? props.lazyOffset
+      : lazyOffset;
+
+    return {
+      adUnitPath: _adUnitPath,
+      networkId: _networkId,
+      lazyOffset: _lazyOffset,
+      id: _id,
+      ...rest
+    }
+  });

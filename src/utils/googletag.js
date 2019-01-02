@@ -28,17 +28,12 @@ export const cmdPush = cb => window.googletag.cmd.push(cb);
  */
 export const define = (outOfPageSlot, adUnitPath, mapSize, id) => {
   return outOfPageSlot
-    ? window.googletag.defineOutOfPageSlot(adUnitPath, id)
-    : window.googletag.defineSlot(adUnitPath, mapSize, id);
-};
-
-/**
- * Add the pubads service to the slot.
- * @param {Slot} slot - Googletag slot.
- * @returns {void}
- */
-export const addService = slot => {
-  cmdPush(() => slot.addService(window.googletag.pubads()));
+    ? window.googletag
+      .defineOutOfPageSlot(adUnitPath, id)
+      .addService(window.googletag.pubads())
+    : window.googletag
+      .defineSlot(adUnitPath, mapSize, id)
+      .addService(window.googletag.pubads());
 };
 
 /**

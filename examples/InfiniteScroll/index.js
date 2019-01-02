@@ -30,6 +30,7 @@ class Page extends React.Component {
   render() {
     return (
       <Provider
+        refreshDelay={200}
         enableVideoAds={false}
         collapseEmptyDivs={false}
         adUnitPath="travel"
