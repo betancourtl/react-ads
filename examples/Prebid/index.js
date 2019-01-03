@@ -18,6 +18,7 @@ const ProviderBidHandler = ({ id, sizes }) => ({
 });
 
 const AdBidHandler = (_, code) => {
+  // ProviderBidHandler's output to overwrite bid.
   console.log(code);
   return code;
 };
