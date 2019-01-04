@@ -30,6 +30,7 @@ class Provider extends Component {
     startPrebidQueue();
     if (props.prebid) props.prebid();
     createGoogleTagEvents(this.pubSub);
+
     this.bidManager = bidManager({
       getBids: getBids(this.props.prebidTimeout, this.props.prebidFailsafeTimeout),
       refresh: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),

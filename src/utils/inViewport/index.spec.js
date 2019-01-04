@@ -1,4 +1,4 @@
-import { inView } from './inViewport';
+import { inView } from '.';
 
 describe('inViewport', () => {
   it('should return true when in element is in view', () => {    

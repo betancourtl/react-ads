@@ -8,6 +8,7 @@ const Nav = () => {
       <li><NavLink to='/InfiniteScroll'>InfiniteScroll</NavLink></li>
       <li><NavLink to='/Prebid'>Prebid</NavLink></li>
       <li><NavLink to='/Lazy'>Lazy</NavLink></li>
+      <li><NavLink to='/CustomBidManager'>CustomBidManager</NavLink></li>
     </ul>
   );
 };

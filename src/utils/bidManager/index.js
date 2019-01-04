@@ -1,4 +1,4 @@
-import JobQueue from '../lib/JobQueue';
+import JobQueue from '../../lib/JobQueue';
 
 /** 
  * @param {Number} props.chunkSize - Max ads to process.
@@ -10,9 +10,9 @@ import JobQueue from '../lib/JobQueue';
  * @returns {Object}
  */
 const bidManager = (props = {}) => {
-  const { 
-    getBids, 
-    refresh, 
+  const {
+    getBids,
+    refresh,
     prebidEnabled,
     chunkSize = 5,
     refreshDelay = 100,
@@ -24,20 +24,18 @@ const bidManager = (props = {}) => {
     processFn: (q, done) => {
       const slots = [];
       const adUnits = [];
-      
+
       while (!q.isEmpty) {
         const { slot, bids } = q.dequeue().data;
         slots.push(slot);
-        if (bids) {
-          adUnits.push(bids);
-        }
+        if (bids) adUnits.push(bids);
       }
-    
+
       if (!prebidEnabled || !adUnits) {
         refresh(slots);
         return done();
       }
-  
+
       getBids(adUnits)
         .then(() => {
           refresh(slots);
