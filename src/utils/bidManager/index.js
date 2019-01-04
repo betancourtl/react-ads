@@ -1,4 +1,6 @@
+/* eslint-disable no-console */
 import JobQueue from '../../lib/JobQueue';
+import bidDispatcher from '../bidDispatcher';
 
 /** 
  * @param {Number} props.chunkSize - Max ads to process.
@@ -11,37 +13,61 @@ import JobQueue from '../../lib/JobQueue';
  */
 const bidManager = (props = {}) => {
   const {
-    getBids,
     refresh,
-    prebidEnabled,
     chunkSize = 5,
     refreshDelay = 100,
+    bidTimeout = 1000,
+    bidProviders = [],
   } = props;
+
 
   const refreshJob = new JobQueue({
     chunkSize: chunkSize,
     delay: refreshDelay,
     processFn: (q, done) => {
       const slots = [];
-      const adUnits = [];
+      const nextBids = {};
 
       while (!q.isEmpty) {
         const { slot, bids } = q.dequeue().data;
         slots.push(slot);
-        if (bids) adUnits.push(bids);
+
+        if (!bids) break;
+
+        Object
+          .entries(bids)
+          .forEach(([key, val]) => {
+            if (!nextBids[key]) nextBids[key] = [];
+            nextBids[key].push(val);
+          });
       }
 
-      if (!prebidEnabled || !adUnits) {
+      // There are no bidProviders or there are no bids requested.
+      if ([bidProviders, Object.keys(nextBids)].some(x => x.length === 0)) {
         refresh(slots);
         return done();
       }
 
-      getBids(adUnits)
-        .then(() => {
+      // Fetch the bids.
+      bidDispatcher(
+        bidProviders.map(bidder => bidder.fetchBids(nextBids[bidder.name])),
+        bidTimeout
+      )
+        .then((responses) => {
+          responses.forEach((res, i) => {
+            if (res.status === 'fulfilled') {
+              bidProviders[i].onBidWon();
+              bidProviders[i].handleResponse(res.data);
+            }
+
+            if (res.status === 'rejected') {
+              bidProviders[i].onTimeout();
+            }
+          });
+        })
+        .catch(err => console.log('error', err))
+        .finally(() => {
           refresh(slots);
-        }).catch(err => {
-          console.log('error', err);
-        }).finally(() => {
           done();
         });
     }

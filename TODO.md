@@ -790,5 +790,45 @@ registerBidder(spec);
 
 ```
 
+**props**
+
+this.isReady = false;
+this.name = '';
+this.bidQueue = '';
+
+There are a few methods necessary for a BidProvider class.
+
+**init**
+
+This should be a function that provides the initialization functionality.
+
+**isBidRequestValid**
+This makes sure that the bid is in a valid format.
+
+**buildRequests**
+
+This should be the function that provides the the logic for fetching the bids.
+
+**onBidWin**
+
+This function do something when the bid wins. Maybe logging.
+
+**onBidTimeout**
+
+This function should handle the case when the bidder times out.
+
+**interpretResponse**
+
+This function should be in charge of formatting the bids when the bid is won.
+
+**onSetTargeting**
+
+This function is in charge of setting the targeting before
+the API call is made.
+
+**getBids**
+
+Function used to get the bids.
+
 
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)

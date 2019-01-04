@@ -1,34 +1,31 @@
 import React from 'react';
 import { Provider, Ad } from '../../src';
-import prebid from '@webdeveloperpr/prebid';
+import prebid from '../../src/utils/Bidder/prebid';
+import amazon from '../../src/utils/Bidder/amazon';
 
-const ProviderBidHandler = ({ id, sizes }) => ({
-  code: id,
-  mediaTypes: {
-    banner: {
-      sizes: sizes
-    }
-  },
-  bids: [{
-    bidder: 'appnexus',
-    params: {
-      placementId: 13144370
-    }
-  }]
+const bidHandler = ({ id, sizes }) => ({
+  prebid: {
+    code: id,
+    mediaTypes: {
+      banner: {
+        sizes: sizes
+      }
+    },
+    bids: [{
+      bidder: 'appnexus',
+      params: {
+        placementId: 13144370
+      }
+    }]
+  }
 });
-
-const AdBidHandler = (_, code) => {
-  // ProviderBidHandler's output to overwrite bid.
-  console.log(code);
-  return code;
-};
 
 class Page extends React.Component {
   render() {
     return (
       <Provider
-        prebid={prebid}
-        bidHandler={ProviderBidHandler}
+        bidProviders={[prebid, amazon]}
+        bidHandler={bidHandler}
         chunkSize={5}
         prebidTimeout={1000}
         prebidFailsafeTimeout={1200}
@@ -38,7 +35,6 @@ class Page extends React.Component {
         <Ad
           id="div-1"
           lazy
-          bidHandler={AdBidHandler}
           adUnitPath="header-bid-tag-0"
           size={[300, 250]}
           sizeMap={[

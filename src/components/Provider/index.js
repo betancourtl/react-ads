@@ -1,10 +1,9 @@
 /* eslint-disable no-console */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import bidManager from '../../utils/bidManager';
-import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
-import { startPrebidQueue, getBids } from '../../utils/prebid';
+import PubSub from '../../lib/Pubsub';
+import bidManager from '../../utils/bidManager';
 import {
   setTargeting,
   setCentering,
@@ -27,30 +26,29 @@ class Provider extends Component {
     this.pubSub = new PubSub();
     createGPTScript();
     startGoogleTagQue();
-    startPrebidQueue();
-    if (props.prebid) props.prebid();
+    props.bidProviders.forEach(bidder => bidder.init());
     createGoogleTagEvents(this.pubSub);
 
     this.bidManager = bidManager({
-      getBids: getBids(this.props.prebidTimeout, this.props.prebidFailsafeTimeout),
+      bidProviders: props.bidProviders,
+      bidTimeout: props.bidTimeout,
       refresh: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
       chunkSize: props.chunkSize,
       refreshDelay: props.refreshDelay,
-      prebidEnabled: typeof props.prebid === 'function',
     });
-
+    
     this.pubSub.on('refresh', () => { });
     this.pubSub.on('display', () => { });
     this.pubSub.on('destroySlots', () => { });
     this.pubSub.on('defineSlot', () => { });
 
-    setCentering(this.props.setCentering);
-    enableVideoAds(this.props.enableVideoAds);
-    collapseEmptyDivs(this.props.collapseEmptyDivs);
+    setCentering(props.setCentering);
+    enableVideoAds(props.enableVideoAds);
+    collapseEmptyDivs(props.collapseEmptyDivs);
     enableAsyncRendering(true);
     enableSingleRequest(true);
     disableInitialLoad(true);
-    setTargeting(this.props.targeting);
+    setTargeting(props.targeting);
     enableServices();
     // This call to destroy all slots.
     window.googletag.cmd.push(window.googletag.destroySlots)
@@ -94,13 +92,13 @@ Provider.defaultProps = {
   targeting: {},
   enableAds: true,
   lazyOffset: 400,
+  bidProviders: [],
   bidHandler: null,
+  bidTimeout: 1000,
   refreshDelay: 200,
   setCentering: true,
-  prebidTimeout: 1000,
   enableVideoAds: false,
   collapseEmptyDivs: false,
-  prebidFailsafeTimeout: 3000,
 };
 
 Provider.propTypes = {
@@ -113,6 +111,7 @@ Provider.propTypes = {
   adUnitPath: PropTypes.string,
   lazyOffset: PropTypes.number,
   setCentering: PropTypes.bool,
+  bidProviders: PropTypes.array,
   refreshDelay: PropTypes.number,
   enableVideoAds: PropTypes.bool,
   prebidTimeout: PropTypes.number,
