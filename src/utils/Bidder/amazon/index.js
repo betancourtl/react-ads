@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { Bidder } from 'react-ads';
+import Bidder from '../';
 import loadScript from './initialize';
 
 const bidder = new Bidder('amazon');
