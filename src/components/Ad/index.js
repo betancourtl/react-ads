@@ -439,7 +439,7 @@ export default connect(
     const _adUnitPath = adUnitPath
       ? ['', _networkId, adUnitPath].join('/')
       : ['', _networkId, props.adUnitPath].join('/');    
-    const _id = props.id || generateId(props.type);
+    const _id = generateId ? generateId(props.type) : props.id;
     const _lazyOffset = props.lazyOffset && props.lazyOffset >= 0
       ? props.lazyOffset
       : lazyOffset;
