@@ -1,16 +1,17 @@
 /* eslint-disable no-console */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { AdsContext } from '../context';
 import PubSub from '../../lib/Pubsub';
+import { AdsContext } from '../context';
 import bidManager from '../../utils/bidManager';
 import {
+  refresh,
+  destroySlots,
   setTargeting,
   setCentering,
   enableServices,
   enableVideoAds,
   createGPTScript,
-  startGoogleTagQue,
   collapseEmptyDivs,
   disableInitialLoad,
   enableSingleRequest,
@@ -21,42 +22,37 @@ import {
 class Provider extends Component {
   constructor(props) {
     super(props);
+    const { gpt } = props;
     if (!props.enableAds) return;
     this.slotCount = {};
     this.pubSub = new PubSub();
-    createGPTScript();
-    startGoogleTagQue();
-    props.bidProviders.forEach(bidder => bidder.init());
-    createGoogleTagEvents(this.pubSub);
-
+    gpt.createGPTScript();
+    gpt.createGoogleTagEvents(this.pubSub);
+    gpt.setCentering(props.setCentering);
+    gpt.enableVideoAds(props.enableVideoAds);
+    gpt.collapseEmptyDivs(props.collapseEmptyDivs);
+    gpt.enableAsyncRendering(true);
+    gpt.enableSingleRequest(true);
+    gpt.disableInitialLoad(true);
+    gpt.setTargeting(props.targeting);
+    gpt.enableServices();
+    gpt.destroySlots();
     this.bidManager = bidManager({
-      bidProviders: props.bidProviders,
-      bidTimeout: props.bidTimeout,
-      refresh: ids => window.googletag.cmd.push(() => window.googletag.pubads().refresh(ids)),
+      refresh: gpt.refresh,
       chunkSize: props.chunkSize,
+      bidTimeout: props.bidTimeout,
+      bidProviders: props.bidProviders,
       refreshDelay: props.refreshDelay,
     });
-    
+    props.bidProviders.forEach(bidder => bidder.init());
     this.pubSub.on('refresh', () => { });
     this.pubSub.on('display', () => { });
     this.pubSub.on('destroySlots', () => { });
     this.pubSub.on('defineSlot', () => { });
-
-    setCentering(props.setCentering);
-    enableVideoAds(props.enableVideoAds);
-    collapseEmptyDivs(props.collapseEmptyDivs);
-    enableAsyncRendering(true);
-    enableSingleRequest(true);
-    disableInitialLoad(true);
-    setTargeting(props.targeting);
-    enableServices();
-    // This call to destroy all slots.
-    window.googletag.cmd.push(window.googletag.destroySlots)
   }
 
   componentWillUnmount() {
     if (!this.props.enableAds) return;
-    // Clears the event listener.
     this.pubSub.clear();
   }
 
@@ -76,7 +72,7 @@ class Provider extends Component {
         adUnitPath: this.props.adUnitPath,
         lazyOffset: this.props.lazyOffset,
         bidHandler: this.props.bidHandler,
-        refresh: !this.props.enableAds ? null : this.bidManager.refresh,
+        refresh: this.bidManager.refresh,
       }}>
         {this.props.children}
       </AdsContext.Provider>
@@ -99,10 +95,24 @@ Provider.defaultProps = {
   setCentering: true,
   enableVideoAds: false,
   collapseEmptyDivs: false,
+  // GPT
+  gpt: {
+    refresh,
+    setCentering,
+    setTargeting,
+    destroySlots,
+    enableServices,
+    enableVideoAds,
+    createGPTScript,
+    collapseEmptyDivs,
+    disableInitialLoad,
+    enableSingleRequest,
+    enableAsyncRendering,
+    createGoogleTagEvents,
+  }
 };
 
 Provider.propTypes = {
-  prebid: PropTypes.func,
   divider: PropTypes.string,
   enableAds: PropTypes.bool,
   bidHandler: PropTypes.func,
@@ -116,12 +126,24 @@ Provider.propTypes = {
   enableVideoAds: PropTypes.bool,
   prebidTimeout: PropTypes.number,
   collapseEmptyDivs: PropTypes.bool,
-  prebidFailsafeTimeout: PropTypes.number,
   networkId: PropTypes.number.isRequired,
   children: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.arrayOf(PropTypes.node),
   ]),
+  gpt: PropTypes.shape({
+    refresh: PropTypes.func.isRequired,
+    destroySlots: PropTypes.func.isRequired,
+    setCentering: PropTypes.func.isRequired,
+    setTargeting: PropTypes.func.isRequired,
+    enableServices: PropTypes.func.isRequired,
+    createGPTScript: PropTypes.func.isRequired,
+    collapseEmptyDivs: PropTypes.func.isRequired,
+    disableInitialLoad: PropTypes.func.isRequired,
+    enableSingleRequest: PropTypes.func.isRequired,
+    enableAsyncRendering: PropTypes.func.isRequired,
+    createGoogleTagEvents: PropTypes.func.isRequired,
+  })
 };
 
 export default Provider;

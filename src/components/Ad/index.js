@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import hideHOC from '../../hoc/hide';
-import connect from '../../hoc/connector';
 import { AdsContext } from '../context';
+import connect from '../../hoc/connector';
 import withRaf from '../../utils/withRaf';
 import inViewport from '../../utils/inViewport';
 import {

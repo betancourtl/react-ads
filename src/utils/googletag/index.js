@@ -19,6 +19,22 @@ export const getWindowWidth = () => window.innerWidth;
 export const cmdPush = cb => window.googletag.cmd.push(cb);
 
 /**
+ * Destorys google slots.
+ * @returns {void}
+ */
+export const destroySlots = () => {
+  cmdPush(() => window.googletag.destroySlots());
+};
+
+/**
+ * Will push a 
+ * @param {Slot[]} Slot - Array of google slots.
+ */
+export const refresh = slots => {
+  cmdPush(() => window.googletag.pubads().refresh(slots));
+};
+
+/**
  * Add the pubads service to the slot.
  * @param {Boolean} outOfPageSlot
  * @param {String} adUnitPath
@@ -69,6 +85,9 @@ export const addEventListener = (e, cb) => {
  * @returns {void}
  */
 export const createGPTScript = () => {
+  window.googletag = window.googletag || {};
+  window.googletag.cmd = window.googletag.cmd || [];
+
   const id = 'react-ads-google-tag-script';
   const scriptExists = document.getElementById(id);
 
@@ -83,16 +102,6 @@ export const createGPTScript = () => {
   script.src = 'https://www.googletagservices.com/tag/js/gpt.js';
   script.async = true;
   document.head.appendChild(script);
-};
-
-/**
- * Will create the googleTag queue for handling asynchronous calls.
- * @function
- * @returns {void}
- */
-export const startGoogleTagQue = () => {
-  window.googletag = window.googletag || {};
-  window.googletag.cmd = window.googletag.cmd || [];
 };
 
 /**
