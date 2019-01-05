@@ -8,7 +8,6 @@ export const createBid = ({ siteId, size }) => ({
   },
 });
 
-
 export const ixBids = indx => (adUnitId, sizes) => {
   const adMap = indx.mapping[adUnitId];
 

@@ -1,6 +1,4 @@
-import {
-  Ad,
-} from './';
+import { Ad } from './';
 
 const createProps = (props = {}) => ({
   refresh: jest.fn(),

@@ -126,3 +126,4 @@ fabric.properties
 !.elasticbeanstalk/*.global.yml
 /npm/dist/
 .idea/
+.vscode/

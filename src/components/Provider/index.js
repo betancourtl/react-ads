@@ -57,10 +57,10 @@ class Provider extends Component {
   }
 
   generateId = (type = 'ad') => {
-    const count = this.slotCount[type]
-      ? this.slotCount[type]++
-      : this.slotCount[type] = 1;
-    return `${type}${this.props.divider}${count}`;
+    this.slotCount[type];
+    if (isNaN(this.slotCount[type])) this.slotCount[type] = 1
+    else this.slotCount[type] = this.slotCount[type] + 1;
+    return `${type}${this.props.divider}${ this.slotCount[type]}`;
   };
 
   render() {
@@ -83,13 +83,12 @@ class Provider extends Component {
 Provider.defaultProps = {
   divider: '_',
   networkId: 0,
-  prebid: null,
   chunkSize: 4,
   targeting: {},
   enableAds: true,
-  lazyOffset: 400,
+  lazyOffset: 800,
   bidProviders: [],
-  bidHandler: null,
+  bidHandler: undefined,
   bidTimeout: 1000,
   refreshDelay: 200,
   setCentering: true,
@@ -124,7 +123,6 @@ Provider.propTypes = {
   bidProviders: PropTypes.array,
   refreshDelay: PropTypes.number,
   enableVideoAds: PropTypes.bool,
-  prebidTimeout: PropTypes.number,
   collapseEmptyDivs: PropTypes.bool,
   networkId: PropTypes.number.isRequired,
   children: PropTypes.oneOfType([
