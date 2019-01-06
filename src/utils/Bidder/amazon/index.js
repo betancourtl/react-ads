@@ -5,9 +5,7 @@ import loadScript from './initialize';
 const bidder = new Bidder('amazon');
 
 bidder.init = (addScript = loadScript) => {
-  if (window && !window.apstag) {
-    addScript();
-  }
+  addScript();
   window.apstag.init({
     pubID: 123,
     adServer: 'googletag',
