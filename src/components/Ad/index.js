@@ -82,7 +82,7 @@ class Ad extends Component {
   get bidHandler() {
     return this.props.bidHandler
       ? this.props.bidHandler({
-        id: this.props.id,
+        id: this.id,
         sizes: this.mapSize,
       })
       : null;
