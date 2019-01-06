@@ -30,9 +30,9 @@ describe('<Provider />', () => {
       targeting,
       enableAds,
       lazyOffset,
-      bidProviders,
       bidHandler,
       bidTimeout,
+      bidProviders,
       refreshDelay,
       setCentering,
       enableVideoAds,
@@ -57,17 +57,17 @@ describe('<Provider />', () => {
     const mockFn = jest.fn().mockImplementation(x => x);
     const props = createProps({
       gpt: {
-        createGPTScript: () => mockFn('createGPTScript'),
-        createGoogleTagEvents: () => mockFn('createGoogleTagEvents'),
+        destroySlots: () => mockFn('destroySlots'),
         setCentering: () => mockFn('setCentering'),
-        enableVideoAds: () => mockFn('enableVideoAds'),
-        collapseEmptyDivs: () => mockFn('collapseEmptyDivs'),
-        enableAsyncRendering: (x) => mockFn('enableAsyncRendering', x),
-        enableSingleRequest: (x) => mockFn('enableSingleRequest', x),
-        disableInitialLoad: (x) => mockFn('disableInitialLoad', x),
         setTargeting: () => mockFn('setTargeting'),
         enableServices: () => mockFn('enableServices'),
-        destroySlots: () => mockFn('destroySlots'),
+        enableVideoAds: () => mockFn('enableVideoAds'),
+        createGPTScript: () => mockFn('createGPTScript'),
+        collapseEmptyDivs: () => mockFn('collapseEmptyDivs'),
+        disableInitialLoad: x => mockFn('disableInitialLoad', x),
+        enableSingleRequest: x => mockFn('enableSingleRequest', x),
+        createGoogleTagEvents: () => mockFn('createGoogleTagEvents'),
+        enableAsyncRendering: x => mockFn('enableAsyncRendering', x),
       }
     });
     mount(<Provider {...props} />);
@@ -86,15 +86,15 @@ describe('<Provider />', () => {
     ]);
   });
 
-  test('GenerateId', () => {
+  test('generateId', () => {
     const wrapper = mount(<Provider {...createProps} />);
     const instance = wrapper.instance();
-    expect(instance.generateId('rect')).toBe('rect_1');
-    expect(instance.generateId('rect')).toBe('rect_2');
-    expect(instance.generateId('lb')).toBe('lb_1');
-    expect(instance.generateId('lb')).toBe('lb_2');
     expect(instance.generateId()).toBe('ad_1');
     expect(instance.generateId()).toBe('ad_2');
+    expect(instance.generateId('lb')).toBe('lb_1');
+    expect(instance.generateId('lb')).toBe('lb_2');
+    expect(instance.generateId('rect')).toBe('rect_1');
+    expect(instance.generateId('rect')).toBe('rect_2');
   });
 });
 

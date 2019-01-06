@@ -26,24 +26,24 @@ class Ad extends Component {
      * @type {Object}
      */
     this.slot = null;
-
-    /**
-     * Reference the googletag GPT slot.
-     * @type {Boolean}
-     */
-    this.displayed = false;
-
-    /**
-     * Reference the the googletag GPT slot.
-     * @type {Boolean}
-     */
-    this.refreshed = false;
-
+    
     /**
      * List of event listener removing functions.
      * @type {Array}
      */
     this.listeners = [];
+    
+    /**
+     * Reference the googletag GPT slot.
+     * @type {Boolean}
+     */
+    this.displayed = false;
+    
+    /**
+     * Reference the the googletag GPT slot.
+     * @type {Boolean}
+     */
+    this.refreshed = false;
 
     /**
      * Will refresh the Ad when it is visible on the window.
@@ -317,11 +317,6 @@ class Ad extends Component {
     });
   }
 
-
-  componentWillMount() {
-
-  }
-
   componentDidMount() {
     if (!this.props.lazy) {
       this.define();
@@ -382,20 +377,20 @@ Ad.defaultProps = {
 Ad.propTypes = {
   lazy: PropTypes.bool,
   type: PropTypes.string,
-  networkId: PropTypes.number,
   style: PropTypes.object,
-  lazyOffset: PropTypes.number,
+  bidHandler: PropTypes.func,
   className: PropTypes.string,
+  networkId: PropTypes.number,
   targeting: PropTypes.object,
+  lazyOffset: PropTypes.number,
   onSlotOnLoad: PropTypes.func,
   outOfPageSlot: PropTypes.bool,
-  bidHandler: PropTypes.func,
   id: PropTypes.string.isRequired,
   setCollapseEmpty: PropTypes.bool,
   onSlotRenderEnded: PropTypes.func,
   onImpressionViewable: PropTypes.func,
-  onSlotVisibilityChanged: PropTypes.func,
   adUnitPath: PropTypes.string.isRequired,
+  onSlotVisibilityChanged: PropTypes.func,
   priority: PropTypes.number,
   size: PropTypes.oneOfType([
     PropTypes.array.isRequired,
@@ -410,15 +405,13 @@ Ad.propTypes = {
       ])
     })
   ),
-  // provider
   refresh: PropTypes.func,
   adUnitPath: PropTypes.string,
-  networkId: PropTypes.number.isRequired,
-  // gpt events
   define: PropTypes.func.isRequired,
   display: PropTypes.func.isRequired,
   cmdPush: PropTypes.func.isRequired,
   destroyAd: PropTypes.func.isRequired,
+  networkId: PropTypes.number.isRequired,
   sizeMapping: PropTypes.func.isRequired,
   getWindowWidth: PropTypes.func.isRequired,
   addEventListener: PropTypes.func.isRequired,

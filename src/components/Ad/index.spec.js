@@ -64,7 +64,6 @@ describe('<Ad />', () => {
     expect(onSlotRenderEnded).toBe(null);
     expect(onImpressionViewable).toBe(null);
     expect(onSlotVisibilityChanged).toBe(null);
-    // gptEvents
   });
 
   test('non-lazy', () => {
@@ -124,7 +123,6 @@ describe('<Ad />', () => {
   });
 
   test('refresh', () => {
-
     const props = createProps({
       lazy: false,
       id: 'ad-1',

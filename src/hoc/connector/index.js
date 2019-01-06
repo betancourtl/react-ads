@@ -6,7 +6,7 @@ import React from 'react';
  * @param {Component} Component - Component to pass the provider values.
  * @returns {class}
  */
-export const connect = (Context, Component, stateToProps) => {
+export const connect = (Context, stateToProps) => Component => {
   return class Connector extends React.Component {
     render() {
       return (
