@@ -60,7 +60,7 @@ class Provider extends Component {
     this.slotCount[type];
     if (isNaN(this.slotCount[type])) this.slotCount[type] = 1
     else this.slotCount[type] = this.slotCount[type] + 1;
-    return `${type}${this.props.divider}${ this.slotCount[type]}`;
+    return `${type}${this.props.divider}${this.slotCount[type]}`;
   };
 
   render() {
@@ -73,7 +73,8 @@ class Provider extends Component {
         lazyOffset: this.props.lazyOffset,
         bidHandler: this.props.bidHandler,
         refresh: this.bidManager.refresh,
-      }}>
+      }}
+      >
         {this.props.children}
       </AdsContext.Provider>
     );

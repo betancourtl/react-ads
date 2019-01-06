@@ -39,7 +39,7 @@ class Page extends React.Component {
       >
         <DevTools />
         {Array(this.state.articleQty).fill('').map((x, i) => {
-          return <Article key={i + 1} id={'id-' + (i + 1)} />;
+          return <Article key={i + 1} />;
         })}
       </Provider>
     );

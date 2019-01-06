@@ -10,7 +10,6 @@ class Page extends React.Component {
       >
         <div style={{ height: '250vh' }} /> 
         <Ad
-          id="div-1"
           lazy={true}
           lazyOffset={1}
           targeting={{ test: 'infinitescroll' }}

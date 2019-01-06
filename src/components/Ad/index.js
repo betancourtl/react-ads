@@ -349,7 +349,7 @@ class Ad extends Component {
 }
 
 Ad.defaultProps = {
-  id: '', //test
+  id: '',
   size: [],
   style: {},
   lazy: false,

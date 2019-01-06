@@ -27,14 +27,12 @@ class Page extends React.Component {
         bidProviders={[prebid, amazon]}
         bidHandler={bidHandler}
         chunkSize={5}
-        prebidTimeout={1000}
-        prebidFailsafeTimeout={1200}
         adUnitPath="header-bid-tag-0"
         networkId={19968336}
       >
         <Ad
-          id="div-1"
           lazy
+          type="lazy"
           adUnitPath="header-bid-tag-0"
           size={[300, 250]}
           sizeMap={[
@@ -43,9 +41,9 @@ class Page extends React.Component {
         />
 
         <Ad
-          id="div-2"
           adUnitPath="header-bid-tag-1"
           lazy
+          type="lazy"
           size={[728, 90]}
           sizeMap={[
             { viewPort: [0, 0], slots: [[728, 90], [70, 250]] },

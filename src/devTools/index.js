@@ -19,7 +19,6 @@ class DevTools extends React.Component {
 
   getSlots = () => {
     const slots = window.googletag.pubads().getSlots();
-    console.log(slots);
     const adUnits = slots.reduce((acc, slot) => {
       const item = this.creatItem({
         id: slot.getSlotElementId(),
