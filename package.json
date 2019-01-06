@@ -8,6 +8,9 @@
     "react": "^16.x",
     "react-dom": "^16.x"
   },
+  "dependencies": {
+    "lodash.debounce": "^4.0.8"
+  },
   "devDependencies": {
     "@babel/cli": "^7.1.5",
     "@babel/core": "^7.2.2",
@@ -43,9 +46,9 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch --verbose",
     "clean-dir": "rm -rf ./dist",
-    "build": "NODE_ENV=production npm run clean-dir && babel src --out-dir dist --ignore '**/*.spec.js'",
-    "build:prod": "NODE_ENV=production npm run clean-dir && babel src --out-dir dist --ignore '**/*.spec.js' --presets minify",
-    "build:watch": "NODE_ENV=production npm run clean-dir && babel --watch src --out-dir dist",
+    "build": "npm run clean-dir && webpack --config webpack.build.js",
+    "build:prod": "NODE_ENV=production && npm run build",
+    "build:watch": "NODE_ENV=development && npm run build -- --watch",
     "release": "np"
   },
   "keywords": [
@@ -71,8 +74,5 @@
   "bugs": {
     "url": "https://github.com/webdeveloperpr/react-ads/issues"
   },
-  "homepage": "https://github.com/webdeveloperpr/react-ads#readme",
-  "dependencies": {
-    "lodash.debounce": "^4.0.8"
-  }
+  "homepage": "https://github.com/webdeveloperpr/react-ads#readme"
 }

@@ -12,12 +12,17 @@ module.exports = (api) => {
 
   return {
     presets,
-    plugins,
+    plugins,    
     env: {
       test: {
         presets,
         plugins,
+      },
+      production: {
+        presets: presets.concat(['minify', { builtIns: false }]),
+        plugins,
+        comments: false,
       }
-    }
+    },
   };
 };
