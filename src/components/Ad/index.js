@@ -26,19 +26,19 @@ class Ad extends Component {
      * @type {Object}
      */
     this.slot = null;
-    
+
     /**
      * List of event listener removing functions.
      * @type {Array}
      */
     this.listeners = [];
-    
+
     /**
      * Reference the googletag GPT slot.
      * @type {Boolean}
      */
     this.displayed = false;
-    
+
     /**
      * Reference the the googletag GPT slot.
      * @type {Boolean}
@@ -419,37 +419,33 @@ Ad.propTypes = {
 
 const MaybeHiddenAd = hideHOC(Ad);
 
+const stateToProps = ({ adUnitPath, generateId, lazyOffset, networkId, bidHandler, ...rest }, props) => {
+  const _networkId = props.networkId || networkId;
+  const _adUnitPath = adUnitPath
+    ? ['', _networkId, adUnitPath].join('/')
+    : ['', _networkId, props.adUnitPath].join('/');
+  const _id = generateId ? generateId(props.type) : props.id;
+  const _lazyOffset = props.lazyOffset && props.lazyOffset >= 0
+    ? props.lazyOffset
+    : lazyOffset;
+  const results = {
+    adUnitPath: _adUnitPath,
+    networkId: _networkId,
+    lazyOffset: _lazyOffset,
+    id: _id,
+    ...rest
+  };
+
+  if (bidHandler && props.bidHandler) results.bidHandler = x => props.bidHandler(x, bidHandler(x));
+  else if (bidHandler) results.bidHandler = x => bidHandler(x, []);
+  else if (props.bidHandler) results.bidHandler = x => props.bidHandler(x, []);
+
+  return results;
+}
+
 export {
   Ad,
   MaybeHiddenAd,
 };
 
-export default connect(
-  AdsContext,
-  MaybeHiddenAd,
-  ({ adUnitPath, generateId, lazyOffset, networkId, bidHandler, ...rest }, props) => {
-    const _networkId = props.networkId || networkId;
-    const _adUnitPath = adUnitPath
-      ? ['', _networkId, adUnitPath].join('/')
-      : ['', _networkId, props.adUnitPath].join('/');    
-    const _id = generateId ? generateId(props.type) : props.id;
-    const _lazyOffset = props.lazyOffset && props.lazyOffset >= 0
-      ? props.lazyOffset
-      : lazyOffset;
-
-    const results = {
-      adUnitPath: _adUnitPath,
-      networkId: _networkId,
-      lazyOffset: _lazyOffset,
-      id: _id,
-      ...rest
-    };
-
-    if (bidHandler && props.bidHandler) {
-      results.bidHandler = x => props.bidHandler(x, bidHandler(x));
-    }
-    else if (bidHandler) results.bidHandler = x => bidHandler(x, []);
-    else if (props.bidHandler) results.bidHandler = x => props.bidHandler(x, []);
-
-    return results;
-  });
+export default connect(AdsContext, stateToProps)(MaybeHiddenAd);
