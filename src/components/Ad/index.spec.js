@@ -1,11 +1,11 @@
 import { Ad } from './';
 
 const createProps = (props = {}) => ({
-  refresh: jest.fn(),
-  enableAds: true,
   adUnitPath: '',
   networkId: 123,
+  enableAds: true,
   define: jest.fn(),
+  refresh: jest.fn(),
   display: jest.fn(),
   cmdPush: jest.fn(),
   destroyAd: jest.fn(),
@@ -31,15 +31,15 @@ describe('<Ad />', () => {
     const wrapper = mount(<Ad {...props} />);
     const {
       id,
-      size,
       lazy,
-      priority,
+      size,
+      type,
       sizeMap,
+      priority,
+      className,
       targeting,
       adUnitPath,
       lazyOffset,
-      className,
-      type,
       onSlotOnLoad,
       outOfPageSlot,
       setCollapseEmpty,
@@ -53,11 +53,11 @@ describe('<Ad />', () => {
     expect(lazy).toBe(false);
     expect(priority).toBe(1);
     expect(sizeMap).toBe(null);
-    expect(targeting).toEqual({});
+    expect(className).toBe('');
     expect(adUnitPath).toBe('');
     expect(lazyOffset).toBe(-1);
-    expect(className).toBe('');
     expect(type).toBe('default');
+    expect(targeting).toEqual({});
     expect(onSlotOnLoad).toBe(null);
     expect(outOfPageSlot).toBe(false);
     expect(setCollapseEmpty).toBe(false);
