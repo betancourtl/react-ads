@@ -51,6 +51,10 @@ class Ad extends Component {
      */
     this.refreshWhenVisible = withRaf(this.refreshWhenVisible.bind(this));
 
+    /**
+     * The ad's unique id. We only want the Id to be generated once.
+     */
+    this.id = props.id || props.generateId(props.type);
   }
   /**
    * Get the slot map sizes based on the media query breakpoints
@@ -114,7 +118,7 @@ class Ad extends Component {
       this.props.outOfPageSlot,
       this.props.adUnitPath,
       this.mapSize,
-      this.props.id
+      this.id
     );
   };
 
@@ -124,7 +128,7 @@ class Ad extends Component {
    * @returns {void}
    */
   display() {
-    this.props.display(this.props.id);
+    this.props.display(this.id);
     this.displayed = true;
   };
 
@@ -233,7 +237,7 @@ class Ad extends Component {
    * @returns {Object}
    */
   withAdProps = props => ({
-    id: this.props.id,
+    id: this.id,
     ref: this.ref,
     ...props,
   });
@@ -335,7 +339,7 @@ class Ad extends Component {
   render() {
     return (
       <div
-        id={this.props.id}
+        id={this.id}
         ref={ref => this.ref = ref}
         style={{ ...this.props.style }}
         className={this.props.className}
@@ -389,6 +393,7 @@ Ad.propTypes = {
   setCollapseEmpty: PropTypes.bool,
   onSlotRenderEnded: PropTypes.func,
   onImpressionViewable: PropTypes.func,
+  generateId: PropTypes.func.isRequired,
   adUnitPath: PropTypes.string.isRequired,
   onSlotVisibilityChanged: PropTypes.func,
   priority: PropTypes.number,
@@ -424,7 +429,6 @@ const stateToProps = ({ adUnitPath, generateId, lazyOffset, networkId, bidHandle
   const _adUnitPath = adUnitPath
     ? ['', _networkId, adUnitPath].join('/')
     : ['', _networkId, props.adUnitPath].join('/');
-  const _id = generateId ? generateId(props.type) : props.id;
   const _lazyOffset = props.lazyOffset && props.lazyOffset >= 0
     ? props.lazyOffset
     : lazyOffset;
@@ -432,7 +436,7 @@ const stateToProps = ({ adUnitPath, generateId, lazyOffset, networkId, bidHandle
     adUnitPath: _adUnitPath,
     networkId: _networkId,
     lazyOffset: _lazyOffset,
-    id: _id,
+    generateId,
     ...rest
   };
 

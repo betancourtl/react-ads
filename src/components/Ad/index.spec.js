@@ -10,6 +10,7 @@ const createProps = (props = {}) => ({
   cmdPush: jest.fn(),
   destroyAd: jest.fn(),
   addService: jest.fn(),
+  generateId: jest.fn(),
   sizeMapping: jest.fn(),
   getWindowWidth: jest.fn(),
   addEventListener: jest.fn(),
@@ -39,6 +40,7 @@ describe('<Ad />', () => {
       className,
       targeting,
       adUnitPath,
+      generateId,
       lazyOffset,
       onSlotOnLoad,
       outOfPageSlot,
@@ -62,6 +64,7 @@ describe('<Ad />', () => {
     expect(outOfPageSlot).toBe(false);
     expect(setCollapseEmpty).toBe(false);
     expect(onSlotRenderEnded).toBe(null);
+    expect(generateId).toEqual(generateId);
     expect(onImpressionViewable).toBe(null);
     expect(onSlotVisibilityChanged).toBe(null);
   });

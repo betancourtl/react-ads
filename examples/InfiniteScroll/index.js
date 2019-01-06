@@ -1,6 +1,7 @@
 import React from 'react';
 import Article from './Article';
 import { Provider } from '../../src';
+import DevTools from '../../src/devTools';
 
 class Page extends React.Component {
   constructor() {
@@ -36,6 +37,7 @@ class Page extends React.Component {
         adUnitPath="travel"
         networkId={6355419}
       >
+        <DevTools />
         {Array(this.state.articleQty).fill('').map((x, i) => {
           return <Article key={i + 1} id={'id-' + (i + 1)} />;
         })}

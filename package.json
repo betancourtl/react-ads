@@ -1,6 +1,6 @@
 {
-  "name": "react-gpt-prebid-ads",
-  "version": "1.0.5",
+  "name": "react-ads",
+  "version": "1.0.0",
   "description": "package to manage ads",
   "main": "./dist/index.js",
   "peerDependencies": {
@@ -45,8 +45,9 @@
     "start": "webpack-dev-server --mode development && npm run build:watch",
     "test": "jest --coverage",
     "test:watch": "jest --watch --verbose",
-    "clean-dir": "rm -rf ./dist",
-    "build": "npm run clean-dir && webpack --config webpack.build.js",
+    "prebuild": "rm -rf ./dist",
+    "build": "babel src --out-dir dist --ignore **/*.spec.js",
+    "build:dev": "NODE_ENV=development && npm run build",
     "build:prod": "NODE_ENV=production && npm run build",
     "build:watch": "NODE_ENV=development && npm run build -- --watch",
     "release": "np"
