@@ -15,7 +15,6 @@ const dispatchBidders = (promises, ms = DEFAULT_TIMEOUT) => Promise
         reject('Timed out in ' + ms + 'ms.');
       }, ms);
     });
-    console.log('ms', ms);
     return reflect(Promise.race([promise, timeout]));
   }));
 

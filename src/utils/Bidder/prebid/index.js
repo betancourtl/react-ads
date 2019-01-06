@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import prebidInit from '@webdeveloperpr/prebid';
 import Bidder from '../';
 
@@ -10,12 +11,9 @@ bidder.init = () => {
 };
 
 bidder.onBidWon = () => {
-  console.log('prebid won the bid');
-  console.log('bidder:onWon');
 };
 
 bidder.onTimeout = () => {
-  console.log('prebid lost the bid');
 };
 
 /**
@@ -55,7 +53,7 @@ bidder.fetchBids = adUnits => new Promise((resolve, reject) => {
  * @param {Object} response.adUnitCodes
  * @returns {void}
  */
-bidder.handleResponse = ({ adUnitCodes, ...rest }) => {
+bidder.handleResponse = ({ adUnitCodes }) => {
   var pbjs = window.pbjs || {};
   var googletag = window.googletag || {};
   googletag.cmd.push(function () {

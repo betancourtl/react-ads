@@ -4,14 +4,13 @@ import loadScript from './initialize';
 
 const bidder = new Bidder('amazon');
 
-bidder.init = () => {
-  loadScript();
+bidder.init = (addScript = loadScript) => {
+  addScript();
   window.apstag.init({
     pubID: 123,
     adServer: 'googletag',
     bidTimeout: 1000,
   });
-  console.log('amazon initialized');
 };
 
 bidder.fetchBids = adUnits => new Promise((resolve, reject) => {
@@ -29,17 +28,14 @@ bidder.fetchBids = adUnits => new Promise((resolve, reject) => {
 });
 
 bidder.onBidWon = () => {
-  console.log('amazon:onBidWon');
 };
 
 bidder.onTimeout = () => {
-  console.log('amazon:timeout');
 };
 
-bidder.handleResponse = (bids) => {
+bidder.handleResponse = bids => {
   const googletag = window.googletag;
   googletag.cmd.push(function () {
-    console.log('amazon bids', bids);
     bids.forEach(({ amzniid, amznbid, slotID }) => {
       window.googletag
         .pubads()

@@ -40,7 +40,7 @@
   "scripts": {
     "lint": "eslint ./src/**/*.js",
     "start": "webpack-dev-server --mode development && npm run build:watch",
-    "test": "jest",
+    "test": "jest --coverage",
     "test:watch": "jest --watch --verbose",
     "clean-dir": "rm -rf ./dist",
     "build": "NODE_ENV=production npm run clean-dir && babel src --out-dir dist --ignore '**/*.spec.js'",
