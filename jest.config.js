@@ -31,6 +31,8 @@ module.exports = {
     'src/index.js',
     'src/devTools',
     'src/utils/Bidder/amazon/initialize.js',
+    'src/utils/Bidder/amazon',
+    'src/utils/Bidder/prebid',
   ],
 
   // A list of reporter names that Jest uses when writing coverage reports
