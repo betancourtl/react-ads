@@ -19,53 +19,39 @@ var PubSub = function PubSub() {
 
   _classCallCheck(this, PubSub);
 
-  _defineProperty(this, "on", function () {
-    var eventName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    var eventCallback = arguments.length > 1 ? arguments[1] : undefined;
-    var events = _this.state.events[eventName];
-
-    if (!events) {
-      _this.state.events[eventName] = [eventCallback];
-    } else {
-      _this.state.events[eventName].push(eventCallback);
-    }
-  });
-
-  _defineProperty(this, "clear", function () {
-    _this.state.events = {};
-  });
-
-  _defineProperty(this, "emit", function () {
-    var eventName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
+  _defineProperty(this, "emit", function (name) {
     for (var _len = arguments.length, props = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       props[_key - 1] = arguments[_key];
     }
 
-    var event = _this.state.events[eventName];
-    if (!event) return;
-    event.forEach(function (fn) {
+    if (_this.events[name]) _this.events[name].forEach(function (fn) {
       return fn.apply(void 0, props);
     });
   });
 
-  this.state = {
-    events: {}
-  };
+  _defineProperty(this, "on", function (name, handler) {
+    if (!_this.events[name]) _this.events[name] = [];
+
+    _this.events[name].push(handler);
+  });
+
+  _defineProperty(this, "off", function (name, handler) {
+    if (_this.events[name]) _this.events[name].splice(_this.events[name].indexOf(handler));
+  });
+
+  _defineProperty(this, "clear", function () {
+    _this.events = {};
+  });
+
+  this.events = {};
 }
 /**
- * This callback is a function that can be passed to the PubSub event emitter.
- * @callback eventCallback
- * @param {*}
- */
-
-/**
- * Will subscribe to an event, so that when the emit method is called. The
- * callback function can be called.
- * @function
- * @param {String} eventName - The event name that we want to subscript to.
- * @param {Function} eventCallback - The function that we want to call when an event happens.
- */
+* Will emit an action and then call the functions that are subscribed to
+* the event.
+* @function
+* @param {String} name - The event that we want to emit.
+* @param {*} props - parameters to pass to the callback.
+*/
 ;
 
 var _default = PubSub;

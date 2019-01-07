@@ -104,8 +104,6 @@ function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      var _closingHandle;
-
       var styles = {
         devTools: {
           position: 'fixed',
@@ -118,11 +116,20 @@ function (_React$Component) {
           transform: this.state.isOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform .2s ease '
         },
-        closingHandle: (_closingHandle = {
+        closingHandle: {
           position: 'absolute',
           width: '32px',
-          height: '32px'
-        }, _defineProperty(_closingHandle, "position", 'absolute'), _defineProperty(_closingHandle, "width", '32px'), _defineProperty(_closingHandle, "height", '32px'), _defineProperty(_closingHandle, "left", '100%'), _defineProperty(_closingHandle, "top", 0), _defineProperty(_closingHandle, "backgroundColor", 'white'), _defineProperty(_closingHandle, "display", 'flex'), _defineProperty(_closingHandle, "alignItems", 'center'), _defineProperty(_closingHandle, "justifyContent", 'center'), _defineProperty(_closingHandle, "border", '1px solid #ccc'), _defineProperty(_closingHandle, "background", '#222'), _defineProperty(_closingHandle, "color", 'white'), _closingHandle)
+          height: '32px',
+          left: '100%',
+          top: 0,
+          backgroundColor: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '1px solid #ccc',
+          background: '#222',
+          color: 'white'
+        }
       };
       return _react.default.createElement("div", {
         id: "ad-tools",
