@@ -1,10 +1,16 @@
 module.exports = {
+  "parser": "babel-eslint",
+  "settings": {
+    "react": {
+      "version": "detect",
+    },
+  },
   "env": {
     "browser": true,
     "commonjs": true,
     "node": true,
     "es6": true,
-    "jest": true,    
+    "jest": true,
   },
   "globals": {
     "expect": true,

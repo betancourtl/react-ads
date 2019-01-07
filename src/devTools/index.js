@@ -6,7 +6,7 @@ class DevTools extends React.Component {
     this.state = {
       adUnits: [],
       isOpen: true,
-    }
+    };
   }
 
   creatItem = (props = {}) => ({
@@ -43,8 +43,8 @@ class DevTools extends React.Component {
 
   toggleTools = () => {
     this.setState({
-      isOpen: !this.state.isOpen,
-    })
+      isOpen: !this.state.isOpen
+    });
   }
 
   render() {
@@ -65,9 +65,6 @@ class DevTools extends React.Component {
         position: 'absolute',
         width: '32px',
         height: '32px',
-        position: 'absolute',
-        width: '32px',
-        height: '32px',
         left: '100%',
         top: 0,
         backgroundColor: 'white',
@@ -78,7 +75,7 @@ class DevTools extends React.Component {
         background: '#222',
         color: 'white',
       },
-    }
+    };
 
     return (
       <div id="ad-tools" style={styles.devTools}>

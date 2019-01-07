@@ -21,6 +21,7 @@
     "@babel/register": "^7.0.0",
     "@webdeveloperpr/prebid": "github:webdeveloperpr/prebid#master",
     "babel-core": "^7.0.0-bridge",
+    "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.4",
     "babel-preset-minify": "^0.5.0",
@@ -41,7 +42,7 @@
     "webpack-dev-server": "^3.1.14"
   },
   "scripts": {
-    "lint": "eslint ./src/**/*.js",
+    "lint": "eslint ./src/**/*.js --fix",
     "start": "webpack-dev-server --mode development && npm run build:watch",
     "test": "jest --coverage",
     "test:watch": "node node_modules/.bin/jest --watch --verbose false",
