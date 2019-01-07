@@ -5,49 +5,47 @@
  */
 class PubSub {
   constructor() {
-    this.state = {
-      events: {},
-    };
+    this.events = {};
   }
 
   /**
-   * This callback is a function that can be passed to the PubSub event emitter.
-   * @callback eventCallback
-   * @param {*}
-   */
+ * Will emit an action and then call the functions that are subscribed to
+ * the event.
+ * @function
+ * @param {String} name - The event that we want to emit.
+ * @param {*} props - parameters to pass to the callback.
+ */
+  emit = (name = '', ...props) => {
+    if (!this.events[name]) return;
+    this.events[name].forEach(fn => fn(...props));
+  };
 
   /**
    * Will subscribe to an event, so that when the emit method is called. The
    * callback function can be called.
    * @function
-   * @param {String} eventName - The event name that we want to subscript to.
-   * @param {Function} eventCallback - The function that we want to call when an event happens.
+   * @param {String} name - The event name that we want to subscript to.
+   * @param {Function} handler - The function that we want to call when an event happens.
    */
-  on = (eventName = '', eventCallback) => {
-    const events = this.state.events[eventName];
-
-    if (!events) {
-      this.state.events[eventName] = [eventCallback];
-    } else {
-      this.state.events[eventName].push(eventCallback);
-    }
-  };
-
-  clear = () => {
-    this.state.events = {};
+  on = (name = '', handler) => {
+    if (!this.events[name]) this.events[name] = [];
+    this.events[name].push(handler);
   };
 
   /**
-   * Will emit an action and then call the functions that are subscribed to
-   * the event.
+   * Will unsubscribe a handler from the events.
    * @function
-   * @param {String} eventName - The event that we want to emit.
-   * @param {*} props - parameters to pass to the callback.
+   * @param {String} name - The event name that we want to unsubscribe freom.
+   * @param {Function} handler - The function to remove from the event.
    */
-  emit = (eventName = '', ...props) => {
-    const event = this.state.events[eventName];
-    if (!event) return;
-    event.forEach(fn => fn(...props));
+  off = (name, handler) => {
+    if (!this.events[name]) return;
+    var handlerIdx = this.events[name].indexOf(handler);
+    this.events[name].splice(handlerIdx);
+  };
+
+  clear = () => {
+    this.events = {};
   };
 }
 
