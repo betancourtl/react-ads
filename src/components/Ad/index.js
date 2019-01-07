@@ -56,6 +56,7 @@ class Ad extends Component {
      */
     this.id = props.id || props.generateId(props.type);
   }
+
   /**
    * Get the slot map sizes based on the media query breakpoints
    * @function
@@ -109,20 +110,6 @@ class Ad extends Component {
   isFunction = maybeFn => typeof maybeFn === 'function';
 
   /**
-   * Will define this slot on the page.
-   * @function   
-   * @returns {void}
-   */
-  defineSlot = () => {
-    this.slot = this.props.define(
-      this.props.outOfPageSlot,
-      this.props.adUnitPath,
-      this.mapSize,
-      this.id
-    );
-  };
-
-  /**
    * Will display this slot. With SRA disabled display will not fetch the ad.
    * @function
    * @returns {void}
@@ -156,8 +143,7 @@ class Ad extends Component {
    * @returns {void}
    */
   breakPointRefresh = () => {
-    if (!this.displayed) return;
-    this.refresh();
+    if (this.displayed) this.refresh();
   }
 
   /**
@@ -166,9 +152,9 @@ class Ad extends Component {
   * @function   
   * @returns {void}
   */
-  refreshWhenVisible() {
-    if (this.isVisible && !this.refreshed) {
-      this.props.cmdPush(this.define);
+  refreshWhenVisible() {      
+    if (this.props.lazy&& this.isVisible && !this.refreshed) {
+      this.define();
       window.removeEventListener('scroll', this.refreshWhenVisible);
     }
   };
@@ -178,7 +164,7 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  setCollapseEmpty() {
+  setCollapseEmpty() { // Test
     if (!this.props.setCollapseEmpty) return;
     this.slot.setCollapseEmptyDiv(true, true);
   };
@@ -188,7 +174,7 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  setTargeting() {
+  setTargeting() { // Test
     Object
       .entries(this.props.targeting)
       .map(([k, v]) => this.slot.setTargeting(k, v));
@@ -212,7 +198,7 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  setMQListeners() {
+  setMQListeners() { // Test
     if (!this.props.sizeMap) return;
     this.props.sizeMap.forEach(({ viewPort: [width] }) => {
       const mq = window.matchMedia(`(max-width: ${width}px)`);
@@ -249,12 +235,12 @@ class Ad extends Component {
    * @param {Function} cb - Callback function for the event.
    * @returns {void}
    */
-  handleGPTEvent(event, cb) {
-    if (!this.isFunction(cb)) return;
-    this.props.addEventListener(event, e => {
-      if (e.slot !== this.slot) return;
-      cb(this.withAdProps(e));
-    });
+  handleGPTEvent(event, cb) { // TEST
+    if (this.isFunction(cb)) {
+      this.props.addEventListener(event, e => {
+        if (e.slot == this.slot) cb(this.withAdProps(e));
+      });
+    }
   }
 
   /**
@@ -300,10 +286,15 @@ class Ad extends Component {
     this.props.onSlotVisibilityChanged
   );
 
-  define = () => {
+  define() {
     this.props.cmdPush(() => {
-      // event start
-      this.defineSlot();
+      this.slot = this.props.define(
+        this.props.outOfPageSlot,
+        this.props.adUnitPath,
+        this.mapSize,
+        this.id
+      );
+
       this.onSlotOnload();
       this.onSlotRenderEnded();
       this.onImpressionViewable();
@@ -424,6 +415,7 @@ Ad.propTypes = {
 
 const MaybeHiddenAd = hideHOC(Ad);
 
+// TEST
 const stateToProps = ({ adUnitPath, generateId, lazyOffset, networkId, bidHandler, ...rest }, props) => {
   const _networkId = props.networkId || networkId;
   const _adUnitPath = adUnitPath

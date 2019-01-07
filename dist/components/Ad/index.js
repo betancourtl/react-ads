@@ -83,14 +83,8 @@ function (_Component) {
       return typeof maybeFn === 'function';
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "defineSlot", function () {
-      _this.slot = _this.props.define(_this.props.outOfPageSlot, _this.props.adUnitPath, _this.mapSize, _this.id);
-    });
-
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "breakPointRefresh", function () {
-      if (!_this.displayed) return;
-
-      _this.refresh();
+      if (_this.displayed) _this.refresh();
     });
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "withAdProps", function (props) {
@@ -114,35 +108,6 @@ function (_Component) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "onSlotVisibilityChanged", function () {
       return _this.handleGPTEvent(_googletag.events.slotVisibilityChanged, _this.props.onSlotVisibilityChanged);
-    });
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "define", function () {
-      _this.props.cmdPush(function () {
-        // event start
-        _this.defineSlot();
-
-        _this.onSlotOnload();
-
-        _this.onSlotRenderEnded();
-
-        _this.onImpressionViewable();
-
-        _this.onSlotVisibilityChanged(); //configure slot
-
-
-        _this.setMappingSize();
-
-        _this.setMQListeners();
-
-        _this.setCollapseEmpty();
-
-        _this.setTargeting(); // display & fetch slot
-
-
-        _this.display();
-
-        _this.refresh();
-      });
     });
 
     _this.slot = null;
@@ -232,8 +197,8 @@ function (_Component) {
     * @returns {void}
     */
     value: function refreshWhenVisible() {
-      if (this.isVisible && !this.refreshed) {
-        this.props.cmdPush(this.define);
+      if (this.props.lazy && this.isVisible && !this.refreshed) {
+        this.define();
         window.removeEventListener('scroll', this.refreshWhenVisible);
       }
     }
@@ -246,6 +211,7 @@ function (_Component) {
      * @returns {void}
      */
     value: function setCollapseEmpty() {
+      // Test
       if (!this.props.setCollapseEmpty) return;
       this.slot.setCollapseEmptyDiv(true, true);
     }
@@ -260,6 +226,7 @@ function (_Component) {
     value: function setTargeting() {
       var _this2 = this;
 
+      // Test
       Object.entries(this.props.targeting).map(function (_ref) {
         var _ref2 = _slicedToArray(_ref, 2),
             k = _ref2[0],
@@ -295,6 +262,7 @@ function (_Component) {
     value: function setMQListeners() {
       var _this3 = this;
 
+      // Test
       if (!this.props.sizeMap) return;
       this.props.sizeMap.forEach(function (_ref3) {
         var _ref3$viewPort = _slicedToArray(_ref3.viewPort, 1),
@@ -340,11 +308,12 @@ function (_Component) {
     value: function handleGPTEvent(event, cb) {
       var _this4 = this;
 
-      if (!this.isFunction(cb)) return;
-      this.props.addEventListener(event, function (e) {
-        if (e.slot !== _this4.slot) return;
-        cb(_this4.withAdProps(e));
-      });
+      // TEST
+      if (this.isFunction(cb)) {
+        this.props.addEventListener(event, function (e) {
+          if (e.slot == _this4.slot) cb(_this4.withAdProps(e));
+        });
+      }
     }
     /**
      * Will listen to the slotOnload event and then call the passed function.
@@ -352,6 +321,37 @@ function (_Component) {
      * @returns {void}
      */
 
+  }, {
+    key: "define",
+    value: function define() {
+      var _this5 = this;
+
+      this.props.cmdPush(function () {
+        _this5.slot = _this5.props.define(_this5.props.outOfPageSlot, _this5.props.adUnitPath, _this5.mapSize, _this5.id);
+
+        _this5.onSlotOnload();
+
+        _this5.onSlotRenderEnded();
+
+        _this5.onImpressionViewable();
+
+        _this5.onSlotVisibilityChanged(); //configure slot
+
+
+        _this5.setMappingSize();
+
+        _this5.setMQListeners();
+
+        _this5.setCollapseEmpty();
+
+        _this5.setTargeting(); // display & fetch slot
+
+
+        _this5.display();
+
+        _this5.refresh();
+      });
+    }
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
@@ -372,12 +372,12 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this5 = this;
+      var _this6 = this;
 
       return _react.default.createElement("div", {
         id: this.id,
         ref: function ref(_ref4) {
-          return _this5.ref = _ref4;
+          return _this6.ref = _ref4;
         },
         style: _objectSpread({}, this.props.style),
         className: this.props.className
@@ -386,7 +386,7 @@ function (_Component) {
   }, {
     key: "mapSize",
     get: function get() {
-      var _this6 = this;
+      var _this7 = this;
 
       if (!this.props.sizeMap) return this.props.size;
 
@@ -395,7 +395,7 @@ function (_Component) {
           var _ref5$viewPort = _slicedToArray(_ref5.viewPort, 1),
               width = _ref5$viewPort[0];
 
-          return width <= _this6.props.getWindowWidth();
+          return width <= _this7.props.getWindowWidth();
         }).sort(function (a, b) {
           return a > b;
         }).slice(0, 1)[0].slots;
@@ -497,7 +497,8 @@ Ad.propTypes = (_Ad$propTypes = {
   })),
   refresh: _propTypes.default.func
 }, _defineProperty(_Ad$propTypes, "adUnitPath", _propTypes.default.string), _defineProperty(_Ad$propTypes, "define", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "display", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "cmdPush", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "destroyAd", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "networkId", _propTypes.default.number.isRequired), _defineProperty(_Ad$propTypes, "sizeMapping", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "getWindowWidth", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "addEventListener", _propTypes.default.func.isRequired), _Ad$propTypes);
-var MaybeHiddenAd = (0, _hide.default)(Ad);
+var MaybeHiddenAd = (0, _hide.default)(Ad); // TEST
+
 exports.MaybeHiddenAd = MaybeHiddenAd;
 
 var stateToProps = function stateToProps(_ref6, props) {

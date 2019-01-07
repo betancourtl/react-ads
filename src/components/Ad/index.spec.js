@@ -152,4 +152,66 @@ describe('<Ad />', () => {
       }
     });
   });
+
+  test('breakPointRefresh, is called if the displayed property is true.', () => {
+    const props = createProps();
+    const refreshMock = props.refresh;
+    const wrapper = mount(<Ad {...props} />);
+    const instance = wrapper.instance();
+    instance.displayed = true;
+    instance.breakPointRefresh();
+    expect(refreshMock).toBeCalledTimes(1);
+  });
+
+  test('breakPointRefresh, is not called if the displayed property is false.', () => {
+    const props = createProps();
+    const refreshMock = props.refresh;
+    const wrapper = mount(<Ad {...props} />);
+    const instance = wrapper.instance();
+    instance.displayed = false;
+    instance.breakPointRefresh();
+    expect(refreshMock).toBeCalledTimes(0);
+  });
+
+  test(
+    `refreshWhenVisible, is called when 
+    props.lazy = true
+    this.isVisible = true
+    this.refreshed = false
+  `, () => {
+      jest.spyOn(Ad.prototype, 'isVisible', 'get').mockImplementation(() => true);
+      const define = jest.spyOn(Ad.prototype, 'define');
+      const props = createProps({
+        lazy: true,
+      });
+      const wrapper = mount(<Ad {...props} />);
+      const instance = wrapper.instance();
+      instance.refreshed = false;
+      //expected conditions
+      expect(wrapper.props().lazy).toBe(true);
+      expect(instance.isVisible).toBe(true);
+      expect(instance.refreshed).toBe(false);
+      expect(define).toBeCalledTimes(1);
+    });
+
+  test(
+    `refreshWhenVisible does not call define when
+      props.lazy = true
+      this.isVisible = false
+      this.refreshed = false
+    `, () => {
+      jest.spyOn(Ad.prototype, 'isVisible', 'get').mockImplementation(() => false);
+      const define = jest.spyOn(Ad.prototype, 'define');
+      const props = createProps({
+        lazy: true,
+      });
+      const wrapper = mount(<Ad {...props} />);
+      const instance = wrapper.instance();
+      instance.refreshed = false;
+      //expected conditions
+      expect(wrapper.props().lazy).toBe(true);
+      expect(instance.isVisible).toBe(false);
+      expect(instance.refreshed).toBe(false);
+      expect(define).toBeCalledTimes(0);
+    });
 });
