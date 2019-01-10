@@ -20,6 +20,7 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.0.0",
     "@storybook/react": "^4.1.6",
+    "@storybook/storybook-deployer": "^2.8.1",
     "@webdeveloperpr/prebid": "github:webdeveloperpr/prebid#master",
     "babel-core": "^7.0.0-bridge",
     "babel-eslint": "^10.0.1",
@@ -45,10 +46,15 @@
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.14"
   },
+  "storybook-deployer": {
+    "gitUsername": "webdeveloperpr",
+    "gitEmail": "webdeveloperpr@gmail.com",
+    "commitMessage": "Deploy Storybook [skip ci]"
+  },
   "scripts": {
+    "deploy-storybook": "rm -rf docs && storybook-to-ghpages --o=docs",
     "lint": "eslint ./src/**/*.js --fix",
     "start": "start-storybook -p 9001 -c .storybook",
-    "build:storybook": "rm -rf docs && build-storybook -c .storybook -o docs",
     "test": "jest --coverage",
     "test:watch": "node node_modules/.bin/jest --watch --verbose false",
     "prebuild": "rm -rf ./dist",
