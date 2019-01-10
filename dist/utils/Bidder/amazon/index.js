@@ -25,8 +25,7 @@ bidder.init = function () {
 };
 
 bidder.fetchBids = function (adUnits) {
-  return new Promise(function (resolve, reject) {
-    var id = setTimeout(reject, bidder.safeTimeout);
+  return new Promise(function (resolve) {
     var bids = adUnits.reduce(function (acc, _ref) {
       var bids = _ref.bids;
       var newAcc = acc.concat(bids);
@@ -35,7 +34,6 @@ bidder.fetchBids = function (adUnits) {
     window.apstag.fetchBids({
       slots: bids
     }, function () {
-      clearTimeout(id);
       resolve.apply(void 0, arguments);
     });
   });

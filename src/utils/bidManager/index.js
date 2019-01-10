@@ -50,7 +50,7 @@ const bidManager = (props = {}) => {
 
       // Fetch the bids.
       bidDispatcher(
-        bidProviders.map(bidder => bidder.fetchBids(nextBids[bidder.name])),
+        bidProviders.map(bidder => bidder._fetchBids(nextBids[bidder.name])),
         bidTimeout
       )
         .then((responses) => {

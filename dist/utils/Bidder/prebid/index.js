@@ -33,12 +33,10 @@ bidder.onTimeout = function () {};
 
 
 bidder.fetchBids = function (adUnits) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     var pbjs = window.pbjs || {};
     pbjs.que.push(function () {
-      // In case PBJS doesn't load
-      setTimeout(reject, bidder.safeTimeout); // Set new adUnits
-
+      // Set new adUnits
       var adUnitCodes = adUnits.map(function (x) {
         return x.code;
       });

@@ -72,7 +72,7 @@ var bidManager = function bidManager() {
 
 
       (0, _bidDispatcher.default)(bidProviders.map(function (bidder) {
-        return bidder.fetchBids(nextBids[bidder.name]);
+        return bidder._fetchBids(nextBids[bidder.name]);
       }), bidTimeout).then(function (responses) {
         responses.forEach(function (res, i) {
           if (res.status === 'fulfilled') {

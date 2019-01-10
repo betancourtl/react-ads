@@ -124,7 +124,7 @@ class Bidder {
    * @returns {Promise}
    */
   fetchBids = () => {
-    this._interfaceError('getBids');
+    this._interfaceError('fetchBids');
   };
 }
 

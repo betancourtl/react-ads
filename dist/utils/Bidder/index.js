@@ -48,6 +48,25 @@ var Bidder = function Bidder(name) {
     _this._interfaceError('onBidWon');
   });
 
+  _defineProperty(this, "_fetchBids", function () {
+    for (var _len = arguments.length, props = new Array(_len), _key = 0; _key < _len; _key++) {
+      props[_key] = arguments[_key];
+    }
+
+    return new Promise(function (resolve, reject) {
+      var id = setTimeout(function () {
+        reject('Timed Out');
+      }, _this.safeTimeout);
+      return _this.fetchBids.apply(_this, props).then(resolve).catch(reject).finally(function () {
+        clearTimeout(id);
+      });
+    });
+  });
+
+  _defineProperty(this, "fetchBids", function () {
+    _this._interfaceError('fetchBids');
+  });
+
   if (!name) throw Error('Bidder expects a name to be passed.');
   /**
    * The name of the bidder.
@@ -85,6 +104,5 @@ var Bidder = function Bidder(name) {
  */
 ;
 
-;
 var _default = Bidder;
 exports.default = _default;

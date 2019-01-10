@@ -8,7 +8,7 @@
     "react": "^16.x",
     "react-dom": "^16.x"
   },
-  "dependencies": {    
+  "dependencies": {
     "lodash.debounce": "^4.0.8"
   },
   "devDependencies": {
