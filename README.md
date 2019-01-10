@@ -3,7 +3,7 @@
 
 This package allows you to render ads with DFP and Prebid using React components.
 
-### Click [here](webdeveloperpr.github.io/react-ads) to see storybook examples.
+### Click [here](https://webdeveloperpr.github.io/react-ads) to see storybook examples.
 
 ## <Provider \/>
 
