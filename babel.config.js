@@ -19,7 +19,7 @@ module.exports = (api) => {
         plugins,
       },
       production: {
-        presets: presets.concat(['minify', { builtIns: false }]),
+        presets,
         plugins,
         comments: false,
       }
