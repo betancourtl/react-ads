@@ -1,4 +1,5 @@
 import React from 'react';
+import { storiesOf } from '@storybook/react';
 import { Provider, Ad } from '../../src';
 import prebid from '../../src/utils/Bidder/prebid';
 import amazon from '../../src/utils/Bidder/amazon';
@@ -54,4 +55,7 @@ class Page extends React.Component {
   }
 }
 
-export default Page;
+storiesOf('Prebid', module)
+  .add('with text', () => (
+    <Page />
+  ));

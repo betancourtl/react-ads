@@ -23,8 +23,6 @@ var _inViewport = _interopRequireDefault(require("../../utils/inViewport"));
 
 var _googletag = require("../../utils/googletag");
 
-var _Ad$propTypes;
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
@@ -158,7 +156,7 @@ function (_Component) {
      * @returns {void}
      */
     value: function display() {
-      this.props.display(this.id);
+      this.props.gpt.display(this.id);
       this.displayed = true;
     }
     /**
@@ -248,7 +246,7 @@ function (_Component) {
       if (!this.props.sizeMap) return;
       var mapping = this.props.sizeMap.reduce(function (acc, x) {
         return acc.addSize(x.viewPort, x.slots);
-      }, (0, _googletag.sizeMapping)());
+      }, this.props.gpt.sizeMapping());
       this.slot.defineSizeMapping(mapping.build());
     }
     /**
@@ -310,7 +308,7 @@ function (_Component) {
 
       // TEST
       if (this.isFunction(cb)) {
-        this.props.addEventListener(event, function (e) {
+        this.props.gpt.addEventListener(event, function (e) {
           if (e.slot == _this4.slot) cb(_this4.withAdProps(e));
         });
       }
@@ -326,8 +324,8 @@ function (_Component) {
     value: function define() {
       var _this5 = this;
 
-      this.props.cmdPush(function () {
-        _this5.slot = _this5.props.define(_this5.props.outOfPageSlot, _this5.props.adUnitPath, _this5.mapSize, _this5.id);
+      this.props.gpt.cmdPush(function () {
+        _this5.slot = _this5.props.gpt.define(_this5.props.outOfPageSlot, _this5.props.adUnitPath, _this5.mapSize, _this5.id);
 
         _this5.onSlotOnload();
 
@@ -355,13 +353,6 @@ function (_Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      console.log('Ad Mounted');
-      performance.mark('ads:end');
-      performance.measure('ads:', 'ads:start', 'ads:end');
-      var measures = performance.getEntriesByName('ads:');
-      var time = measures[measures.length - 1];
-      console.log('time', time);
-
       if (!this.props.lazy) {
         this.define();
       } else {
@@ -374,7 +365,7 @@ function (_Component) {
     value: function componentWillUnmount() {
       this.unsetMQListeners();
       window.removeEventListener('scroll', this.refreshWhenVisible);
-      this.props.destroyAd(this.slot);
+      this.props.gpt.destroySlots(this.slot);
     }
   }, {
     key: "render",
@@ -469,20 +460,23 @@ Ad.defaultProps = {
   onSlotRenderEnded: null,
   onImpressionViewable: null,
   onSlotVisibilityChanged: null,
-  // gpt events
-  define: _googletag.define,
-  display: _googletag.display,
-  cmdPush: _googletag.cmdPush,
-  destroyAd: _googletag.destroyAd,
-  sizeMapping: _googletag.sizeMapping,
   getWindowWidth: _googletag.getWindowWidth,
-  addEventListener: _googletag.addEventListener
+  gpt: {
+    define: _googletag.define,
+    display: _googletag.display,
+    cmdPush: _googletag.cmdPush,
+    sizeMapping: _googletag.sizeMapping,
+    destroySlots: _googletag.destroySlots,
+    addEventListener: _googletag.addEventListener
+  }
 };
-Ad.propTypes = (_Ad$propTypes = {
+Ad.propTypes = {
   lazy: _propTypes.default.bool,
   type: _propTypes.default.string,
+  refresh: _propTypes.default.func,
   style: _propTypes.default.object,
   bidHandler: _propTypes.default.func,
+  priority: _propTypes.default.number,
   className: _propTypes.default.string,
   networkId: _propTypes.default.number,
   targeting: _propTypes.default.object,
@@ -496,14 +490,21 @@ Ad.propTypes = (_Ad$propTypes = {
   generateId: _propTypes.default.func.isRequired,
   adUnitPath: _propTypes.default.string.isRequired,
   onSlotVisibilityChanged: _propTypes.default.func,
-  priority: _propTypes.default.number,
+  getWindowWidth: _propTypes.default.func.isRequired,
   size: _propTypes.default.oneOfType([_propTypes.default.array.isRequired, _propTypes.default.string.isRequired]),
   sizeMap: _propTypes.default.arrayOf(_propTypes.default.shape({
     viewPort: _propTypes.default.arrayOf(_propTypes.default.number),
     slots: _propTypes.default.oneOfType([_propTypes.default.arrayOf(_propTypes.default.number), _propTypes.default.arrayOf(_propTypes.default.arrayOf(_propTypes.default.number))])
   })),
-  refresh: _propTypes.default.func
-}, _defineProperty(_Ad$propTypes, "adUnitPath", _propTypes.default.string), _defineProperty(_Ad$propTypes, "define", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "display", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "cmdPush", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "destroyAd", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "networkId", _propTypes.default.number.isRequired), _defineProperty(_Ad$propTypes, "sizeMapping", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "getWindowWidth", _propTypes.default.func.isRequired), _defineProperty(_Ad$propTypes, "addEventListener", _propTypes.default.func.isRequired), _Ad$propTypes);
+  gpt: _propTypes.default.shape({
+    define: _propTypes.default.func.isRequired,
+    display: _propTypes.default.func.isRequired,
+    cmdPush: _propTypes.default.func.isRequired,
+    destroySlots: _propTypes.default.func.isRequired,
+    sizeMapping: _propTypes.default.func.isRequired,
+    addEventListener: _propTypes.default.func.isRequired
+  })
+};
 var MaybeHiddenAd = (0, _hide.default)(Ad); // TEST
 
 exports.MaybeHiddenAd = MaybeHiddenAd;
