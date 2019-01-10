@@ -119,6 +119,7 @@ Provider.propTypes = {
   targeting: PropTypes.object,
   chunkSize: PropTypes.number,
   adUnitPath: PropTypes.string,
+  bidTimeout: PropTypes.number,
   lazyOffset: PropTypes.number,
   setCentering: PropTypes.bool,
   bidProviders: PropTypes.array,

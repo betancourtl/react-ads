@@ -161,15 +161,15 @@ function (_Component) {
       this.props.display(this.id);
       this.displayed = true;
     }
-  }, {
-    key: "refresh",
-
     /**
      * Will refresh this slot using the refresh function passed by the provider.
      * component.
      * @function   
      * @returns {void}
      */
+
+  }, {
+    key: "refresh",
     value: function refresh() {
       this.props.refresh({
         priority: this.props.priority,
@@ -202,27 +202,27 @@ function (_Component) {
         window.removeEventListener('scroll', this.refreshWhenVisible);
       }
     }
-  }, {
-    key: "setCollapseEmpty",
-
     /**
      * Will collapse this ad whenever it is empty.
      * @function   
      * @returns {void}
      */
+
+  }, {
+    key: "setCollapseEmpty",
     value: function setCollapseEmpty() {
       // Test
       if (!this.props.setCollapseEmpty) return;
       this.slot.setCollapseEmptyDiv(true, true);
     }
-  }, {
-    key: "setTargeting",
-
     /**
      * Will set the targeting parameters for this ad.
      * @function   
      * @returns {void}
      */
+
+  }, {
+    key: "setTargeting",
     value: function setTargeting() {
       var _this2 = this;
 
@@ -251,14 +251,14 @@ function (_Component) {
       }, (0, _googletag.sizeMapping)());
       this.slot.defineSizeMapping(mapping.build());
     }
-  }, {
-    key: "setMQListeners",
-
     /**
      * Will listen to mediaQueries for hiding/refreshing ads on the page.
      * @function   
      * @returns {void}
      */
+
+  }, {
+    key: "setMQListeners",
     value: function setMQListeners() {
       var _this3 = this;
 
@@ -276,14 +276,14 @@ function (_Component) {
         });
       });
     }
-  }, {
-    key: "unsetMQListeners",
-
     /**
      * Will remove the listener from the page.
      * @function   
      * @returns {void}
      */
+
+  }, {
+    key: "unsetMQListeners",
     value: function unsetMQListeners() {
       this.listeners.forEach(function (fn) {
         return fn();
@@ -355,6 +355,13 @@ function (_Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
+      console.log('Ad Mounted');
+      performance.mark('ads:end');
+      performance.measure('ads:', 'ads:start', 'ads:end');
+      var measures = performance.getEntriesByName('ads:');
+      var time = measures[measures.length - 1];
+      console.log('time', time);
+
       if (!this.props.lazy) {
         this.define();
       } else {

@@ -1,19 +1,24 @@
 import { Ad } from './';
 
-const createProps = (props = {}) => ({
+const createProps = ({ gpt, ...props } = {}) => ({
   adUnitPath: '',
   networkId: 123,
   enableAds: true,
   define: jest.fn(),
   refresh: jest.fn(),
-  display: jest.fn(),
-  cmdPush: jest.fn(),
-  destroyAd: jest.fn(),
-  addService: jest.fn(),
   generateId: jest.fn(),
-  sizeMapping: jest.fn(),
-  getWindowWidth: jest.fn(),
-  addEventListener: jest.fn(),
+  gpt: {
+    define: jest.fn(),
+    display: jest.fn(),
+    cmdPush: jest.fn(),
+    destroySlots: jest.fn(),
+    addService: jest.fn(),
+    generateId: jest.fn(),
+    sizeMapping: jest.fn(),
+    getWindowWidth: jest.fn(),
+    addEventListener: jest.fn(),
+    ...gpt
+  },
   ...props,
 });
 
@@ -72,20 +77,22 @@ describe('<Ad />', () => {
   test('non-lazy', () => {
     const props = createProps();
     mount(<Ad {...props} />);
-    expect(props.cmdPush).toBeCalledTimes(1);
+    expect(props.gpt.cmdPush).toBeCalledTimes(1);
   });
 
   test('non-lazy', () => {
     const props = createProps({ lazy: true });
     const refreshWhenVisible = jest.spyOn(Ad.prototype, 'refreshWhenVisible');
     mount(<Ad {...props} />);
-    expect(props.cmdPush).toBeCalledTimes(0);
+    expect(props.gpt.cmdPush).toBeCalledTimes(0);
     expect(refreshWhenVisible).toBeCalledTimes(1);
   });
 
   test('calls correct functions in componentWillMount', () => {
     const props = createProps({
-      cmdPush: (fn) => fn(),
+      gpt: {
+        cmdPush: (fn) => fn(),
+      },
       onSlotOnLoad: jest.fn(),
       onSlotRenderEnded: jest.fn(),
       onImpressionViewable: jest.fn(),
@@ -101,7 +108,7 @@ describe('<Ad />', () => {
     const display = jest.spyOn(Ad.prototype, 'display');
     const refresh = jest.spyOn(Ad.prototype, 'refresh');
     const wrapper = mount(<Ad {...props} />);
-    expect(props.define).toBeCalledTimes(1);
+    expect(props.gpt.define).toBeCalledTimes(1);
     expect(handleGPTEvent).toBeCalledTimes(4);
     expect(setMappingSize).toBeCalledTimes(1);
     expect(setMQListeners).toBeCalledTimes(1);
@@ -122,7 +129,7 @@ describe('<Ad />', () => {
     wrapper.unmount();
     expect(componentWillUnmount).toBeCalledTimes(1);
     expect(unsetMQListeners).toBeCalledTimes(1);
-    expect(props.destroyAd).toBeCalledTimes(1);
+    expect(props.gpt.destroySlots).toBeCalledTimes(1);
   });
 
   test('refresh', () => {

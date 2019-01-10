@@ -19,15 +19,16 @@ export const getWindowWidth = () => window.innerWidth;
 export const cmdPush = cb => window.googletag.cmd.push(cb);
 
 /**
- * Destorys google slots.
+ * Destroys google slots.
+ * @param {Slot[]} - Array of slots to destroy.
  * @returns {void}
  */
-export const destroySlots = () => {
-  cmdPush(() => window.googletag.destroySlots());
+export const destroySlots = slots => {
+  cmdPush(() => window.googletag.destroySlots(slots));
 };
 
 /**
- * Will push a 
+ * 
  * @param {Slot[]} Slot - Array of google slots.
  */
 export const refresh = slots => {
@@ -53,7 +54,7 @@ export const define = (outOfPageSlot, adUnitPath, mapSize, id) => {
 };
 
 /**
- * Will destory the googletag slot.
+ * Will destroy the googletag slot.
  * @param {Slot} slot
  * @returns {void}
  */

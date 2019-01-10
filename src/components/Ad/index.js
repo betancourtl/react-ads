@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable react/no-find-dom-node */
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
@@ -11,8 +13,8 @@ import {
   define,
   display,
   cmdPush,
-  destroyAd,
   sizeMapping,
+  destroySlots,
   getWindowWidth,
   addEventListener,
 } from '../../utils/googletag';
@@ -115,9 +117,9 @@ class Ad extends Component {
    * @returns {void}
    */
   display() {
-    this.props.display(this.id);
+    this.props.gpt.display(this.id);
     this.displayed = true;
-  };
+  }
 
   /**
    * Will refresh this slot using the refresh function passed by the provider.
@@ -152,12 +154,12 @@ class Ad extends Component {
   * @function   
   * @returns {void}
   */
-  refreshWhenVisible() {      
-    if (this.props.lazy&& this.isVisible && !this.refreshed) {
+  refreshWhenVisible() {
+    if (this.props.lazy && this.isVisible && !this.refreshed) {
       this.define();
       window.removeEventListener('scroll', this.refreshWhenVisible);
     }
-  };
+  }
 
   /**
    * Will collapse this ad whenever it is empty.
@@ -167,7 +169,7 @@ class Ad extends Component {
   setCollapseEmpty() { // Test
     if (!this.props.setCollapseEmpty) return;
     this.slot.setCollapseEmptyDiv(true, true);
-  };
+  }
 
   /**
    * Will set the targeting parameters for this ad.
@@ -189,9 +191,9 @@ class Ad extends Component {
   setMappingSize() {
     if (!this.props.sizeMap) return;
     const mapping = this.props.sizeMap
-      .reduce((acc, x) => acc.addSize(x.viewPort, x.slots), sizeMapping());
+      .reduce((acc, x) => acc.addSize(x.viewPort, x.slots), this.props.gpt.sizeMapping());
     this.slot.defineSizeMapping(mapping.build());
-  };
+  }
 
   /**
    * Will listen to mediaQueries for hiding/refreshing ads on the page.
@@ -206,7 +208,7 @@ class Ad extends Component {
 
       this.listeners.push(() => mq.removeListener(this.breakPointRefresh));
     });
-  };
+  }
 
   /**
    * Will remove the listener from the page.
@@ -237,7 +239,7 @@ class Ad extends Component {
    */
   handleGPTEvent(event, cb) { // TEST
     if (this.isFunction(cb)) {
-      this.props.addEventListener(event, e => {
+      this.props.gpt.addEventListener(event, e => {
         if (e.slot == this.slot) cb(this.withAdProps(e));
       });
     }
@@ -287,8 +289,8 @@ class Ad extends Component {
   );
 
   define() {
-    this.props.cmdPush(() => {
-      this.slot = this.props.define(
+    this.props.gpt.cmdPush(() => {
+      this.slot = this.props.gpt.define(
         this.props.outOfPageSlot,
         this.props.adUnitPath,
         this.mapSize,
@@ -324,7 +326,7 @@ class Ad extends Component {
   componentWillUnmount() {
     this.unsetMQListeners();
     window.removeEventListener('scroll', this.refreshWhenVisible);
-    this.props.destroyAd(this.slot);
+    this.props.gpt.destroySlots(this.slot);
   }
 
   render() {
@@ -359,21 +361,24 @@ Ad.defaultProps = {
   onSlotRenderEnded: null,
   onImpressionViewable: null,
   onSlotVisibilityChanged: null,
-  // gpt events
-  define: define,
-  display: display,
-  cmdPush: cmdPush,
-  destroyAd: destroyAd,
-  sizeMapping: sizeMapping,
   getWindowWidth: getWindowWidth,
-  addEventListener: addEventListener,
+  gpt: {
+    define,
+    display,
+    cmdPush,
+    sizeMapping,
+    destroySlots,
+    addEventListener,
+  }
 };
 
 Ad.propTypes = {
   lazy: PropTypes.bool,
   type: PropTypes.string,
+  refresh: PropTypes.func,
   style: PropTypes.object,
   bidHandler: PropTypes.func,
+  priority: PropTypes.number,
   className: PropTypes.string,
   networkId: PropTypes.number,
   targeting: PropTypes.object,
@@ -387,7 +392,7 @@ Ad.propTypes = {
   generateId: PropTypes.func.isRequired,
   adUnitPath: PropTypes.string.isRequired,
   onSlotVisibilityChanged: PropTypes.func,
-  priority: PropTypes.number,
+  getWindowWidth: PropTypes.func.isRequired,  
   size: PropTypes.oneOfType([
     PropTypes.array.isRequired,
     PropTypes.string.isRequired,
@@ -400,17 +405,15 @@ Ad.propTypes = {
         PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))
       ])
     })
-  ),
-  refresh: PropTypes.func,
-  adUnitPath: PropTypes.string,
-  define: PropTypes.func.isRequired,
-  display: PropTypes.func.isRequired,
-  cmdPush: PropTypes.func.isRequired,
-  destroyAd: PropTypes.func.isRequired,
-  networkId: PropTypes.number.isRequired,
-  sizeMapping: PropTypes.func.isRequired,
-  getWindowWidth: PropTypes.func.isRequired,
-  addEventListener: PropTypes.func.isRequired,
+  ),    
+  gpt: PropTypes.shape({
+    define: PropTypes.func.isRequired,
+    display: PropTypes.func.isRequired,
+    cmdPush: PropTypes.func.isRequired,
+    destroySlots: PropTypes.func.isRequired,
+    sizeMapping: PropTypes.func.isRequired,
+    addEventListener: PropTypes.func.isRequired,
+  }),
 };
 
 const MaybeHiddenAd = hideHOC(Ad);
@@ -437,7 +440,7 @@ const stateToProps = ({ adUnitPath, generateId, lazyOffset, networkId, bidHandle
   else if (props.bidHandler) results.bidHandler = x => props.bidHandler(x, []);
 
   return results;
-}
+};
 
 export {
   Ad,
