@@ -23,11 +23,9 @@ bidder.onTimeout = () => {
  * @param {Object} adUnits 
  * @returns {Promise}
  */
-bidder.fetchBids = adUnits => new Promise((resolve, reject) => {
+bidder.fetchBids = adUnits => new Promise(resolve => {
   var pbjs = window.pbjs || {};
   pbjs.que.push(function () {
-    // In case PBJS doesn't load
-    setTimeout(reject, bidder.safeTimeout);
     
     // Set new adUnits
     const adUnitCodes = adUnits.map(x => x.code);

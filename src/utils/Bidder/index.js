@@ -99,6 +99,33 @@ class Bidder {
   onBidWon = () => {
     this._interfaceError('onBidWon');
   }
-};
+
+  /**
+   * Will automatically handle timing out the promise in the case
+   * that it exceeds the ammount of time that it should take to
+   * get bids back from the server.
+   */
+  _fetchBids = (...props) => new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
+      reject('Timed Out');
+    }, this.safeTimeout);
+
+    return this.fetchBids(...props)
+      .then(resolve)
+      .catch(reject)
+      .finally(() => {
+        clearTimeout(id);
+      });
+  });
+
+  /**
+   * Will make the API call to fetch the bids.
+   * @function
+   * @returns {Promise}
+   */
+  fetchBids = () => {
+    this._interfaceError('getBids');
+  };
+}
 
 export default Bidder;

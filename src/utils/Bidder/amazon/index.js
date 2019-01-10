@@ -13,8 +13,7 @@ bidder.init = (addScript = loadScript) => {
   });
 };
 
-bidder.fetchBids = adUnits => new Promise((resolve, reject) => {
-  const id = setTimeout(reject, bidder.safeTimeout);
+bidder.fetchBids = adUnits => new Promise((resolve) => {
 
   const bids = adUnits.reduce((acc, { bids }) => {
     const newAcc = acc.concat(bids);
@@ -22,7 +21,6 @@ bidder.fetchBids = adUnits => new Promise((resolve, reject) => {
   }, []);
 
   window.apstag.fetchBids({ slots: bids }, (...props) => {
-    clearTimeout(id);
     resolve(...props);
   });
 });

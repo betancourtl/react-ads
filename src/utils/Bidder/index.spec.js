@@ -20,7 +20,7 @@ describe('Bidder', () => {
     expect(bidder.isReady).toBe(true);
   });
 
-  test('Should set isReady to true when promise is resolved', (done) => {
+  test('Should set isReady to true when promise is resolved', done => {
     const bidder = new Bidder('test');
     bidder.init = () => new Promise(resolve => resolve());
     bidder._init();
@@ -38,5 +38,25 @@ describe('Bidder', () => {
       expect(bidder.isReady).toBe(false);
       done();
     }, 5);
+  });
+
+  test('Should timeout the bidder when it exceeds the failsafe timeout.', async () => {
+    const bidder = new Bidder('test');
+    bidder.safeTimeout = 5;
+    bidder.fetchBids = () => new Promise(resolve => {
+      setTimeout(() => resolve('resolved'), 10);
+    });
+
+    await expect(bidder._fetchBids()).rejects.toEqual('Timed Out');
+  });
+
+  test('Should resolve when the promise resolves before the safeTimeout.', async () => {
+    const bidder = new Bidder('test');
+    bidder.safeTimeout = 10;
+    bidder.fetchBids = () => new Promise(resolve => {
+      setTimeout(() => resolve('resolved'), 5);
+    });
+
+    await expect(bidder._fetchBids()).resolves.toEqual('resolved');
   });
 });
