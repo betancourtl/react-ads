@@ -40,20 +40,21 @@ var cmdPush = function cmdPush(cb) {
   return window.googletag.cmd.push(cb);
 };
 /**
- * Destorys google slots.
+ * Destroys google slots.
+ * @param {Slot[]} - Array of slots to destroy.
  * @returns {void}
  */
 
 
 exports.cmdPush = cmdPush;
 
-var destroySlots = function destroySlots() {
+var destroySlots = function destroySlots(slots) {
   cmdPush(function () {
-    return window.googletag.destroySlots();
+    return window.googletag.destroySlots(slots);
   });
 };
 /**
- * Will push a 
+ * 
  * @param {Slot[]} Slot - Array of google slots.
  */
 
@@ -81,7 +82,7 @@ var define = function define(outOfPageSlot, adUnitPath, mapSize, id) {
   return outOfPageSlot ? window.googletag.defineOutOfPageSlot(adUnitPath, id).addService(window.googletag.pubads()) : window.googletag.defineSlot(adUnitPath, mapSize, id).addService(window.googletag.pubads());
 };
 /**
- * Will destory the googletag slot.
+ * Will destroy the googletag slot.
  * @param {Slot} slot
  * @returns {void}
  */

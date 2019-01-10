@@ -58,7 +58,7 @@ class Provider extends Component {
 
   generateId = (type = 'ad') => {
     this.slotCount[type];
-    if (isNaN(this.slotCount[type])) this.slotCount[type] = 1
+    if (isNaN(this.slotCount[type])) this.slotCount[type] = 1;
     else this.slotCount[type] = this.slotCount[type] + 1;
     return `${type}${this.props.divider}${this.slotCount[type]}`;
   };

@@ -94,16 +94,10 @@ function (_Component) {
 
     _this.pubSub.on('defineSlot', function () {});
 
-    performance.mark('ads:start');
     return _this;
   }
 
   _createClass(Provider, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      console.log('provider mounted');
-    }
-  }, {
     key: "componentWillUnmount",
     value: function componentWillUnmount() {
       if (!this.props.enableAds) return;
@@ -166,6 +160,7 @@ Provider.propTypes = {
   targeting: _propTypes.default.object,
   chunkSize: _propTypes.default.number,
   adUnitPath: _propTypes.default.string,
+  bidTimeout: _propTypes.default.number,
   lazyOffset: _propTypes.default.number,
   setCentering: _propTypes.default.bool,
   bidProviders: _propTypes.default.array,
