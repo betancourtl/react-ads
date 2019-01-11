@@ -2,6 +2,60 @@
 import JobQueue from '../../lib/JobQueue';
 import bidDispatcher from '../bidDispatcher';
 
+// Create a bidProvider
+// Create push bids into a Queue.
+
+export const processFn = (bidProviders, bidTimeout, refresh, dispatchBidders = bidDispatcher) => (q, done) => {
+  const slots = [];
+  const nextBids = {};
+
+  while (!q.isEmpty) {
+    const { slot, bids } = q.dequeue().data;
+    slots.push(slot);
+
+    if (!bids) break;
+
+    Object
+      .entries(bids)
+      .forEach(([key, val]) => {
+        if (!nextBids[key]) nextBids[key] = [];
+        nextBids[key].push(val);
+      });
+  }
+
+  const noBidsOrProviders = [bidProviders, Object.keys(nextBids)]
+    .some(x => x.length === 0);
+
+  if (noBidsOrProviders) {
+    refresh(slots);
+    return done();
+  }
+
+  // Fetch the bids.
+  dispatchBidders(
+    // calls Promise.all[]
+    bidProviders.map(bidder => bidder._fetchBids(nextBids[bidder.name])),
+    bidTimeout
+  )
+    .then((responses) => {
+      responses.forEach((res, i) => {
+        if (res.status === 'fulfilled') {
+          bidProviders[i].onBidWon();
+          bidProviders[i].handleResponse(res.data);
+        }
+
+        if (res.status === 'rejected') {
+          bidProviders[i].onTimeout();
+        }
+      });
+    })
+    .catch(err => console.log('error', err))
+    .finally(() => {
+      refresh(slots);
+      done();
+    });
+};
+
 /** 
  * @param {Number} props.chunkSize - Max ads to process.
  * @param {Number} props.refreshDelay - Refresh delay.
@@ -15,61 +69,15 @@ const bidManager = (props = {}) => {
   const {
     refresh,
     chunkSize = 5,
-    refreshDelay = 100,
-    bidTimeout = 1000,
     bidProviders = [],
+    bidTimeout = 1000,
+    refreshDelay = 100,
   } = props;
 
   const refreshJob = new JobQueue({
-    chunkSize: chunkSize,
     delay: refreshDelay,
-    processFn: (q, done) => {
-      const slots = [];
-      const nextBids = {};
-
-      while (!q.isEmpty) {
-        const { slot, bids } = q.dequeue().data;
-        slots.push(slot);
-
-        if (!bids) break;
-
-        Object
-          .entries(bids)
-          .forEach(([key, val]) => {
-            if (!nextBids[key]) nextBids[key] = [];
-            nextBids[key].push(val);
-          });
-      }
-
-      // There are no bidProviders or there are no bids requested.
-      if ([bidProviders, Object.keys(nextBids)].some(x => x.length === 0)) {
-        refresh(slots);
-        return done();
-      }
-
-      // Fetch the bids.
-      bidDispatcher(
-        bidProviders.map(bidder => bidder._fetchBids(nextBids[bidder.name])),
-        bidTimeout
-      )
-        .then((responses) => {
-          responses.forEach((res, i) => {
-            if (res.status === 'fulfilled') {
-              bidProviders[i].onBidWon();
-              bidProviders[i].handleResponse(res.data);
-            }
-
-            if (res.status === 'rejected') {
-              bidProviders[i].onTimeout();
-            }
-          });
-        })
-        .catch(err => console.log('error', err))
-        .finally(() => {
-          refresh(slots);
-          done();
-        });
-    }
+    chunkSize: chunkSize,
+    processFn: processFn(bidProviders, bidTimeout, refresh),
   });
 
   return {
