@@ -66,15 +66,10 @@ class Ad extends Component {
    */
   get mapSize() {
     if (!this.props.sizeMap) return this.props.size;
-    try {
-      return this.props.sizeMap
-        .filter(({ viewPort: [width] }) => width <= this.props.getWindowWidth())
-        .sort((a, b) => a > b)
-        .slice(0, 1)[0].slots;
-    } catch (err) {
-      console.log('Could not get the correct sizes from the sizeMapping array');
-      return this.props.size;
-    }
+    return this.props.sizeMap
+      .filter(({ viewPort: [width] }) => width <= this.props.getWindowWidth())
+      .sort((a, b) => a > b)
+      .slice(0, 1)[0].slots;
   }
 
   /**
@@ -392,7 +387,7 @@ Ad.propTypes = {
   generateId: PropTypes.func.isRequired,
   adUnitPath: PropTypes.string.isRequired,
   onSlotVisibilityChanged: PropTypes.func,
-  getWindowWidth: PropTypes.func.isRequired,  
+  getWindowWidth: PropTypes.func.isRequired,
   size: PropTypes.oneOfType([
     PropTypes.array.isRequired,
     PropTypes.string.isRequired,
@@ -405,7 +400,7 @@ Ad.propTypes = {
         PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))
       ])
     })
-  ),    
+  ),
   gpt: PropTypes.shape({
     define: PropTypes.func.isRequired,
     display: PropTypes.func.isRequired,

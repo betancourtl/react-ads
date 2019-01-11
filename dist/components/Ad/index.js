@@ -387,20 +387,14 @@ function (_Component) {
       var _this7 = this;
 
       if (!this.props.sizeMap) return this.props.size;
+      return this.props.sizeMap.filter(function (_ref5) {
+        var _ref5$viewPort = _slicedToArray(_ref5.viewPort, 1),
+            width = _ref5$viewPort[0];
 
-      try {
-        return this.props.sizeMap.filter(function (_ref5) {
-          var _ref5$viewPort = _slicedToArray(_ref5.viewPort, 1),
-              width = _ref5$viewPort[0];
-
-          return width <= _this7.props.getWindowWidth();
-        }).sort(function (a, b) {
-          return a > b;
-        }).slice(0, 1)[0].slots;
-      } catch (err) {
-        console.log('Could not get the correct sizes from the sizeMapping array');
-        return this.props.size;
-      }
+        return width <= _this7.props.getWindowWidth();
+      }).sort(function (a, b) {
+        return a > b;
+      }).slice(0, 1)[0].slots;
     }
     /**
      * Will call the bidder function.

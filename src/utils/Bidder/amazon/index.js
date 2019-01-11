@@ -14,7 +14,6 @@ bidder.init = (addScript = loadScript) => {
 };
 
 bidder.fetchBids = adUnits => new Promise((resolve) => {
-
   const bids = adUnits.reduce((acc, { bids }) => {
     const newAcc = acc.concat(bids);
     return newAcc;

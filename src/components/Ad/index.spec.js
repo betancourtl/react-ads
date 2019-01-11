@@ -7,6 +7,7 @@ const createProps = ({ gpt, ...props } = {}) => ({
   define: jest.fn(),
   refresh: jest.fn(),
   generateId: jest.fn(),
+  getWindowWidth: jest.fn(),
   gpt: {
     define: jest.fn(),
     display: jest.fn(),
@@ -15,7 +16,6 @@ const createProps = ({ gpt, ...props } = {}) => ({
     addService: jest.fn(),
     generateId: jest.fn(),
     sizeMapping: jest.fn(),
-    getWindowWidth: jest.fn(),
     addEventListener: jest.fn(),
     ...gpt
   },
@@ -221,4 +221,95 @@ describe('<Ad />', () => {
       expect(instance.refreshed).toBe(false);
       expect(define).toBeCalledTimes(0);
     });
+
+  test('Should get the size prop if no sizeMap is defined.', () => {
+    const props = createProps({
+      lazy: true,
+      size: [250, 300],
+    });
+    const wrapper = mount(<Ad {...props} />);
+    const instance = wrapper.instance();
+    expect(instance.mapSize).toEqual(props.size);
+  });
+
+  test('Should get the sizeMap based on the windowWidth.', () => {
+    const props = createProps({
+      lazy: true,
+      size: [250, 300],
+      getWindowWidth: () => 800,
+      sizeMap: [
+        { viewPort: [750, 200], slots: [[728, 90], [728, 250]] },
+        { viewPort: [0, 0], slots: [] }
+      ]
+    });
+    const wrapper = mount(<Ad {...props} />);
+    const instance = wrapper.instance();
+    expect(instance.mapSize).toEqual([[728, 90], [728, 250]]);
+  });
+
+  test('Should get the sizeMap based on the windowWidth.', () => {
+    const props = createProps({
+      lazy: true,
+      size: [250, 300],
+      getWindowWidth: () => 749,
+      sizeMap: [
+        { viewPort: [750, 200], slots: [[728, 90], [728, 250]] },
+        { viewPort: [0, 0], slots: [] }
+      ]
+    });
+    const wrapper = mount(<Ad {...props} />);
+    const instance = wrapper.instance();
+    expect(instance.mapSize).toEqual([]);
+  });
+
+  test('should call setCollapseEmpty and set it to true', () => {
+    const props = createProps({
+      lazy: true,
+      size: [250, 300],
+      setCollapseEmpty: true,
+    });
+    const wrapper = mount(<Ad {...props} />);
+    const instance = wrapper.instance();
+    const mockFn = jest.fn();
+    instance.slot = {};
+    instance.slot.setCollapseEmptyDiv = mockFn;
+    instance.setCollapseEmpty();
+    expect(mockFn).toHaveBeenCalledWith(true, true);
+  });
+
+  test('should call setCollapseEmpty and not set it to true', () => {
+    const props = createProps({
+      lazy: true,
+      size: [250, 300],
+      setCollapseEmpty: false,
+    });
+    const wrapper = mount(<Ad {...props} />);
+    const instance = wrapper.instance();
+    const mockFn = jest.fn();
+    instance.slot = {};
+    instance.slot.setCollapseEmptyDiv = mockFn;
+    instance.setCollapseEmpty();
+    expect(mockFn).not.toBeCalled();
+  });
+
+  test('setTargeting', () => {
+    const props = createProps({
+      size: [250, 300],
+      targeting: {
+        firstName: 'Luis',
+        lastName: 'Betancourt',
+      }
+    });
+    const wrapper = mount(<Ad {...props} />);
+    const instance = wrapper.instance();
+    const mockFn = jest.fn();
+    instance.slot = {};
+    instance.slot.setTargeting = mockFn;
+    instance.setTargeting();
+    expect(mockFn).toBeCalledTimes(2);
+    expect(mockFn.mock.calls).toEqual([
+      ['firstName', 'Luis'],
+      ['lastName', 'Betancourt']
+    ]);
+  });
 });

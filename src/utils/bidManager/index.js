@@ -20,7 +20,6 @@ const bidManager = (props = {}) => {
     bidProviders = [],
   } = props;
 
-
   const refreshJob = new JobQueue({
     chunkSize: chunkSize,
     delay: refreshDelay,
