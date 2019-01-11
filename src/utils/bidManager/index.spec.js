@@ -26,7 +26,7 @@ describe('processFn', () => {
     expect(getBids).toBeCalledTimes(0);
   });
 
-  test`('Should call getBids when bids or bidProviders are passed.', async () => {
+  test('Should call getBids when bids or bidProviders are passed.', async () => {
     const q = new Queue();
     q.enqueue({
       priority: 1,
