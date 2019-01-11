@@ -27,14 +27,14 @@ class JobQueue {
     this.work();
     return this;
   };
-
+  
   work = debounce(() => {   
     this.process(this.q)
       .then(() => {
-        if (!this.heap.isEmpty) this.work();
+        if (!this.heap.isEmpty) return this.work();
         else this.isProcessing = false;
       });
-  }, this.delay);
+  }, this.delay, { leading: false, trailing: true });
 
   grab = () => {
     let count = 0;
@@ -51,6 +51,6 @@ class JobQueue {
     return this.processFn(this.grab(5), done);
   });
 
-};
+}
 
 export default JobQueue;

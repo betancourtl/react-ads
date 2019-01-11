@@ -45,9 +45,12 @@ var JobQueue = function JobQueue(props) {
 
   _defineProperty(this, "work", (0, _lodash.default)(function () {
     _this.process(_this.q).then(function () {
-      if (!_this.heap.isEmpty) _this.work();else _this.isProcessing = false;
+      if (!_this.heap.isEmpty) return _this.work();else _this.isProcessing = false;
     });
-  }, this.delay));
+  }, this.delay, {
+    leading: false,
+    trailing: true
+  }));
 
   _defineProperty(this, "grab", function () {
     var count = 0;
@@ -80,6 +83,5 @@ var JobQueue = function JobQueue(props) {
   });
 };
 
-;
 var _default = JobQueue;
 exports.default = _default;

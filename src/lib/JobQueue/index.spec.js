@@ -6,7 +6,7 @@ describe('JobQueue', () => {
     data: {},
   });
 
-  test('Should create a job', (done) => {
+  test('Should create a job', done => {
     let results = [];
 
     const processFn = (q, resolve) => {
@@ -14,7 +14,7 @@ describe('JobQueue', () => {
       setTimeout(() => {
         while (!q.isEmpty) results.push(q.dequeue().priority);
         resolve();
-      }, 100);
+      }, 50);
     };
 
     const job = new JobQueue({
@@ -33,20 +33,31 @@ describe('JobQueue', () => {
       .add(createMessage(2))
       .add(createMessage(2))
       .add(createMessage(2))
-      .add(createMessage(2));
+      .add(createMessage(2))
+      // chunk 3
+      .add(createMessage(3))
+      .add(createMessage(3))
+      .add(createMessage(3))
+      .add(createMessage(3))
+      .add(createMessage(3));
 
-      
     expect(job.isProcessing).toEqual(true);
-    expect(job.delay).toEqual(10);
+    // expect(job.delay).toEqual(1);
     expect(job.processFn).toEqual((processFn));
+
     setTimeout(() => {
-      expect(results).toEqual([1, 1, 1, 1, 1]);
-    }, 120);
+      expect(results).toEqual([1, 1, 1, 1, 1]);    
+    }, 65);
 
     setTimeout(() => {
       expect(results).toEqual([1, 1, 1, 1, 1, 2, 2, 2, 2, 2]);
+      expect(job.isProcessing).toEqual(true);      
+    }, 130);
+
+    setTimeout(() => {
+      expect(results).toEqual([1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3]);      
       expect(job.isProcessing).toEqual(false);
       done();
-    }, 220);
+    }, 195);
   });
 });
