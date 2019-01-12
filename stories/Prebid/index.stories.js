@@ -1,6 +1,6 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 import { Provider, Ad } from '../../src';
+import { storiesOf } from '@storybook/react';
 import prebid from '../../src/utils/Bidder/prebid';
 import amazon from '../../src/utils/Bidder/amazon';
 

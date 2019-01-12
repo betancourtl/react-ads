@@ -9,10 +9,22 @@ Object.defineProperty(exports, "Ad", {
     return _Ad.default;
   }
 });
+Object.defineProperty(exports, "DevTools", {
+  enumerable: true,
+  get: function get() {
+    return _devTools.default;
+  }
+});
 Object.defineProperty(exports, "Bidder", {
   enumerable: true,
   get: function get() {
     return _Bidder.default;
+  }
+});
+Object.defineProperty(exports, "Video", {
+  enumerable: true,
+  get: function get() {
+    return _Video.default;
   }
 });
 Object.defineProperty(exports, "Provider", {
@@ -21,19 +33,15 @@ Object.defineProperty(exports, "Provider", {
     return _Provider.default;
   }
 });
-Object.defineProperty(exports, "DevTools", {
-  enumerable: true,
-  get: function get() {
-    return _devTools.default;
-  }
-});
 
 var _Ad = _interopRequireDefault(require("./components/Ad"));
 
+var _devTools = _interopRequireDefault(require("./devTools"));
+
 var _Bidder = _interopRequireDefault(require("./utils/Bidder"));
 
-var _Provider = _interopRequireDefault(require("./components/Provider"));
+var _Video = _interopRequireDefault(require("./components/Video"));
 
-var _devTools = _interopRequireDefault(require("./devTools"));
+var _Provider = _interopRequireDefault(require("./components/Provider"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
