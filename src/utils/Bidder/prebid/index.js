@@ -5,6 +5,7 @@ import Bidder from '../';
 const bidder = new Bidder('prebid');
 
 bidder.init = () => {
+  if (bidder.isReady) return;
   var pbjs = window.pbjs || {};
   pbjs.que = pbjs.que || [];
   prebidInit();

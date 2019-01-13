@@ -5,6 +5,7 @@ import loadScript from './initialize';
 const bidder = new Bidder('amazon');
 
 bidder.init = (addScript = loadScript) => {
+  if (bidder.isReady) return;
   addScript();
   window.apstag.init({
     pubID: 123,
