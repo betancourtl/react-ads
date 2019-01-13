@@ -118,7 +118,7 @@ describe('<Ad />', () => {
     expect(wrapper.instance().displayed).toBe(true);
     expect(refresh).toBeCalledTimes(1);
     expect(props.refresh).toBeCalledTimes(1);
-    expect(wrapper.instance().refreshed).toBe(true);
+    expect(wrapper.instance().refreshedOnce).toBe(true);
   });
 
   test('componentWillUnmount', () => {
@@ -184,7 +184,7 @@ describe('<Ad />', () => {
     `refreshWhenVisible, is called when 
     props.lazy = true
     this.isVisible = true
-    this.refreshed = false
+    this.refreshedOnce = false
   `, () => {
       jest.spyOn(Ad.prototype, 'isVisible', 'get').mockImplementation(() => true);
       const define = jest.spyOn(Ad.prototype, 'define');
@@ -193,11 +193,11 @@ describe('<Ad />', () => {
       });
       const wrapper = mount(<Ad {...props} />);
       const instance = wrapper.instance();
-      instance.refreshed = false;
+      instance.refreshedOnce = false;
       //expected conditions
       expect(wrapper.props().lazy).toBe(true);
       expect(instance.isVisible).toBe(true);
-      expect(instance.refreshed).toBe(false);
+      expect(instance.refreshedOnce).toBe(false);
       expect(define).toBeCalledTimes(1);
     });
 
@@ -205,7 +205,7 @@ describe('<Ad />', () => {
     `refreshWhenVisible does not call define when
       props.lazy = true
       this.isVisible = false
-      this.refreshed = false
+      this.refreshedOnce = false
     `, () => {
       jest.spyOn(Ad.prototype, 'isVisible', 'get').mockImplementation(() => false);
       const define = jest.spyOn(Ad.prototype, 'define');
@@ -214,11 +214,11 @@ describe('<Ad />', () => {
       });
       const wrapper = mount(<Ad {...props} />);
       const instance = wrapper.instance();
-      instance.refreshed = false;
+      instance.refreshedOnce = false;
       //expected conditions
       expect(wrapper.props().lazy).toBe(true);
       expect(instance.isVisible).toBe(false);
-      expect(instance.refreshed).toBe(false);
+      expect(instance.refreshedOnce).toBe(false);
       expect(define).toBeCalledTimes(0);
     });
 
