@@ -13,6 +13,15 @@ const bidHandler = ({ id, sizes }) => ({
         context: 'outstream',
       }
     },
+    renderer: {
+      url: 'http://cdn.adnxs.com/renderer/video/ANOutstreamVideo.js',
+      render: function (bid) {
+        window.ANOutstreamVideo.renderAd({
+          targetId: bid.adUnitCode,
+          adResponse: bid.adResponse,
+        });
+      }
+    },
     bids: [{
       bidder: 'appnexus',
       params: {
@@ -26,7 +35,7 @@ const bidHandler = ({ id, sizes }) => ({
   }
 });
 
-class Page extends React.Component {
+class Story extends React.Component {
   render() {
     return (
       <Provider
@@ -45,5 +54,5 @@ class Page extends React.Component {
 
 storiesOf('Video', module)
   .add('Outstream video', () => (
-    <Page />
+    <Story />
   ));

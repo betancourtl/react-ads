@@ -12,10 +12,10 @@ const createProps = ({ gpt, ...props } = {}) => ({
     define: jest.fn(),
     display: jest.fn(),
     cmdPush: jest.fn(),
-    destroySlots: jest.fn(),
     addService: jest.fn(),
     generateId: jest.fn(),
     sizeMapping: jest.fn(),
+    destroySlots: jest.fn(),
     addEventListener: jest.fn(),
     ...gpt
   },
@@ -100,13 +100,13 @@ describe('<Ad />', () => {
       lazy: false,
     });
 
+    const display = jest.spyOn(Ad.prototype, 'display');
+    const refresh = jest.spyOn(Ad.prototype, 'refresh');
+    const setTargeting = jest.spyOn(Ad.prototype, 'setTargeting');
     const handleGPTEvent = jest.spyOn(Ad.prototype, 'handleGPTEvent');
     const setMappingSize = jest.spyOn(Ad.prototype, 'setMappingSize');
     const setMQListeners = jest.spyOn(Ad.prototype, 'setMQListeners');
     const setCollapseEmpty = jest.spyOn(Ad.prototype, 'setCollapseEmpty');
-    const setTargeting = jest.spyOn(Ad.prototype, 'setTargeting');
-    const display = jest.spyOn(Ad.prototype, 'display');
-    const refresh = jest.spyOn(Ad.prototype, 'refresh');
     const wrapper = mount(<Ad {...props} />);
     expect(props.gpt.define).toBeCalledTimes(1);
     expect(handleGPTEvent).toBeCalledTimes(4);

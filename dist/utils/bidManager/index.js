@@ -19,8 +19,16 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-// Create a bidProvider
-// Create push bids into a Queue.
+/**
+ * This function will make bid requests and then call the bidders functions
+ * for callbacks for a successfull bid call.
+ * @param {Function} props.refresh - Googletag refresh fn.
+ * @param {Bidder[]} props.bidProviders - Array of bidProviders.
+ * @param {Number} props.bidTimeout - Ammount of time to wait for bidders.
+ * @param {Function} props.dispatchBidders - function that fetches the bids.
+ * @param {Function} q - The items that the job passed to thie processing fn.
+ * @param {Function} done - Resolves a promise and ends the job.
+ */
 var processFn = function processFn(bidProviders, bidTimeout, refresh) {
   var dispatchBidders = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _bidDispatcher.default;
   return function (q, done) {
@@ -50,11 +58,9 @@ var processFn = function processFn(bidProviders, bidTimeout, refresh) {
     if (noBidsOrProviders) {
       refresh(slots);
       return done();
-    } // Fetch the bids.
+    }
 
-
-    dispatchBidders( // calls Promise.all[]
-    bidProviders.map(function (bidder) {
+    dispatchBidders(bidProviders.map(function (bidder) {
       return bidder._fetchBids(nextBids[bidder.name]);
     }), bidTimeout).then(function (responses) {
       responses.forEach(function (res, i) {
@@ -76,11 +82,11 @@ var processFn = function processFn(bidProviders, bidTimeout, refresh) {
   };
 };
 /** 
- * @param {Number} props.chunkSize - Max ads to process.
- * @param {Number} props.refreshDelay - Refresh delay.
  * @param {Function} props.refresh - Googletag refresh fn.
+ * @param {Number} props.chunkSize - Max ads to process.
+ * @param {Bidder[]} props.bidProviders - Array of bidProviders.
  * @param {Function} props.getBids - Prebid function used to fetch bids.
- * @param {Boolean} props.prebidEnabled - Function to used to fetch prebid bids.
+ * @param {Number} props.refreshDelay - Refresh delay.
  * @function
  * @returns {Object}
  */

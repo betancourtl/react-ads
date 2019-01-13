@@ -24,28 +24,28 @@ class Ad extends Component {
     super(props);
 
     /**
-     * Reference the the googletag GPT slot.
+     * Reference to the googletag GPT slot.
      * @type {Object}
      */
     this.slot = null;
 
     /**
-     * List of event listener removing functions.
+     * List of event listeners removing functions.
      * @type {Array}
      */
     this.listeners = [];
 
     /**
-     * Reference the googletag GPT slot.
+     * Flag to indicate that this slot has been displayed.
      * @type {Boolean}
      */
     this.displayed = false;
 
     /**
-     * Reference the the googletag GPT slot.
+     * Flag to indicate that this slot has been refreshedOnce.
      * @type {Boolean}
      */
-    this.refreshed = false;
+    this.refreshedOnce = false;
 
     /**
      * Will refresh the Ad when it is visible on the window.
@@ -54,13 +54,15 @@ class Ad extends Component {
     this.refreshWhenVisible = withRaf(this.refreshWhenVisible.bind(this));
 
     /**
-     * The ad's unique id. We only want the Id to be generated once.
+     * The ad's unique id. We only want the Id to be generated once, so we run
+     * generateId in the constructor.
+     *  @type {String}
      */
     this.id = props.id || props.generateId(props.type);
   }
 
   /**
-   * Get the slot map sizes based on the media query breakpoints
+   * Get the slot map sizes based on the current media query breakpoint.
    * @function
    * @returns {Array}
    */
@@ -73,9 +75,9 @@ class Ad extends Component {
   }
 
   /**
-   * Will call the bidder function.
+   * Will call the bidHandler function that generates the adUnit code.
    * @funtion
-   * @returns {Function | Object}
+   * @returns {Function | Null}
    */
   get bidHandler() {
     return this.props.bidHandler
@@ -87,7 +89,7 @@ class Ad extends Component {
   }
 
   /**
-  * Return true if the slot is visible on the page. This is used for refreshing
+  * Returns true if the slot is visible on the page. This is used for refreshing
   * lazy loaded ads.
   * @funtion
   * @returns {Boolean}
@@ -130,12 +132,11 @@ class Ad extends Component {
         slot: this.slot,
       }
     });
-    this.refreshed = true;
+    this.refreshedOnce = true;
   }
 
   /**
-   * Will trigger a refresh whenever it this slots enters in a new breakpoint
-   * specified on the sizeMap.
+   * Will trigger a refresh whenever it this slot enters into a new breakpoint.
    * @funtion
    * @returns {void}
    */
@@ -150,7 +151,7 @@ class Ad extends Component {
   * @returns {void}
   */
   refreshWhenVisible() {
-    if (this.props.lazy && this.isVisible && !this.refreshed) {
+    if (this.props.lazy && this.isVisible && !this.refreshedOnce) {
       this.define();
       window.removeEventListener('scroll', this.refreshWhenVisible);
     }
@@ -161,7 +162,7 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  setCollapseEmpty() { // Test
+  setCollapseEmpty() {
     if (!this.props.setCollapseEmpty) return;
     this.slot.setCollapseEmptyDiv(true, true);
   }
@@ -171,10 +172,10 @@ class Ad extends Component {
    * @function   
    * @returns {void}
    */
-  setTargeting() { // Test
+  setTargeting() {
     Object
       .entries(this.props.targeting)
-      .map(([k, v]) => this.slot.setTargeting(k, v));
+      .forEach(([k, v]) => this.slot.setTargeting(k, v));
   }
 
   /**
@@ -191,11 +192,12 @@ class Ad extends Component {
   }
 
   /**
-   * Will listen to mediaQueries for hiding/refreshing ads on the page.
+   * Will listen to mediaQueries. This is used for hiding/refreshing ads on the 
+   * page.
    * @function   
    * @returns {void}
    */
-  setMQListeners() { // Test
+  setMQListeners() {
     if (!this.props.sizeMap) return;
     this.props.sizeMap.forEach(({ viewPort: [width] }) => {
       const mq = window.matchMedia(`(max-width: ${width}px)`);
@@ -206,7 +208,7 @@ class Ad extends Component {
   }
 
   /**
-   * Will remove the listener from the page.
+   * Will remove the listeners from the page.
    * @function   
    * @returns {void}
    */
@@ -227,12 +229,12 @@ class Ad extends Component {
 
   /**
    * Will handle a GPT event for this slot. This method was not auto-binded for 
-   * testing reases.
+   * testing reasons.
    * @param {String} event
-   * @param {Function} cb - Callback function for the event.
+   * @param {Function} cb
    * @returns {void}
    */
-  handleGPTEvent(event, cb) { // TEST
+  handleGPTEvent(event, cb) {
     if (this.isFunction(cb)) {
       this.props.gpt.addEventListener(event, e => {
         if (e.slot == this.slot) cb(this.withAdProps(e));
@@ -283,6 +285,11 @@ class Ad extends Component {
     this.props.onSlotVisibilityChanged
   );
 
+  /**
+   * Will initialize the adSlot.
+   * @function
+   * @returns {void}
+   */
   define() {
     this.props.gpt.cmdPush(() => {
       this.slot = this.props.gpt.define(
@@ -297,22 +304,21 @@ class Ad extends Component {
       this.onImpressionViewable();
       this.onSlotVisibilityChanged();
 
-      //configure slot
+      // configures the slot.
       this.setMappingSize();
       this.setMQListeners();
       this.setCollapseEmpty();
       this.setTargeting();
 
-      // display & fetch slot
+      // display & fetches the slot.
       this.display();
       this.refresh();
     });
   }
 
   componentDidMount() {
-    if (!this.props.lazy) {
-      this.define();
-    } else {
+    if (!this.props.lazy) this.define();
+    else {
       this.refreshWhenVisible();
       window.addEventListener('scroll', this.refreshWhenVisible);
     }
@@ -342,21 +348,21 @@ Ad.defaultProps = {
   style: {},
   lazy: false,
   priority: 1,
+  className: '',
   sizeMap: null,
   targeting: {},
   adUnitPath: '',
+  getWindowWidth,
   lazyOffset: -1,
-  className: '',
   type: 'default',
   bidHandler: null,
   onSlotOnLoad: null,
   outOfPageSlot: false,
   networkId: undefined,
-  setCollapseEmpty: false,
   onSlotRenderEnded: null,
+  setCollapseEmpty: false,
   onImpressionViewable: null,
   onSlotVisibilityChanged: null,
-  getWindowWidth: getWindowWidth,
   gpt: {
     define,
     display,
@@ -403,10 +409,10 @@ Ad.propTypes = {
   ),
   gpt: PropTypes.shape({
     define: PropTypes.func.isRequired,
-    display: PropTypes.func.isRequired,
     cmdPush: PropTypes.func.isRequired,
-    destroySlots: PropTypes.func.isRequired,
+    display: PropTypes.func.isRequired,
     sizeMapping: PropTypes.func.isRequired,
+    destroySlots: PropTypes.func.isRequired,
     addEventListener: PropTypes.func.isRequired,
   }),
 };

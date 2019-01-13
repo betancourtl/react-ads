@@ -47,8 +47,8 @@ class Provider extends Component {
     props.bidProviders.forEach(bidder => bidder.init());
     this.pubSub.on('refresh', () => { });
     this.pubSub.on('display', () => { });
-    this.pubSub.on('destroySlots', () => { });
     this.pubSub.on('defineSlot', () => { });
+    this.pubSub.on('destroySlots', () => { });
   }
 
   componentWillUnmount() {
@@ -56,6 +56,11 @@ class Provider extends Component {
     this.pubSub.clear();
   }
 
+  /**
+   * Will generate the id for the adSlot.
+   * @param {String} type
+   * @returns 
+   */
   generateId = (type = 'ad') => {
     this.slotCount[type];
     if (isNaN(this.slotCount[type])) this.slotCount[type] = 1;
@@ -89,10 +94,10 @@ Provider.defaultProps = {
   enableAds: true,
   lazyOffset: 800,
   bidProviders: [],
-  bidHandler: undefined,
   bidTimeout: 1000,
   refreshDelay: 200,
   setCentering: true,
+  bidHandler: undefined,
   enableVideoAds: false,
   collapseEmptyDivs: false,
   // GPT

@@ -59,7 +59,6 @@ function () {
     }
   }, {
     key: "siftUp",
-    // [3, 5, 10, 15, 2];
     value: function siftUp(index) {
       var parentIndex = this.getParentIndex(index);
 

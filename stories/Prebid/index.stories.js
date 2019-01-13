@@ -21,7 +21,7 @@ const bidHandler = ({ id, sizes }) => ({
   }
 });
 
-class Page extends React.Component {
+class Story extends React.Component {
   render() {
     return (
       <Provider
@@ -57,5 +57,5 @@ class Page extends React.Component {
 
 storiesOf('Prebid', module)
   .add('with text', () => (
-    <Page />
+    <Story />
   ));

@@ -9,12 +9,6 @@ Object.defineProperty(exports, "Ad", {
     return _Ad.default;
   }
 });
-Object.defineProperty(exports, "DevTools", {
-  enumerable: true,
-  get: function get() {
-    return _devTools.default;
-  }
-});
 Object.defineProperty(exports, "Bidder", {
   enumerable: true,
   get: function get() {
@@ -35,8 +29,6 @@ Object.defineProperty(exports, "Provider", {
 });
 
 var _Ad = _interopRequireDefault(require("./components/Ad"));
-
-var _devTools = _interopRequireDefault(require("./devTools"));
 
 var _Bidder = _interopRequireDefault(require("./utils/Bidder"));
 

@@ -47,7 +47,6 @@ class Heap {
     return Math.floor((index - 1) / 2);
   };
 
-  // [3, 5, 10, 15, 2];
   siftUp(index) {
     let parentIndex = this.getParentIndex(index);
     while (index > 0 && this.compareFn(this.heap[parentIndex], this.heap[index])) {
