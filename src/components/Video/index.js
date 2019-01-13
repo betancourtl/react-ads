@@ -4,6 +4,9 @@ import hideHOC from '../../hoc/hide';
 import { AdsContext } from '../context';
 import connect from '../../hoc/connector';
 
+/**
+ * This is still a prototype and is not meant to be used yet.
+ */
 class Video extends Component {
   constructor(props) {
     super();
