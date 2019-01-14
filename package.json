@@ -1,7 +1,7 @@
 {
-  "name": "react-ads",
+  "name": "react-bids",
   "version": "1.0.0",
-  "description": "package to manage ads",
+  "description": "reactjs implementation of googletag (gpt) and prebid.",
   "main": "./dist/index.js",
   "peerDependencies": {
     "prop-types": "^15.x",
@@ -22,7 +22,6 @@
     "@babel/register": "^7.0.0",
     "@storybook/react": "^4.1.6",
     "@storybook/storybook-deployer": "^2.8.1",
-    "@webdeveloperpr/prebid": "github:webdeveloperpr/prebid#master",
     "babel-core": "^7.0.0-bridge",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
@@ -73,7 +72,8 @@
     "dfp",
     "header",
     "bidder",
-    "google"
+    "google",
+    "googletag"
   ],
   "author": "Luis Betancourt",
   "license": "MIT",

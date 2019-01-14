@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _prebid = _interopRequireDefault(require("@webdeveloperpr/prebid"));
-
 var _ = _interopRequireDefault(require("../"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -18,7 +16,14 @@ bidder.init = function () {
   if (bidder.isReady) return;
   var pbjs = window.pbjs || {};
   pbjs.que = pbjs.que || [];
-  (0, _prebid.default)();
+  return new Promise(function (resolve, reject) {
+    var el = document.createElement('script');
+    el.src = "https://acdn.adnxs.com/prebid/not-for-prod/1/prebid.js?".concat(Math.random(1, 10));
+    el.async = true;
+    el.onload = resolve;
+    el.onerror = reject;
+    document.head.appendChild(el);
+  });
 };
 
 bidder.onBidWon = function () {};

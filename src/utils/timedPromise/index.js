@@ -30,7 +30,7 @@ const reflect = p => p.then(resolved, rejected);
  * @param {Promise[]} promises
  * @param {Number} ms - Amoun of time to wait for bid calls.
  */
-const dispatchBidders = (promises, ms = DEFAULT_TIMEOUT) => Promise
+const timedPromise = (promises, ms = DEFAULT_TIMEOUT) => Promise
   .all([].concat(promises).map((promise) => {
     let timeout = new Promise((_, reject) => {
       let id = setTimeout(() => {
@@ -41,4 +41,4 @@ const dispatchBidders = (promises, ms = DEFAULT_TIMEOUT) => Promise
     return reflect(Promise.race([promise, timeout]));
   }));
 
-export default dispatchBidders;
+export default timedPromise;

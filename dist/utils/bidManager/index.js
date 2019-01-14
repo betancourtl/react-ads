@@ -7,7 +7,7 @@ exports.default = exports.processFn = void 0;
 
 var _JobQueue = _interopRequireDefault(require("../../lib/JobQueue"));
 
-var _bidDispatcher = _interopRequireDefault(require("../bidDispatcher"));
+var _timedPromise2 = _interopRequireDefault(require("../timedPromise"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30,7 +30,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
  * @param {Function} done - Resolves a promise and ends the job.
  */
 var processFn = function processFn(bidProviders, bidTimeout, refresh) {
-  var dispatchBidders = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _bidDispatcher.default;
+  var timedPromise = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _timedPromise2.default;
   return function (q, done) {
     var slots = [];
     var nextBids = {};
@@ -60,7 +60,7 @@ var processFn = function processFn(bidProviders, bidTimeout, refresh) {
       return done();
     }
 
-    dispatchBidders(bidProviders.map(function (bidder) {
+    timedPromise(bidProviders.map(function (bidder) {
       return bidder._fetchBids(nextBids[bidder.name]);
     }), bidTimeout).then(function (responses) {
       responses.forEach(function (res, i) {
@@ -104,12 +104,17 @@ var bidManager = function bidManager() {
       _props$bidTimeout = props.bidTimeout,
       bidTimeout = _props$bidTimeout === void 0 ? 1000 : _props$bidTimeout,
       _props$refreshDelay = props.refreshDelay,
-      refreshDelay = _props$refreshDelay === void 0 ? 100 : _props$refreshDelay;
+      refreshDelay = _props$refreshDelay === void 0 ? 100 : _props$refreshDelay,
+      _props$onBiddersReady = props.onBiddersReady,
+      onBiddersReady = _props$onBiddersReady === void 0 ? function () {} : _props$onBiddersReady;
   var refreshJob = new _JobQueue.default({
     delay: refreshDelay,
     chunkSize: chunkSize,
-    processFn: processFn(bidProviders, bidTimeout, refresh)
-  });
+    processFn: processFn(bidProviders, bidTimeout, refresh),
+    canProcess: false
+  }); // Wait for the bidders to be ready before starting the job.
+
+  onBiddersReady(refreshJob.start);
   return {
     refresh: refreshJob.add
   };

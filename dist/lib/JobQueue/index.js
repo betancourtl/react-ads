@@ -22,6 +22,18 @@ var JobQueue = function JobQueue(props) {
 
   _classCallCheck(this, JobQueue);
 
+  _defineProperty(this, "stop", function () {
+    return _this.canProcess = false;
+  });
+
+  _defineProperty(this, "start", function () {
+    _this.canProcess = true;
+
+    _this.work();
+
+    return _this;
+  });
+
   _defineProperty(this, "add", function () {
     var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -36,6 +48,7 @@ var JobQueue = function JobQueue(props) {
     });
 
     if (_this.isProcessing) return _this;
+    if (!_this.canProcess) return _this;
     _this.isProcessing = true;
 
     _this.work();
@@ -45,7 +58,7 @@ var JobQueue = function JobQueue(props) {
 
   _defineProperty(this, "work", (0, _lodash.default)(function () {
     _this.process(_this.q).then(function () {
-      if (!_this.heap.isEmpty) return _this.work();else _this.isProcessing = false;
+      if (!_this.heap.isEmpty && _this.canProcess) return _this.work();else _this.isProcessing = false;
     });
   }, this.delay, {
     leading: false,
@@ -81,6 +94,11 @@ var JobQueue = function JobQueue(props) {
   this.heap = new _MinHeap.default(function (a, b) {
     return a.priority > b.priority;
   });
+
+  this.canProcess = function () {
+    if (props.canProcess === false) return false;
+    if (props.canProcess === true) return true;else return true;
+  }();
 };
 
 var _default = JobQueue;

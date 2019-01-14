@@ -2,7 +2,6 @@ import React from 'react';
 import { Provider, Ad } from '../../src';
 import { storiesOf } from '@storybook/react';
 import prebid from '../../src/utils/Bidder/prebid';
-import amazon from '../../src/utils/Bidder/amazon';
 
 const bidHandler = ({ id, sizes }) => ({
   prebid: {
@@ -25,7 +24,7 @@ class Story extends React.Component {
   render() {
     return (
       <Provider
-        bidProviders={[prebid, amazon]}
+        bidProviders={[prebid]}
         bidHandler={bidHandler}
         chunkSize={5}
         adUnitPath="header-bid-tag-0"
@@ -55,7 +54,7 @@ class Story extends React.Component {
   }
 }
 
-storiesOf('Prebid', module)
-  .add('with text', () => (
+storiesOf('Readme', module)
+  .add('example', () => (
     <Story />
   ));
