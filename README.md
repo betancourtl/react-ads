@@ -1,6 +1,12 @@
 [![Build Status](https://travis-ci.com/webdeveloperpr/react-ads.svg?branch=master)](https://travis-ci.com/webdeveloperpr/react-ads)
 # react-gpt-prebid-ads
 
+API
+- [Provider](#provider)
+- [Ad](#ad)
+
+[Example](#example)
+
 
 ## Example
 
@@ -156,7 +162,7 @@ This package allows you to render ads with DFP and Prebid using React components
 
 ### Click [here](https://webdeveloperpr.github.io/react-ads) to see storybook examples.
 
-## <Provider \/>
+## Provider
 
 | Name                  | Type     | Default  | Description                                                                                                                                                                                                                                                                                                                                                                                       |
 |-----------------------|----------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -176,7 +182,7 @@ This package allows you to render ads with DFP and Prebid using React components
 | lazyOffset     | String  |          | Amount of pixels an ad has to be relative to the window before lazy loading them. |
 | initTimeout     | Number  |          |  Amount the bidder initiation script can take. This is used for scripts appended to the page. If no scripts are appendedi n the page then this timeout will end automatically.  |
  
-## <Ad  \/>
+## Ad
 
 ___
 
