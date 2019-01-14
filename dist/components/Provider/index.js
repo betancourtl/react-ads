@@ -15,6 +15,8 @@ var _context = require("../context");
 
 var _bidManager = _interopRequireDefault(require("../../utils/bidManager"));
 
+var _timedPromise = _interopRequireDefault(require("../../utils/timedPromise"));
+
 var _googletag = require("../../utils/googletag");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -80,19 +82,23 @@ function (_Component) {
       chunkSize: props.chunkSize,
       bidTimeout: props.bidTimeout,
       bidProviders: props.bidProviders,
-      refreshDelay: props.refreshDelay
-    });
-    props.bidProviders.forEach(function (bidder) {
-      return bidder.init();
-    });
+      refreshDelay: props.refreshDelay,
+      // Fn to call when the bidders are ready.
+      onBiddersReady: function onBiddersReady(fn) {
+        return _this.pubSub.on('bidders-ready', fn);
+      }
+    }); // Wait x ammount of time for bidder init scripts to be ready.
 
-    _this.pubSub.on('refresh', function () {});
+    (0, _timedPromise.default)(props.bidProviders.map(function (bidder) {
+      return bidder._init();
+    }), props.initTimeout).then(function (results) {
+      results.forEach(function (x) {
+        if (x.status === 'fulfilled') console.log('fulfilled', x.data);
+        if (x.status === 'rejected') console.log('rejected', x.err);
 
-    _this.pubSub.on('display', function () {});
-
-    _this.pubSub.on('defineSlot', function () {});
-
-    _this.pubSub.on('destroySlots', function () {});
+        _this.pubSub.emit('bidders-ready', true);
+      });
+    }); // this.pubSub.on('refresh', () => { });
 
     return _this;
   }
@@ -138,6 +144,7 @@ Provider.defaultProps = {
   lazyOffset: 800,
   bidProviders: [],
   bidTimeout: 1000,
+  initTimeout: 350,
   refreshDelay: 200,
   setCentering: true,
   bidHandler: undefined,
@@ -170,6 +177,7 @@ Provider.propTypes = {
   lazyOffset: _propTypes.default.number,
   setCentering: _propTypes.default.bool,
   bidProviders: _propTypes.default.array,
+  initTimeout: _propTypes.default.number,
   refreshDelay: _propTypes.default.number,
   enableVideoAds: _propTypes.default.bool,
   collapseEmptyDivs: _propTypes.default.bool,

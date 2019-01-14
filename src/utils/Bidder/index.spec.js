@@ -42,6 +42,7 @@ describe('Bidder', () => {
 
   test('Should timeout the bidder when it exceeds the failsafe timeout.', async () => {
     const bidder = new Bidder('test');
+    bidder.isReady = true;
     bidder.safeTimeout = 5;
     bidder.fetchBids = () => new Promise(resolve => {
       setTimeout(() => resolve('resolved'), 10);
@@ -50,8 +51,9 @@ describe('Bidder', () => {
     await expect(bidder._fetchBids()).rejects.toEqual('Timed Out');
   });
 
-  test('Should resolve when the promise resolves before the safeTimeout.', async () => {
+  test('Should resolve when the promise resolves before the safeTimeout.', async () => {    
     const bidder = new Bidder('test');
+    bidder.isReady = true;
     bidder.safeTimeout = 10;
     bidder.fetchBids = () => new Promise(resolve => {
       setTimeout(() => resolve('resolved'), 5);

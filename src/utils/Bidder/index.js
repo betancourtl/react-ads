@@ -48,18 +48,23 @@ class Bidder {
    * Should call the init function and set the bidder status to ready.
    * @private
    * @function
-   * @returns {void}
+   * @returns {Promise}
    */
   _init = () => {
     const p = this.init();
-    if (p && p.then) p
+    if (p && p.then) return p
       .then(() => {
         this.isReady = true;
+        return `${this.name} resolved`;
       })
       .catch(() => {
         this.isReady = false;
+        return `${this.name} rejected`;
       });
-    else this.isReady = true;
+    else {
+      this.isReady = true;
+      return Promise.resolve(`${this.name} resolved`);
+    }
   }
 
   /**
@@ -106,6 +111,11 @@ class Bidder {
    * get bids back from the server.
    */
   _fetchBids = (...props) => new Promise((resolve, reject) => {
+    if (!this.isReady) {
+      console.log(`${this.name} Bidder is not ready`);
+      return reject('Bidder is not ready.');
+    }
+    
     const id = setTimeout(() => {
       reject('Timed Out');
     }, this.safeTimeout);

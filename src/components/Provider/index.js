@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
 import bidManager from '../../utils/bidManager';
+import timedPromise from '../../utils/timedPromise';
 import {
   refresh,
   destroySlots,
@@ -43,12 +44,22 @@ class Provider extends Component {
       bidTimeout: props.bidTimeout,
       bidProviders: props.bidProviders,
       refreshDelay: props.refreshDelay,
+      // Fn to call when the bidders are ready.
+      onBiddersReady: fn => this.pubSub.on('bidders-ready', fn),      
+    });    
+    // Wait x ammount of time for bidder init scripts to be ready.
+    timedPromise(
+      props.bidProviders.map(bidder => bidder._init()),
+      props.initTimeout
+    ).then(results => {
+      results.forEach(x => {
+        if (x.status === 'fulfilled') console.log('fulfilled', x.data);
+        if (x.status === 'rejected') console.log('rejected', x.err);
+        this.pubSub.emit('bidders-ready', true);
+      });
     });
-    props.bidProviders.forEach(bidder => bidder.init());
-    this.pubSub.on('refresh', () => { });
-    this.pubSub.on('display', () => { });
-    this.pubSub.on('defineSlot', () => { });
-    this.pubSub.on('destroySlots', () => { });
+
+    // this.pubSub.on('refresh', () => { });
   }
 
   componentWillUnmount() {
@@ -95,6 +106,7 @@ Provider.defaultProps = {
   lazyOffset: 800,
   bidProviders: [],
   bidTimeout: 1000,
+  initTimeout: 350,
   refreshDelay: 200,
   setCentering: true,
   bidHandler: undefined,
@@ -128,6 +140,7 @@ Provider.propTypes = {
   lazyOffset: PropTypes.number,
   setCentering: PropTypes.bool,
   bidProviders: PropTypes.array,
+  initTimeout: PropTypes.number,
   refreshDelay: PropTypes.number,
   enableVideoAds: PropTypes.bool,
   collapseEmptyDivs: PropTypes.bool,

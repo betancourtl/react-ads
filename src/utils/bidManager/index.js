@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import JobQueue from '../../lib/JobQueue';
-import bidDispatcher from '../bidDispatcher';
+import _timedPromise from '../timedPromise';
 
 /**
  * This function will make bid requests and then call the bidders functions
@@ -12,7 +12,7 @@ import bidDispatcher from '../bidDispatcher';
  * @param {Function} q - The items that the job passed to thie processing fn.
  * @param {Function} done - Resolves a promise and ends the job.
  */
-export const processFn = (bidProviders, bidTimeout, refresh, dispatchBidders = bidDispatcher) => (q, done) => {
+export const processFn = (bidProviders, bidTimeout, refresh, timedPromise = _timedPromise) => (q, done) => {
   const slots = [];
   const nextBids = {};
 
@@ -38,7 +38,7 @@ export const processFn = (bidProviders, bidTimeout, refresh, dispatchBidders = b
     return done();
   }
 
-  dispatchBidders(
+  timedPromise(
     bidProviders.map(bidder => bidder._fetchBids(nextBids[bidder.name])),
     bidTimeout
   )
@@ -77,13 +77,18 @@ const bidManager = (props = {}) => {
     bidProviders = [],
     bidTimeout = 1000,
     refreshDelay = 100,
+    onBiddersReady = () => { },
   } = props;
 
   const refreshJob = new JobQueue({
     delay: refreshDelay,
     chunkSize: chunkSize,
     processFn: processFn(bidProviders, bidTimeout, refresh),
+    canProcess: false
   });
+  
+  // Wait for the bidders to be ready before starting the job.
+  onBiddersReady(refreshJob.start);
 
   return {
     refresh: refreshJob.add,

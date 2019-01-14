@@ -25,11 +25,16 @@ var Bidder = function Bidder(name) {
   _defineProperty(this, "_init", function () {
     var p = _this.init();
 
-    if (p && p.then) p.then(function () {
+    if (p && p.then) return p.then(function () {
       _this.isReady = true;
+      return "".concat(_this.name, " resolved");
     }).catch(function () {
       _this.isReady = false;
-    });else _this.isReady = true;
+      return "".concat(_this.name, " rejected");
+    });else {
+      _this.isReady = true;
+      return Promise.resolve("".concat(_this.name, " resolved"));
+    }
   });
 
   _defineProperty(this, "init", function () {
@@ -54,6 +59,11 @@ var Bidder = function Bidder(name) {
     }
 
     return new Promise(function (resolve, reject) {
+      if (!_this.isReady) {
+        console.log("".concat(_this.name, " Bidder is not ready"));
+        return reject('Bidder is not ready.');
+      }
+
       var id = setTimeout(function () {
         reject('Timed Out');
       }, _this.safeTimeout);

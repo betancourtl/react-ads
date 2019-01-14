@@ -8,8 +8,21 @@ class JobQueue {
     this.delay = props.delay || 0;
     this.isProcessing = false;
     this.chunkSize = props.chunkSize || 5;
-    this.processFn = props.processFn || function(_ , done) { done()};
-    this.heap = new Heap((a , b) => a.priority > b.priority);
+    this.processFn = props.processFn || function (_, done) { done() };
+    this.heap = new Heap((a, b) => a.priority > b.priority);
+    this.canProcess = (() => {
+      if (props.canProcess === false) return false;
+      if (props.canProcess === true) return true;
+      else return true;
+    })();
+  }
+
+  stop = () => this.canProcess = false;
+
+  start = () => {
+    this.canProcess = true;
+    this.work();
+    return this;
   }
 
   add = (message = {}) => {
@@ -24,15 +37,16 @@ class JobQueue {
     });
 
     if (this.isProcessing) return this;
+    if (!this.canProcess) return this;
     this.isProcessing = true;
     this.work();
     return this;
   };
-  
-  work = debounce(() => {   
+
+  work = debounce(() => {
     this.process(this.q)
       .then(() => {
-        if (!this.heap.isEmpty) return this.work();
+        if (!this.heap.isEmpty && this.canProcess) return this.work();
         else this.isProcessing = false;
       });
   }, this.delay, { leading: false, trailing: true });

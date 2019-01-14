@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import prebidInit from '@webdeveloperpr/prebid';
 import Bidder from '../';
 
 const bidder = new Bidder('prebid');
@@ -8,14 +7,20 @@ bidder.init = () => {
   if (bidder.isReady) return;
   var pbjs = window.pbjs || {};
   pbjs.que = pbjs.que || [];
-  prebidInit();
+
+  return new Promise((resolve, reject) => {
+    const el = document.createElement('script');
+    el.src = `https://acdn.adnxs.com/prebid/not-for-prod/1/prebid.js?${Math.random(1, 10)}`;
+    el.async = true;
+    el.onload = resolve;
+    el.onerror = reject;
+    document.head.appendChild(el);
+  });
 };
 
-bidder.onBidWon = () => {
-};
+bidder.onBidWon = () => { };
 
-bidder.onTimeout = () => {
-};
+bidder.onTimeout = () => { };
 
 /**
  * Will fetch the prebid bids.
@@ -27,7 +32,6 @@ bidder.onTimeout = () => {
 bidder.fetchBids = adUnits => new Promise(resolve => {
   var pbjs = window.pbjs || {};
   pbjs.que.push(function () {
-
     // Set new adUnits
     const adUnitCodes = adUnits.map(x => x.code);
     pbjs.addAdUnits(adUnits);
