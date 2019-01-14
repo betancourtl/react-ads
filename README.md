@@ -1,11 +1,16 @@
 [![Build Status](https://travis-ci.com/webdeveloperpr/react-ads.svg?branch=master)](https://travis-ci.com/webdeveloperpr/react-ads)
 # react-gpt-prebid-ads
 
+This package allows you to render ads with DFP and Prebid.
+
 API
 - [Provider](#provider)
 - [Ad](#ad)
 
-[Example](#example)
+Example
+- [Example](#example)
+- [Storybook](https://webdeveloperpr.github.io/react-ads)
+
 
 
 ## Example
@@ -158,9 +163,6 @@ export default Example;
 
 ```
 
-This package allows you to render ads with DFP and Prebid using React components.
-
-### Click [here](https://webdeveloperpr.github.io/react-ads) to see storybook examples.
 
 ## Provider
 
