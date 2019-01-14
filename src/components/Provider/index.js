@@ -74,10 +74,10 @@ class Provider extends Component {
         generateId: this.generateId,
         enableAds: this.props.enableAds,
         networkId: this.props.networkId,
-        adUnitPath: this.props.adUnitPath,
-        lazyOffset: this.props.lazyOffset,
-        bidHandler: this.props.bidHandler,
         refresh: this.bidManager.refresh,
+        adUnitPath: this.props.adUnitPath,
+        bidHandler: this.props.bidHandler,
+        lazyOffset: this.props.lazyOffset,
       }}
       >
         {this.props.children}

@@ -27,21 +27,24 @@ bidder.onTimeout = () => {
 bidder.fetchBids = adUnits => new Promise(resolve => {
   var pbjs = window.pbjs || {};
   pbjs.que.push(function () {
-    
+
     // Set new adUnits
     const adUnitCodes = adUnits.map(x => x.code);
-    adUnitCodes.forEach(adUnitCode => window.pbjs.removeAdUnit(adUnitCode));
     pbjs.addAdUnits(adUnits);
-    
+
     // Make the request
     pbjs.requestBids({
       adUnitCodes,
       timeout: bidder.timeout,
-      bidsBackHandler: response => resolve({
-        response,
-        bids: pbjs.getBidResponses(),
-        adUnitCodes,
-      }),            
+      bidsBackHandler: response => {
+        resolve({
+          response,
+          bids: pbjs.getBidResponses(),
+          adUnitCodes,
+        });
+        // remove the adUnits
+        adUnitCodes.forEach(adUnitCode => window.pbjs.removeAdUnit(adUnitCode));
+      },
     });
   });
 });

@@ -117,10 +117,10 @@ function (_Component) {
           generateId: this.generateId,
           enableAds: this.props.enableAds,
           networkId: this.props.networkId,
+          refresh: this.bidManager.refresh,
           adUnitPath: this.props.adUnitPath,
-          lazyOffset: this.props.lazyOffset,
           bidHandler: this.props.bidHandler,
-          refresh: this.bidManager.refresh
+          lazyOffset: this.props.lazyOffset
         }
       }, this.props.children);
     }

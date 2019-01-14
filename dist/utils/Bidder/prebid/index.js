@@ -41,19 +41,20 @@ bidder.fetchBids = function (adUnits) {
       var adUnitCodes = adUnits.map(function (x) {
         return x.code;
       });
-      adUnitCodes.forEach(function (adUnitCode) {
-        return window.pbjs.removeAdUnit(adUnitCode);
-      });
       pbjs.addAdUnits(adUnits); // Make the request
 
       pbjs.requestBids({
         adUnitCodes: adUnitCodes,
         timeout: bidder.timeout,
         bidsBackHandler: function bidsBackHandler(response) {
-          return resolve({
+          resolve({
             response: response,
             bids: pbjs.getBidResponses(),
             adUnitCodes: adUnitCodes
+          }); // remove the adUnits
+
+          adUnitCodes.forEach(function (adUnitCode) {
+            return window.pbjs.removeAdUnit(adUnitCode);
           });
         }
       });
