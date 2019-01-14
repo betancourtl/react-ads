@@ -2,16 +2,16 @@ class Queue {
   constructor() {
     this.items = {};
     this.count = 0;
-    this.lowestCount = 0
+    this.lowestCount = 0;
   }
 
   get size() {
     return this.count - this.lowestCount;
-  };
+  }
 
   get isEmpty() {
     return this.size === 0;
-  };
+  }
 
   enqueue = (items = []) => {
     []
@@ -20,7 +20,7 @@ class Queue {
         this.items[this.count] = item;
         this.count++;
       });
-      return this;
+    return this;
   };
 
   dequeue = () => {
@@ -48,7 +48,7 @@ class Queue {
     return Object
       .keys(this.items)
       .map(x => this.items[x])
-      .join(', ')
+      .join(', ');
   };
 }
 

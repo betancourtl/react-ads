@@ -1,7 +1,8 @@
 import React from 'react';
 import { Provider, Ad } from '../../src';
 import { storiesOf } from '@storybook/react';
-class Page extends React.Component {
+
+class Story extends React.Component {
   render() {
     return (
       <Provider
@@ -26,5 +27,5 @@ class Page extends React.Component {
 
 storiesOf('Lazy', module)
   .add('with text', () => (
-    <Page />
+    <Story />
   ));

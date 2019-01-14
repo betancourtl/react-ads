@@ -210,8 +210,10 @@ ___
 | 13. Update prebid.js bidder to use the new config size | ok  |
 | 14. Update the visibility function to use offsets      | ok  |
 | 15. Add ix bidder helper                               | ok  |
-| 16. Add a way to handle custom bids (amazon)           | x   |
-| 17. Create a prebid Handler configuration              | x   |
+| 16. Add a way to handle custom bids (amazon)           | ok  |
+| 17. Create a prebid Handler configuration              | ok  |
+| 18. Implement Ad to Ad communication for firing events | x   |
+| 19. Implement Instream Video                           | x   |
 
 
 #### AdCallManager

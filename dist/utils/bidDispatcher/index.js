@@ -9,6 +9,12 @@ var status = {
   rejected: 'rejected',
   fulfilled: 'fulfilled'
 };
+/**
+ * Resolve promise handler.
+ * @param {*} data
+ * @returns {void}
+ */
+
 exports.status = status;
 
 var resolved = function resolved(data) {
@@ -17,6 +23,12 @@ var resolved = function resolved(data) {
     status: status.fulfilled
   };
 };
+/**
+ * Resolve promise handler.
+ * @param {*} data 
+ * @returns {void}
+ */
+
 
 var rejected = function rejected(err) {
   return {
@@ -24,10 +36,22 @@ var rejected = function rejected(err) {
     status: status.rejected
   };
 };
+/**
+ * Resolve promise handler
+ * @param {*} data
+ * @returns {Object} 
+ */
+
 
 var reflect = function reflect(p) {
   return p.then(resolved, rejected);
 };
+/**
+ * 
+ * @param {Promise[]} promises
+ * @param {Number} ms - Amoun of time to wait for bid calls.
+ */
+
 
 var dispatchBidders = function dispatchBidders(promises) {
   var ms = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_TIMEOUT;

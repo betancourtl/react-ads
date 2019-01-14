@@ -16,6 +16,7 @@ var bidder = new _.default('amazon');
 
 bidder.init = function () {
   var addScript = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _initialize.default;
+  if (bidder.isReady) return;
   addScript();
   window.apstag.init({
     pubID: 123,

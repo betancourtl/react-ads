@@ -3,7 +3,7 @@ import Article from './Article';
 import { Provider } from '../../src';
 import { storiesOf } from '@storybook/react';
 
-class Page extends React.Component {
+class Story extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -47,5 +47,5 @@ class Page extends React.Component {
 
 storiesOf('InfiniteScroll', module)
   .add('with text', () => (
-    <Page />
+    <Story />
   ));

@@ -2,9 +2,16 @@
 import JobQueue from '../../lib/JobQueue';
 import bidDispatcher from '../bidDispatcher';
 
-// Create a bidProvider
-// Create push bids into a Queue.
-
+/**
+ * This function will make bid requests and then call the bidders functions
+ * for callbacks for a successfull bid call.
+ * @param {Function} props.refresh - Googletag refresh fn.
+ * @param {Bidder[]} props.bidProviders - Array of bidProviders.
+ * @param {Number} props.bidTimeout - Ammount of time to wait for bidders.
+ * @param {Function} props.dispatchBidders - function that fetches the bids.
+ * @param {Function} q - The items that the job passed to thie processing fn.
+ * @param {Function} done - Resolves a promise and ends the job.
+ */
 export const processFn = (bidProviders, bidTimeout, refresh, dispatchBidders = bidDispatcher) => (q, done) => {
   const slots = [];
   const nextBids = {};
@@ -31,9 +38,7 @@ export const processFn = (bidProviders, bidTimeout, refresh, dispatchBidders = b
     return done();
   }
 
-  // Fetch the bids.
   dispatchBidders(
-    // calls Promise.all[]
     bidProviders.map(bidder => bidder._fetchBids(nextBids[bidder.name])),
     bidTimeout
   )
@@ -57,11 +62,11 @@ export const processFn = (bidProviders, bidTimeout, refresh, dispatchBidders = b
 };
 
 /** 
- * @param {Number} props.chunkSize - Max ads to process.
- * @param {Number} props.refreshDelay - Refresh delay.
  * @param {Function} props.refresh - Googletag refresh fn.
+ * @param {Number} props.chunkSize - Max ads to process.
+ * @param {Bidder[]} props.bidProviders - Array of bidProviders.
  * @param {Function} props.getBids - Prebid function used to fetch bids.
- * @param {Boolean} props.prebidEnabled - Function to used to fetch prebid bids.
+ * @param {Number} props.refreshDelay - Refresh delay.
  * @function
  * @returns {Object}
  */

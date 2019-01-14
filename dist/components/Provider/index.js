@@ -90,9 +90,9 @@ function (_Component) {
 
     _this.pubSub.on('display', function () {});
 
-    _this.pubSub.on('destroySlots', function () {});
-
     _this.pubSub.on('defineSlot', function () {});
+
+    _this.pubSub.on('destroySlots', function () {});
 
     return _this;
   }
@@ -103,6 +103,12 @@ function (_Component) {
       if (!this.props.enableAds) return;
       this.pubSub.clear();
     }
+    /**
+     * Will generate the id for the adSlot.
+     * @param {String} type
+     * @returns 
+     */
+
   }, {
     key: "render",
     value: function render() {
@@ -111,10 +117,10 @@ function (_Component) {
           generateId: this.generateId,
           enableAds: this.props.enableAds,
           networkId: this.props.networkId,
+          refresh: this.bidManager.refresh,
           adUnitPath: this.props.adUnitPath,
-          lazyOffset: this.props.lazyOffset,
           bidHandler: this.props.bidHandler,
-          refresh: this.bidManager.refresh
+          lazyOffset: this.props.lazyOffset
         }
       }, this.props.children);
     }
@@ -131,10 +137,10 @@ Provider.defaultProps = {
   enableAds: true,
   lazyOffset: 800,
   bidProviders: [],
-  bidHandler: undefined,
   bidTimeout: 1000,
   refreshDelay: 200,
   setCentering: true,
+  bidHandler: undefined,
   enableVideoAds: false,
   collapseEmptyDivs: false,
   // GPT

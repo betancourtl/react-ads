@@ -12,10 +12,10 @@ const createProps = ({ gpt, ...props } = {}) => ({
     define: jest.fn(),
     display: jest.fn(),
     cmdPush: jest.fn(),
-    destroySlots: jest.fn(),
     addService: jest.fn(),
     generateId: jest.fn(),
     sizeMapping: jest.fn(),
+    destroySlots: jest.fn(),
     addEventListener: jest.fn(),
     ...gpt
   },
@@ -100,13 +100,13 @@ describe('<Ad />', () => {
       lazy: false,
     });
 
+    const display = jest.spyOn(Ad.prototype, 'display');
+    const refresh = jest.spyOn(Ad.prototype, 'refresh');
+    const setTargeting = jest.spyOn(Ad.prototype, 'setTargeting');
     const handleGPTEvent = jest.spyOn(Ad.prototype, 'handleGPTEvent');
     const setMappingSize = jest.spyOn(Ad.prototype, 'setMappingSize');
     const setMQListeners = jest.spyOn(Ad.prototype, 'setMQListeners');
     const setCollapseEmpty = jest.spyOn(Ad.prototype, 'setCollapseEmpty');
-    const setTargeting = jest.spyOn(Ad.prototype, 'setTargeting');
-    const display = jest.spyOn(Ad.prototype, 'display');
-    const refresh = jest.spyOn(Ad.prototype, 'refresh');
     const wrapper = mount(<Ad {...props} />);
     expect(props.gpt.define).toBeCalledTimes(1);
     expect(handleGPTEvent).toBeCalledTimes(4);
@@ -118,7 +118,7 @@ describe('<Ad />', () => {
     expect(wrapper.instance().displayed).toBe(true);
     expect(refresh).toBeCalledTimes(1);
     expect(props.refresh).toBeCalledTimes(1);
-    expect(wrapper.instance().refreshed).toBe(true);
+    expect(wrapper.instance().refreshedOnce).toBe(true);
   });
 
   test('componentWillUnmount', () => {
@@ -184,7 +184,7 @@ describe('<Ad />', () => {
     `refreshWhenVisible, is called when 
     props.lazy = true
     this.isVisible = true
-    this.refreshed = false
+    this.refreshedOnce = false
   `, () => {
       jest.spyOn(Ad.prototype, 'isVisible', 'get').mockImplementation(() => true);
       const define = jest.spyOn(Ad.prototype, 'define');
@@ -193,11 +193,11 @@ describe('<Ad />', () => {
       });
       const wrapper = mount(<Ad {...props} />);
       const instance = wrapper.instance();
-      instance.refreshed = false;
+      instance.refreshedOnce = false;
       //expected conditions
       expect(wrapper.props().lazy).toBe(true);
       expect(instance.isVisible).toBe(true);
-      expect(instance.refreshed).toBe(false);
+      expect(instance.refreshedOnce).toBe(false);
       expect(define).toBeCalledTimes(1);
     });
 
@@ -205,7 +205,7 @@ describe('<Ad />', () => {
     `refreshWhenVisible does not call define when
       props.lazy = true
       this.isVisible = false
-      this.refreshed = false
+      this.refreshedOnce = false
     `, () => {
       jest.spyOn(Ad.prototype, 'isVisible', 'get').mockImplementation(() => false);
       const define = jest.spyOn(Ad.prototype, 'define');
@@ -214,11 +214,11 @@ describe('<Ad />', () => {
       });
       const wrapper = mount(<Ad {...props} />);
       const instance = wrapper.instance();
-      instance.refreshed = false;
+      instance.refreshedOnce = false;
       //expected conditions
       expect(wrapper.props().lazy).toBe(true);
       expect(instance.isVisible).toBe(false);
-      expect(instance.refreshed).toBe(false);
+      expect(instance.refreshedOnce).toBe(false);
       expect(define).toBeCalledTimes(0);
     });
 

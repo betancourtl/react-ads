@@ -43,6 +43,10 @@ class PubSub {
       .splice(this.events[name].indexOf(handler));
   };
 
+  /**
+   * Will clreat all of the events.
+   * @returns {void}
+   */
   clear = () => {
     this.events = {};
   };

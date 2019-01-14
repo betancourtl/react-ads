@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import connect from './';
 
 const TestContext1 = React.createContext({});

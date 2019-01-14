@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Heap from '../MinHeap';
 import Queue from '../Queue';
 import debounce from 'lodash.debounce';
