@@ -1,93 +1,30 @@
-# react-ads
+## DEVELOPMENT NOTES
 
-This package allows you to render DFP ads using React components.
-
-## <Provider \/>
-
-| Name                  | Type     | Default  | Description                                                                                                                                                                                                                                                                                                                                                                                       |
-|-----------------------|----------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| prebid                | Function |          | A custom prebid initialization function.                                                                                                                                                                                                                                                                                                                                                          |
-| chunkSize             | Number   |          | This will fetch ads in chunks of the specified number.                                                                                                                                                                                                                                                                                                                                            |
-| networkId             | Number   |          | DFP network id.                                                                                                                                                                                                                                                                                                                                                                                   |
-| adUnitPath            | String   |          | This will set The network Id for all of the ads. The,can overwrite this.                                                                                                                                                                                                                                                                                                                          |
-| refreshDelay          | Number   |          | Time to wait before refreshing ads. This allows ads to be added to a queue beforebeing defined and refreshed. This multiple ads to be refreshed at the same time.                                                                                                                                                                                                                                 |
-| setCentering          | Boolean  |          | Enables/disables centering of ads. This mode must be set before the service is enabled. Centering is disabled by default. In legacy gpt_mobile.js, centering is enabled by default.                                                                                                                                                                                                               |
-| setTargeting          | Object   |          | Sets page level targeting for all slots. This targeting will apply to all slots.                                                                                                                                                                                                                                                                                                                  |
-| prebidTimeout         | Number   |          | Prebid bids timeout.                                                                                                                                                                                                                                                                                                                                                                              |
-| enableVideoAds        | Boolean  |          | Signals to GPT that video ads will be present on the page. This enables competitive exclusion constraints on display and video ads. If the video content is known, call setVideoContent in order to be able to use content exclusion for display ads.                                                                                                                                             |
-| collapseEmptyDivs     | Boolean  |          | If you're using the asynchronous mode of Google Publisher Tags (GPT) and know that one or more ad slots on your page don't always get filled, you can instruct the browser to collapse empty divs by adding the collapseEmptyDivs(),method to your tags. This method may trigger a reflow of the content of your,page, so how you use it depends on how often you expect an ad slot to be,filled. |
-| prebidFailsafeTimeout | Number   |          | Prebid bids timeout, in case the prebid timeout goes wrong.                                                                                                                                                                                                                                                                                                                                       |
- 
-## <Ad  \/>
-
+ ### Future Features
 ___
 
-| Name                    | Type                       | Default               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-|-------------------------|----------------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| id                      | String                     |                       | Id that DFP will use to identify this ad. When not set it will create a default id.                                                                                                                                                                                                                                                                                                                                                                   |
-| size                    | Array                      |                       | Defines the size of the GPT slot. This value will be passed to the googletag.defineSlot() fn.                                                                                                                                                                                                                                                                                                                                                         |
-| lazy                    | Boolean                    |                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| style                   | Object                     |                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| lazyOffset              | Number                     |                       | Use a value > 0 to lazy load ads x pixels before they show in the window.                                                                                                                                                                                                                                                                                                                                                                             |
-| className               | String                     |                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| priority                | Number                     |                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| targeting               | Object                     |                       | Sets a custom targeting parameter for this slot.                                                                                                                                                                                                                                                                                                                                                                                                      |
-| adUnitPath              | String                     | Provider's unitPathId | This will set The network Id for this . This overwrites the value from the .                                                                                                                                                                                                                                                                                                                                                                          |
-| bidderCode              | Function                   |                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| sizeMapping             | Array || [[Number,Number]] |                       | Define the the viewport size and the slots allowed to be rendered in the viewportSize.This value is an array so you can define multiple ads per viewport size.                                                                                                                                                                                                                                                                                        |
-| onSlotOnLoad            | Function                   |                       | This event is fired when the creative's iframe fires its load event. When rendering rich media ads in sync rendering mode, no iframe is used so no SlotOnloadEvent will be fired.ex.                                                                                                                                                                                                                                                                  |
-| outOfPageSlot           | Boolean                    |                       | When set to true it sets the ad as an out of page slot.                                                                                                                                                                                                                                                                                                                                                                                               |
-| SetCollapseEmpty        | Boolean                    |                       | Sets whether the slot div should be hidden when there is no ad in the slot. This overrides the global,settings.                                                                                                                                                                                                                                                                                                                                       |
-| onSlotRenderEnded       | Function                   |                       | This event is fired when the creative code is injected into a slot. This event will occur before the creative's resources are fetched, so the creative may not be visible yet. The event is fired by the service that rendered the slot. Example: To listen to companion ads, add a listener to the companion ads service, not the pubads service. Note: If you need to know when the creative hasfired its load event, consider the SlotOnloadEvent. |
-| onImpressionViewable    | Function                   |                       | This event is fired when an impression becomes viewable, according to the ActiveView criteria.                                                                                                                                                                                                                                                                                                                                                        |
-| onSlotVisibilityChanged | Function                   |                       | This event is fired whenever the on-screen percentage of an ad slot's area changes. The event is throttled and will not fire more often than once every 200ms.                                                                                                                                                                                                                                                                                        |
+| Features                                            | Status |
+|-----------------------------------------------------|--------|
+| 1. Create initial ads Heap                             | ok  |
+| 2. Create Lazy Loaded Ads Heap                         | ok  |
+| 3. Create Custom Lazy Loading functionality            | ok  |
+| 4. Create Heap extraction/fetching/re-extraction logic | ok  |
+| 5. Integrate Prebid.JS                                 | ok  |
+| 6. Add Unit Testing Framework                          | ok  |
+| 7. Add Line Item Generator Utils                       | x   |
+| 9. Add provider gpt event hooks                        | x   |
+| 10. Disable loading ads                                | ok  |
+| 11. Create dynamic ids                                 | ok  |
+| 12. Add sizes dynamically on pregid bid request        | ok  |
+| 13. Update prebid.js bidder to use the new config size | ok  |
+| 14. Update the visibility function to use offsets      | ok  |
+| 15. Add ix bidder helper                               | ok  |
+| 16. Add a way to handle custom bids (amazon)           | ok  |
+| 17. Create a prebid Handler configuration              | ok  |
+| 18. Implement Ad to Ad communication for firing events | x   |
+| 19. Implement Instream Video                           | x   |
+| 20. Wait for init scripts to finish loading            | x   |
 
-
-**sizeMapping**
-```javascript
-[ 
-    // One Ad until infinity 
-    { viewPort: [1500, 200], slots: [728, 90] }, 
-    // Multiple Ads until browser width >= 1500px
-    { viewPort: [1250, 200], slots: [[728, 90], [970, 250]] }, 
-    // No Ads until browser width >= 1250px
-    { viewPort: [0, 0], slots: [] },
-]
-```
-
-**onSlotOnLoad**
-
-```javascript
-const onSlotLoadEvent = ({id, ref, ... e}) => ({
-    console.log(`slot id is ${id}`);
-}
-```
-
-**onSlotRenderEnded**
-
-```javascript
-const onSlotLoadEvent = ({id, ref, ...e}) => ({
-    console.log(`slot ${id} rendered`);
-}
-```
-
-**onImpressionViewable**
-
-```javascript
-const onSlotLoadEvent = ({id, ref, ...e}) => ({
-    console.log(`Impression for slot with id ${id} served`);
-}
-```
-
-**onSlotVisibilityChanged**
-
-```javascript
-const onSlotLoadEvent = ({id, ref, ...e}) => ({
-    console.log(`Slot viewability is ${e} %`);
-}
-```
-
-## DEVELOPMENT NOTES
 
 ### Ad Loading strategies
 ___
@@ -190,30 +127,6 @@ enabled.
 
 So to take advantage of SRA we have to define all slots before enabling the 
 service.
-
- ### Future Features
-___
-
-| Features                                            | Status |
-|-----------------------------------------------------|--------|
-| 1. Create initial ads Heap                             | ok  |
-| 2. Create Lazy Loaded Ads Heap                         | ok  |
-| 3. Create Custom Lazy Loading functionality            | ok  |
-| 4. Create Heap extraction/fetching/re-extraction logic | ok  |
-| 5. Integrate Prebid.JS                                 | ok  |
-| 6. Add Unit Testing Framework                          | ok  |
-| 7. Add Line Item Generator Utils                       | x   |
-| 9. Add provider gpt event hooks                        | x   |
-| 10. Disable loading ads                                | ok  |
-| 11. Create dynamic ids                                 | ok  |
-| 12. Add sizes dynamically on pregid bid request        | ok  |
-| 13. Update prebid.js bidder to use the new config size | ok  |
-| 14. Update the visibility function to use offsets      | ok  |
-| 15. Add ix bidder helper                               | ok  |
-| 16. Add a way to handle custom bids (amazon)           | ok  |
-| 17. Create a prebid Handler configuration              | ok  |
-| 18. Implement Ad to Ad communication for firing events | x   |
-| 19. Implement Instream Video                           | x   |
 
 
 #### AdCallManager
@@ -831,6 +744,13 @@ the API call is made.
 **getBids**
 
 Function used to get the bids.
+
+## Wait for bidders to finish loading.
+
+Some of the bidders could be installed via scripts and this will take some time 
+install. We have to delay the bids from being called until the scripts finish 
+installing, or until a certain ammount of time passes. This will allow us 
+quickly move to making a request if the init script takes too long.
 
 
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)

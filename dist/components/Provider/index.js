@@ -87,18 +87,21 @@ function (_Component) {
       onBiddersReady: function onBiddersReady(fn) {
         return _this.pubSub.on('bidders-ready', fn);
       }
-    }); // Wait x ammount of time for bidder init scripts to be ready.
+    }); // Signal the the bidder is ready when there are no bid providers.
 
-    (0, _timedPromise.default)(props.bidProviders.map(function (bidder) {
-      return bidder._init();
-    }), props.initTimeout).then(function (results) {
-      results.forEach(function (x) {
-        if (x.status === 'fulfilled') console.log('fulfilled', x.data);
-        if (x.status === 'rejected') console.log('rejected', x.err);
+    if (!props.bidProviders.length) _this.pubSub.emit('bidders-ready', true); // Wait x ammount of time for bidder init scripts to be ready.
+    else {
+        (0, _timedPromise.default)(props.bidProviders.map(function (bidder) {
+          return bidder._init();
+        }), props.initTimeout).then(function (results) {
+          results.forEach(function (x) {
+            if (x.status === 'fulfilled') console.log('fulfilled', x.data);
+            if (x.status === 'rejected') console.log('rejected', x.err);
 
-        _this.pubSub.emit('bidders-ready', true);
-      });
-    }); // this.pubSub.on('refresh', () => { });
+            _this.pubSub.emit('bidders-ready', true);
+          });
+        });
+      } // this.pubSub.on('refresh', () => { });
 
     return _this;
   }

@@ -45,19 +45,24 @@ class Provider extends Component {
       bidProviders: props.bidProviders,
       refreshDelay: props.refreshDelay,
       // Fn to call when the bidders are ready.
-      onBiddersReady: fn => this.pubSub.on('bidders-ready', fn),      
-    });    
-    // Wait x ammount of time for bidder init scripts to be ready.
-    timedPromise(
-      props.bidProviders.map(bidder => bidder._init()),
-      props.initTimeout
-    ).then(results => {
-      results.forEach(x => {
-        if (x.status === 'fulfilled') console.log('fulfilled', x.data);
-        if (x.status === 'rejected') console.log('rejected', x.err);
-        this.pubSub.emit('bidders-ready', true);
-      });
+      onBiddersReady: fn => this.pubSub.on('bidders-ready', fn),
     });
+    
+    // Signal the the bidder is ready when there are no bid providers.
+    if (!props.bidProviders.length) this.pubSub.emit('bidders-ready', true);
+    // Wait x ammount of time for bidder init scripts to be ready.
+    else {
+      timedPromise(
+        props.bidProviders.map(bidder => bidder._init()),
+        props.initTimeout
+      ).then(results => {
+        results.forEach(x => {
+          if (x.status === 'fulfilled') console.log('fulfilled', x.data);
+          if (x.status === 'rejected') console.log('rejected', x.err);
+          this.pubSub.emit('bidders-ready', true);
+        });
+      });
+    }
 
     // this.pubSub.on('refresh', () => { });
   }
