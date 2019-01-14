@@ -28,6 +28,7 @@ var JobQueue = function JobQueue(props) {
 
   _defineProperty(this, "start", function () {
     _this.canProcess = true;
+    _this.isProcessing = true;
 
     _this.work();
 

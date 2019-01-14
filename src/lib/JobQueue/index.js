@@ -21,6 +21,7 @@ class JobQueue {
 
   start = () => {
     this.canProcess = true;
+    this.isProcessing = true;
     this.work();
     return this;
   }
