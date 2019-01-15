@@ -28,7 +28,7 @@ class Provider extends Component {
     this.pubsub = props.pubsub;
     this.slotCount = {};
     gpt.createGPTScript();
-    gpt.createGoogleTagEvents(this.pubSub);
+    gpt.createGoogleTagEvents(this.pubsub);
     gpt.setCentering(props.setCentering);
     gpt.enableVideoAds(props.enableVideoAds);
     gpt.collapseEmptyDivs(props.collapseEmptyDivs);

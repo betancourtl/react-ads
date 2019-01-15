@@ -84,7 +84,7 @@ function (_Component) {
     _this.pubsub = props.pubsub;
     _this.slotCount = {};
     gpt.createGPTScript();
-    gpt.createGoogleTagEvents(_this.pubSub);
+    gpt.createGoogleTagEvents(_this.pubsub);
     gpt.setCentering(props.setCentering);
     gpt.enableVideoAds(props.enableVideoAds);
     gpt.collapseEmptyDivs(props.collapseEmptyDivs);
