@@ -752,5 +752,8 @@ install. We have to delay the bids from being called until the scripts finish
 installing, or until a certain ammount of time passes. This will allow us 
 quickly move to making a request if the init script takes too long.
 
+- Add Provider tests.
+- Add JobQueue tests.
+- Add a PubSub to the JobQueue in order to notify events for testing purposes.
 
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)

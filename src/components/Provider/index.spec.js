@@ -1,4 +1,6 @@
 import Provider from './';
+import PubSub from '../../lib/Pubsub';
+import Bidder from '../../utils/Bidder';
 
 const createProps = ({ gpt = {}, ...props } = {}) => ({
   gpt: {
@@ -87,7 +89,7 @@ describe('<Provider />', () => {
   });
 
   test('generateId', () => {
-    const wrapper = mount(<Provider {...createProps} />);
+    const wrapper = mount(<Provider {...createProps()} />);
     const instance = wrapper.instance();
     expect(instance.generateId()).toBe('ad_1');
     expect(instance.generateId()).toBe('ad_2');
@@ -95,6 +97,48 @@ describe('<Provider />', () => {
     expect(instance.generateId('lb')).toBe('lb_2');
     expect(instance.generateId('rect')).toBe('rect_1');
     expect(instance.generateId('rect')).toBe('rect_2');
+  });
+
+  test('Calls biddersReady when no bidProviders are passed.', () => {
+    const pubsub = new PubSub();
+    const biddersReady = jest.fn();
+    pubsub.on('bidders-ready', biddersReady);
+    const props = createProps({
+      pubsub,
+    });
+    const wrapper = mount(<Provider {...props} />);
+    wrapper.instance();
+    expect(biddersReady).toBeCalledTimes(1);
+  });
+
+  test('Calls biddersReady when bidProviders are have loaded or timed out.', done => {
+    const pubsub = new PubSub();
+    const bidder1 = new Bidder('bidder1');
+    
+    bidder1.init = () => new Promise((resolve) => {
+      setTimeout(resolve, 10);
+    });
+
+    const biddersReady = jest.fn();
+    pubsub.on('bidders-ready', biddersReady);
+    const props = createProps({
+      pubsub,
+      bidProviders: [bidder1]
+    });
+    const wrapper = mount(<Provider {...props} />);
+    wrapper.instance();
+
+    // Make sure that the event is not called.
+    setTimeout(() => {
+      expect(biddersReady).not.toBeCalled();
+      done();
+    }, 5); 
+
+    // Make sure that the event is called once it is resolved.
+    setTimeout(() => {
+      expect(biddersReady).toBeCalledTimes(1);
+      done();
+    }, 15);    
   });
 });
 

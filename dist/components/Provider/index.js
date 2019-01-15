@@ -55,6 +55,23 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Provider).call(this, props));
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "initBidders", function () {
+      if (!_this.props.bidProviders.length) _this.pubsub.emit('bidders-ready', true);else {
+        (0, _timedPromise.default)(_this.props.bidProviders.map(function (bidder) {
+          return bidder._init();
+        }), _this.props.initTimeout).then(function (results) {
+          results.forEach(function (x) {
+            if (x.status === 'fulfilled') console.log('fulfilled', x.data);
+            if (x.status === 'rejected') console.log('rejected', x.err);
+          });
+        }).catch(function (err) {
+          return console.log('Error initializing bidders', err);
+        }).finally(function () {
+          return _this.pubsub.emit('bidders-ready', true);
+        });
+      }
+    });
+
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "generateId", function () {
       var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'ad';
       _this.slotCount[type];
@@ -64,8 +81,8 @@ function (_Component) {
 
     var gpt = props.gpt;
     if (!props.enableAds) return _possibleConstructorReturn(_this);
+    _this.pubsub = props.pubsub;
     _this.slotCount = {};
-    _this.pubSub = new _Pubsub.default();
     gpt.createGPTScript();
     gpt.createGoogleTagEvents(_this.pubSub);
     gpt.setCentering(props.setCentering);
@@ -83,25 +100,12 @@ function (_Component) {
       bidTimeout: props.bidTimeout,
       bidProviders: props.bidProviders,
       refreshDelay: props.refreshDelay,
-      // Fn to call when the bidders are ready.
       onBiddersReady: function onBiddersReady(fn) {
-        return _this.pubSub.on('bidders-ready', fn);
+        return _this.pubsub.on('bidders-ready', fn);
       }
-    }); // Signal the the bidder is ready when there are no bid providers.
+    });
 
-    if (!props.bidProviders.length) _this.pubSub.emit('bidders-ready', true); // Wait x ammount of time for bidder init scripts to be ready.
-    else {
-        (0, _timedPromise.default)(props.bidProviders.map(function (bidder) {
-          return bidder._init();
-        }), props.initTimeout).then(function (results) {
-          results.forEach(function (x) {
-            if (x.status === 'fulfilled') console.log('fulfilled', x.data);
-            if (x.status === 'rejected') console.log('rejected', x.err);
-
-            _this.pubSub.emit('bidders-ready', true);
-          });
-        });
-      } // this.pubSub.on('refresh', () => { });
+    _this.initBidders();
 
     return _this;
   }
@@ -110,7 +114,7 @@ function (_Component) {
     key: "componentWillUnmount",
     value: function componentWillUnmount() {
       if (!this.props.enableAds) return;
-      this.pubSub.clear();
+      this.pubsub.clear();
     }
     /**
      * Will generate the id for the adSlot.
@@ -150,6 +154,7 @@ Provider.defaultProps = {
   initTimeout: 350,
   refreshDelay: 200,
   setCentering: true,
+  pubsub: new _Pubsub.default(),
   bidHandler: undefined,
   enableVideoAds: false,
   collapseEmptyDivs: false,
@@ -184,6 +189,7 @@ Provider.propTypes = {
   refreshDelay: _propTypes.default.number,
   enableVideoAds: _propTypes.default.bool,
   collapseEmptyDivs: _propTypes.default.bool,
+  pubsub: _propTypes.default.instanceOf(_Pubsub.default),
   networkId: _propTypes.default.number.isRequired,
   children: _propTypes.default.oneOfType([_propTypes.default.node, _propTypes.default.arrayOf(_propTypes.default.node)]),
   gpt: _propTypes.default.shape({

@@ -25,8 +25,8 @@ class Provider extends Component {
     super(props);
     const { gpt } = props;
     if (!props.enableAds) return;
+    this.pubsub = props.pubsub;
     this.slotCount = {};
-    this.pubSub = new PubSub();
     gpt.createGPTScript();
     gpt.createGoogleTagEvents(this.pubSub);
     gpt.setCentering(props.setCentering);
@@ -44,32 +44,32 @@ class Provider extends Component {
       bidTimeout: props.bidTimeout,
       bidProviders: props.bidProviders,
       refreshDelay: props.refreshDelay,
-      // Fn to call when the bidders are ready.
-      onBiddersReady: fn => this.pubSub.on('bidders-ready', fn),
+      onBiddersReady: fn => this.pubsub.on('bidders-ready', fn),
     });
-    
-    // Signal the the bidder is ready when there are no bid providers.
-    if (!props.bidProviders.length) this.pubSub.emit('bidders-ready', true);
-    // Wait x ammount of time for bidder init scripts to be ready.
+    this.initBidders();
+  }
+
+  initBidders = () => {
+    if (!this.props.bidProviders.length) this.pubsub.emit('bidders-ready', true);
     else {
       timedPromise(
-        props.bidProviders.map(bidder => bidder._init()),
-        props.initTimeout
-      ).then(results => {
-        results.forEach(x => {
-          if (x.status === 'fulfilled') console.log('fulfilled', x.data);
-          if (x.status === 'rejected') console.log('rejected', x.err);
-          this.pubSub.emit('bidders-ready', true);
-        });
-      });
+        this.props.bidProviders.map(bidder => bidder._init()),
+        this.props.initTimeout
+      )
+        .then(results => {
+          results.forEach(x => {
+            if (x.status === 'fulfilled') console.log('fulfilled', x.data);
+            if (x.status === 'rejected') console.log('rejected', x.err);
+          });
+        })
+        .catch(err => console.log('Error initializing bidders', err))
+        .finally(() => this.pubsub.emit('bidders-ready', true));
     }
-
-    // this.pubSub.on('refresh', () => { });
   }
 
   componentWillUnmount() {
     if (!this.props.enableAds) return;
-    this.pubSub.clear();
+    this.pubsub.clear();
   }
 
   /**
@@ -114,6 +114,7 @@ Provider.defaultProps = {
   initTimeout: 350,
   refreshDelay: 200,
   setCentering: true,
+  pubsub: new PubSub(),
   bidHandler: undefined,
   enableVideoAds: false,
   collapseEmptyDivs: false,
@@ -149,6 +150,7 @@ Provider.propTypes = {
   refreshDelay: PropTypes.number,
   enableVideoAds: PropTypes.bool,
   collapseEmptyDivs: PropTypes.bool,
+  pubsub: PropTypes.instanceOf(PubSub),
   networkId: PropTypes.number.isRequired,
   children: PropTypes.oneOfType([
     PropTypes.node,
