@@ -41,7 +41,7 @@ describe('<Provider />', () => {
     } = wrapper.props();
     expect(divider).toBe('_');
     expect(networkId).toBe(0);
-    expect(chunkSize).toBe(4);
+    expect(chunkSize).toBe(5);
     expect(enableAds).toBe(true);
     expect(lazyOffset).toBe(800);
     expect(targeting).toEqual({});
