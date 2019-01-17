@@ -149,7 +149,7 @@ function (_Component) {
 Provider.defaultProps = {
   divider: '_',
   networkId: 0,
-  chunkSize: 4,
+  chunkSize: 5,
   targeting: {},
   enableAds: true,
   lazyOffset: 800,
