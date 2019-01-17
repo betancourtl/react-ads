@@ -15,12 +15,6 @@ Object.defineProperty(exports, "Bidder", {
     return _Bidder.default;
   }
 });
-Object.defineProperty(exports, "Video", {
-  enumerable: true,
-  get: function get() {
-    return _Video.default;
-  }
-});
 Object.defineProperty(exports, "Provider", {
   enumerable: true,
   get: function get() {
@@ -31,8 +25,6 @@ Object.defineProperty(exports, "Provider", {
 var _Ad = _interopRequireDefault(require("./components/Ad"));
 
 var _Bidder = _interopRequireDefault(require("./utils/Bidder"));
-
-var _Video = _interopRequireDefault(require("./components/Video"));
 
 var _Provider = _interopRequireDefault(require("./components/Provider"));
 
