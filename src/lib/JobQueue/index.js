@@ -84,7 +84,7 @@ class JobQueue {
       this.emit.jobEnd();
     };
     
-    return this.processFn(this.grab(5), done);
+    return this.processFn(this.grab(), done);
   });
 }
 

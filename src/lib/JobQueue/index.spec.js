@@ -41,7 +41,7 @@ describe('JobQueue', () => {
       .add(createMessage(3))
       .add(createMessage(3));
 
-    expect(job.isProcessing).toEqual(true);
+
     // expect(job.delay).toEqual(1);
     expect(job.processFn).toEqual((processFn));
 
@@ -93,10 +93,6 @@ describe('JobQueue', () => {
       .add(createMessage(3))
       .add(createMessage(3))
       .add(createMessage(3));
-
-    expect(job.isProcessing).toEqual(true);
-    // expect(job.delay).toEqual(1);
-    expect(job.processFn).toEqual((processFn));
 
     const expected = [[1, 1, 1, 1, 1]];
 

@@ -97,7 +97,7 @@ var JobQueue = function JobQueue(props) {
         _this.emit.jobEnd();
       };
 
-      return _this.processFn(_this.grab(5), done);
+      return _this.processFn(_this.grab(), done);
     });
   });
 
