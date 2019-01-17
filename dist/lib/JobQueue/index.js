@@ -45,6 +45,12 @@ var JobQueue = function JobQueue(props) {
     return _this.canProcess = false;
   });
 
+  _defineProperty(this, "work", function () {
+    _this.process(_this.q).then(function () {
+      if (!_this.heap.isEmpty && _this.canProcess) return _this.work();else _this.isProcessing = false;
+    });
+  });
+
   _defineProperty(this, "add", function () {
     var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -59,25 +65,13 @@ var JobQueue = function JobQueue(props) {
     });
 
     if (_this.isProcessing) return _this;
-    if (!_this.canProcess) return _this;
-    _this.isProcessing = true; // Only debounce the initial call. 
+    if (!_this.canProcess) return _this; // Only debounce the initial call. 
     // No need to keep debouncing recursive calls.
 
     _this.debouncedWork();
 
     return _this;
   });
-
-  _defineProperty(this, "work", function () {
-    _this.process(_this.q).then(function () {
-      if (!_this.heap.isEmpty && _this.canProcess) return _this.work();else _this.isProcessing = false;
-    });
-  });
-
-  _defineProperty(this, "debouncedWork", (0, _lodash.default)(this.work, this.delay, {
-    leading: false,
-    trailing: true
-  }));
 
   _defineProperty(this, "grab", function () {
     var count = 0;
@@ -92,14 +86,18 @@ var JobQueue = function JobQueue(props) {
   });
 
   _defineProperty(this, "process", function () {
-    return new Promise(function (done) {
+    return new Promise(function (resolve) {
+      _this.isProcessing = true;
+
       _this.emit.jobStart();
 
-      return _this.processFn(_this.grab(5), function () {
-        done();
+      var done = function done() {
+        resolve();
 
         _this.emit.jobEnd();
-      });
+      };
+
+      return _this.processFn(_this.grab(5), done);
     });
   });
 
@@ -121,6 +119,7 @@ var JobQueue = function JobQueue(props) {
     if (props.canProcess === true) return true;else return true;
   }();
 
+  this.debouncedWork = (0, _lodash.default)(this.work, Number(this.delay));
   this.emit = {
     jobStart: function jobStart() {
       return _this.pubsub.emit('jobStart');

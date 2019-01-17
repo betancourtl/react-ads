@@ -17,6 +17,7 @@ class JobQueue {
       if (props.canProcess === true) return true;
       else return true;
     })();
+    this.debouncedWork = debounce(this.work, Number(this.delay));
     this.emit = {
       jobStart: () => this.pubsub.emit('jobStart'),
       jobEnd: () => this.pubsub.emit('jobEnd'),
@@ -36,6 +37,14 @@ class JobQueue {
 
   stop = () => this.canProcess = false;
 
+  work = () => {
+    this.process(this.q)
+      .then(() => {
+        if (!this.heap.isEmpty && this.canProcess) return this.work();
+        else this.isProcessing = false;
+      });
+  };
+
   add = (message = {}) => {
     if (!message.priority || !message.data) {
       console.log('invalid job');
@@ -49,25 +58,11 @@ class JobQueue {
 
     if (this.isProcessing) return this;
     if (!this.canProcess) return this;
-    this.isProcessing = true;
     // Only debounce the initial call. 
     // No need to keep debouncing recursive calls.
     this.debouncedWork();
     return this;
   };
-
-  work = () => {
-    this.process(this.q)
-      .then(() => {
-        if (!this.heap.isEmpty && this.canProcess) return this.work();
-        else this.isProcessing = false;
-      });
-  };
-
-  debouncedWork = debounce(
-    this.work,
-    this.delay, { leading: false, trailing: true }
-  );
 
   grab = () => {
     let count = 0;
@@ -80,15 +75,17 @@ class JobQueue {
     return items;
   };
 
-  process = () => new Promise((done) => {
+  process = () => new Promise(resolve => {
+    this.isProcessing = true;
     this.emit.jobStart();
-
-    return this.processFn(this.grab(5), () => {
-      done();
+    
+    const done = () => {
+      resolve();
       this.emit.jobEnd();
-    });
+    };
+    
+    return this.processFn(this.grab(5), done);
   });
-
 }
 
 export default JobQueue;
