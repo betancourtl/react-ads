@@ -31,7 +31,7 @@ class Story extends React.Component {
   render() {
     return (
       <Provider
-        refreshDelay={200}
+        refreshDelay={500}
         enableVideoAds={false}
         collapseEmptyDivs={false}
         adUnitPath="travel"
