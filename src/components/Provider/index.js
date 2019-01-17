@@ -40,6 +40,8 @@ class Provider extends Component {
 
   /**
    * Initializes GPT.
+   * @function
+   * @returns {void}
    */
   initGPT = () => {
     const { props } = this;
@@ -59,6 +61,8 @@ class Provider extends Component {
   /**
    * It calls the bidProvider's init fns and when the bidders are ready it lets 
    * the bidManager know that it can start bidding.
+   * @function
+   * @returns {void}
    */
   initBidders = () => {
     if (!this.props.bidProviders.length) this.pubsub.emit('bidders-ready', true);
@@ -75,7 +79,7 @@ class Provider extends Component {
   /**
    * Will generate the id for the adSlot.
    * @param {String} type
-   * @returns 
+   * @returns {String}
    */
   generateId = (type = 'ad') => {
     this.slotCount[type];

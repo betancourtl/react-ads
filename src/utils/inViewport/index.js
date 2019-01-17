@@ -1,6 +1,9 @@
 /**
  * Will return true if the element is in view.
  * @param {HTMLElement} el - Ad HTML element.
+ * @param {Number} offset - Amount of offset to add detect when an the element 
+ * is in view.
+ * @returns {Boolean}
  */
 const elementInViewport = (el, offset = 0) => {
   let top = el.offsetTop;

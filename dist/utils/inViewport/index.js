@@ -8,6 +8,9 @@ exports.default = exports.inView = void 0;
 /**
  * Will return true if the element is in view.
  * @param {HTMLElement} el - Ad HTML element.
+ * @param {Number} offset - Amount of offset to add detect when an the element 
+ * is in view.
+ * @returns {Boolean}
  */
 var elementInViewport = function elementInViewport(el) {
   var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;

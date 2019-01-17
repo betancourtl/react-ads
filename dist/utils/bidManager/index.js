@@ -7,7 +7,9 @@ exports.default = exports.processFn = void 0;
 
 var _JobQueue = _interopRequireDefault(require("../../lib/JobQueue"));
 
-var _timedPromise2 = _interopRequireDefault(require("../timedPromise"));
+var _timedPromise2 = _interopRequireWildcard(require("../timedPromise"));
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28,6 +30,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
  * @param {Function} props.dispatchBidders - function that fetches the bids.
  * @param {Function} q - The items that the job passed to thie processing fn.
  * @param {Function} done - Resolves a promise and ends the job.
+ * @function
+ * @returns {void}
  */
 var processFn = function processFn(bidProviders, bidTimeout, refresh) {
   var timedPromise = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _timedPromise2.default;
@@ -64,12 +68,12 @@ var processFn = function processFn(bidProviders, bidTimeout, refresh) {
       return bidder._fetchBids(nextBids[bidder.name]);
     }), bidTimeout).then(function (responses) {
       responses.forEach(function (res, i) {
-        if (res.status === 'fulfilled') {
+        if (res.status === _timedPromise2.status.fulfilled) {
           bidProviders[i].onBidWon();
           bidProviders[i].handleResponse(res.data);
         }
 
-        if (res.status === 'rejected') {
+        if (res.status === _timedPromise2.status.rejected) {
           bidProviders[i].onTimeout();
         }
       });

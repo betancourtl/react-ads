@@ -419,11 +419,16 @@ Ad.propTypes = {
 
 const MaybeHiddenAd = hideHOC(Ad);
 
-const stateToProps = ({ adUnitPath, generateId, lazyOffset, networkId, bidHandler, ...rest }, props) => {
+export const stateToProps = ({ adUnitPath, generateId, lazyOffset, networkId, bidHandler, ...rest }, props) => {
+  const withSlash = x => x ? '/'.concat(x) : x;
+
   const _networkId = props.networkId || networkId;
-  const _adUnitPath = adUnitPath
-    ? ['', _networkId, adUnitPath].join('/')
-    : ['', _networkId, props.adUnitPath].join('/');
+  const _adUnitPath = [
+    _networkId,
+    props.adUnitPath || adUnitPath
+  ]
+    .map(x => withSlash(x))
+    .join('');
   const _lazyOffset = props.lazyOffset && props.lazyOffset >= 0
     ? props.lazyOffset
     : lazyOffset;

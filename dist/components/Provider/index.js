@@ -48,23 +48,35 @@ var Provider =
 function (_Component) {
   _inherits(Provider, _Component);
 
-  function Provider(props) {
+  function Provider(_props) {
     var _this;
 
     _classCallCheck(this, Provider);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Provider).call(this, props));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Provider).call(this, _props));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "initGPT", function () {
+      var _assertThisInitialize = _assertThisInitialized(_assertThisInitialized(_this)),
+          props = _assertThisInitialize.props;
+
+      var gpt = props.gpt;
+      gpt.createGPTScript();
+      gpt.setCentering(props.setCentering);
+      gpt.enableVideoAds(props.enableVideoAds);
+      gpt.collapseEmptyDivs(props.collapseEmptyDivs);
+      gpt.enableAsyncRendering(true);
+      gpt.enableSingleRequest(true);
+      gpt.disableInitialLoad(true);
+      gpt.setTargeting(props.targeting);
+      gpt.enableServices();
+      gpt.destroySlots();
+    });
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "initBidders", function () {
       if (!_this.props.bidProviders.length) _this.pubsub.emit('bidders-ready', true);else {
         (0, _timedPromise.default)(_this.props.bidProviders.map(function (bidder) {
           return bidder._init();
-        }), _this.props.initTimeout).then(function (results) {
-          results.forEach(function (x) {
-            if (x.status === 'fulfilled') console.log('fulfilled', x.data);
-            if (x.status === 'rejected') console.log('rejected', x.err);
-          });
-        }).catch(function (err) {
+        }), _this.props.initTimeout).catch(function (err) {
           return console.log('Error initializing bidders', err);
         }).finally(function () {
           return _this.pubsub.emit('bidders-ready', true);
@@ -79,27 +91,19 @@ function (_Component) {
       return "".concat(type).concat(_this.props.divider).concat(_this.slotCount[type]);
     });
 
-    var gpt = props.gpt;
-    if (!props.enableAds) return _possibleConstructorReturn(_this);
-    _this.pubsub = props.pubsub;
+    var _gpt = _props.gpt;
+    if (!_props.enableAds) return _possibleConstructorReturn(_this);
+    _this.pubsub = _props.pubsub;
     _this.slotCount = {};
-    gpt.createGPTScript();
-    gpt.createGoogleTagEvents(_this.pubsub);
-    gpt.setCentering(props.setCentering);
-    gpt.enableVideoAds(props.enableVideoAds);
-    gpt.collapseEmptyDivs(props.collapseEmptyDivs);
-    gpt.enableAsyncRendering(true);
-    gpt.enableSingleRequest(true);
-    gpt.disableInitialLoad(true);
-    gpt.setTargeting(props.targeting);
-    gpt.enableServices();
-    gpt.destroySlots();
+
+    _this.initGPT();
+
     _this.bidManager = (0, _bidManager.default)({
-      refresh: gpt.refresh,
-      chunkSize: props.chunkSize,
-      bidTimeout: props.bidTimeout,
-      bidProviders: props.bidProviders,
-      refreshDelay: props.refreshDelay,
+      refresh: _gpt.refresh,
+      chunkSize: _props.chunkSize,
+      bidTimeout: _props.bidTimeout,
+      bidProviders: _props.bidProviders,
+      refreshDelay: _props.refreshDelay,
       onBiddersReady: function onBiddersReady(fn) {
         return _this.pubsub.on('bidders-ready', fn);
       }
@@ -109,6 +113,12 @@ function (_Component) {
 
     return _this;
   }
+  /**
+   * Initializes GPT.
+   * @function
+   * @returns {void}
+   */
+
 
   _createClass(Provider, [{
     key: "componentWillUnmount",
@@ -116,12 +126,6 @@ function (_Component) {
       if (!this.props.enableAds) return;
       this.pubsub.clear();
     }
-    /**
-     * Will generate the id for the adSlot.
-     * @param {String} type
-     * @returns 
-     */
-
   }, {
     key: "render",
     value: function render() {
@@ -170,8 +174,7 @@ Provider.defaultProps = {
     collapseEmptyDivs: _googletag.collapseEmptyDivs,
     disableInitialLoad: _googletag.disableInitialLoad,
     enableSingleRequest: _googletag.enableSingleRequest,
-    enableAsyncRendering: _googletag.enableAsyncRendering,
-    createGoogleTagEvents: _googletag.createGoogleTagEvents
+    enableAsyncRendering: _googletag.enableAsyncRendering
   }
 };
 Provider.propTypes = {
@@ -202,8 +205,7 @@ Provider.propTypes = {
     collapseEmptyDivs: _propTypes.default.func.isRequired,
     disableInitialLoad: _propTypes.default.func.isRequired,
     enableSingleRequest: _propTypes.default.func.isRequired,
-    enableAsyncRendering: _propTypes.default.func.isRequired,
-    createGoogleTagEvents: _propTypes.default.func.isRequired
+    enableAsyncRendering: _propTypes.default.func.isRequired
   })
 };
 var _default = Provider;

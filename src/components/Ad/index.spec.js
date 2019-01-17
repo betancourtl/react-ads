@@ -1,4 +1,4 @@
-import { Ad } from './';
+import { Ad, stateToProps } from './';
 
 const createProps = ({ gpt, ...props } = {}) => ({
   adUnitPath: '',
@@ -311,5 +311,79 @@ describe('<Ad />', () => {
       ['firstName', 'Luis'],
       ['lastName', 'Betancourt']
     ]);
+  });
+});
+
+describe('stateToProps', () => {
+  test('should use the providers networkId and adUnitPath.', () => {
+    const providerProps = {
+      adUnitPath: 'provider',
+      networkId: 11,
+      lazyOffset: 100
+    };
+
+    const adProps = {
+      adUnitPath: '',
+      networkId: '',
+    };
+
+    const results = stateToProps(providerProps, adProps);
+    expect(results.adUnitPath).toEqual('/11/provider');
+    expect(results.lazyOffset).toEqual(100);
+  });
+
+  test('should use the Ad\'s networkId and adUnitPath.', () => {
+    const providerProps = {
+      adUnitPath: 'provider',
+      networkId: 11,
+      lazyOffset: 100
+    };
+
+    const adProps = {
+      adUnitPath: 'ad',
+      networkId: 22,
+      lazyOffset: 200
+    };
+
+    const results = stateToProps(providerProps, adProps);
+    expect(results.adUnitPath).toEqual('/22/ad');
+    expect(results.lazyOffset).toEqual(200);
+  });
+
+  test('should return a bidHandler that uses the provider and ad bidHandlers.', () => {
+    const providerProps = {
+      bidHandler: () => 'a',
+    };
+
+    const adProps = {
+      bidHandler: (x, y) => [x, y].join(''),
+    };
+
+    const results = stateToProps(providerProps, adProps);
+    expect(results.bidHandler('b')).toEqual('ba');
+  });
+
+  test('should return a bidHandler from the Ad.', () => {
+    const providerProps = {
+    };
+
+    const adProps = {
+      bidHandler: (x, y) => [x, y].join(''),
+    };
+
+    const results = stateToProps(providerProps, adProps);
+    expect(results.bidHandler('b', 'a')).toEqual('b');
+  });
+
+  test('should return a bidHandler from the Provider.', () => {
+    const providerProps = {
+      bidHandler: (x, y) => [x, y].join(''),
+    };
+
+    const adProps = {      
+    };
+
+    const results = stateToProps(providerProps, adProps);
+    expect(results.bidHandler('b', 'a')).toEqual('b');
   });
 });

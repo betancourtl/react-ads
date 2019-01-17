@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createGoogleTagEvents = exports.setTargeting = exports.enableServices = exports.display = exports.getVersion = exports.collapseEmptyDivs = exports.enableVideoAds = exports.enableAsyncRendering = exports.setCentering = exports.disableInitialLoad = exports.enableSingleRequest = exports.createGPTScript = exports.addEventListener = exports.sizeMapping = exports.destroyAd = exports.define = exports.refresh = exports.destroySlots = exports.cmdPush = exports.getWindowWidth = exports.events = void 0;
+exports.setTargeting = exports.enableServices = exports.display = exports.getVersion = exports.collapseEmptyDivs = exports.enableVideoAds = exports.enableAsyncRendering = exports.setCentering = exports.disableInitialLoad = exports.enableSingleRequest = exports.createGPTScript = exports.addEventListener = exports.sizeMapping = exports.destroyAd = exports.define = exports.refresh = exports.destroySlots = exports.cmdPush = exports.getWindowWidth = exports.events = void 0;
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
@@ -265,7 +265,7 @@ var getVersion = function getVersion() {
  * Will fetch the google ad from DFP. When SRA is enabled this will
  * fetch ALL the ads that called the defineSlot function, but have
  * not been displayed.
- * @param {String |  Slot} id - The slotElementId or the Slot Object.
+ * @param {String|Slot} id - The slotElementId or the Slot Object.
  */
 
 
@@ -311,53 +311,5 @@ var setTargeting = function setTargeting() {
     });
   });
 };
-/**
- * Will monkey patch the global googletag functions so that we can subscribe to
- * events whenever a GPT fn is called.
- * @function
- * @param {callback} pubSub - PubSub instance used to emit events.
- * @returns {void}
- */
-
 
 exports.setTargeting = setTargeting;
-
-var createGoogleTagEvents = function createGoogleTagEvents(pubSub) {
-  var log = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  cmdPush(function () {
-    // Pass this outside the function. There is no need to know about the inner
-    // workings of the pubSub.
-    var callback = function callback(evtName, result) {
-      if (log) console.log('fired ', evtName);
-      pubSub.emit(evtName, result);
-    };
-
-    var fns = [{
-      ref: window.googletag,
-      events: ['defineSlot', 'destroySlots', 'enableServices', 'display']
-    }, {
-      ref: window.googletag.pubads(),
-      events: ['disableInitialLoad', 'enableAsyncRendering', 'enableSyncRendering', 'enableLazyLoad', 'enableSingleRequest', 'enableVideoAds', 'setCentering', 'collapseEmptyDivs', 'getVersion', 'refresh']
-    }];
-
-    var monkeyPatch = function monkeyPatch(obj, fnName, cb) {
-      var fn = obj[fnName];
-
-      obj[fnName] = function () {
-        var result = fn.apply(this, arguments);
-        cb(fnName, result, arguments);
-        return result;
-      };
-    };
-
-    fns.forEach(function (_ref3) {
-      var ref = _ref3.ref,
-          events = _ref3.events;
-      events.forEach(function (evt) {
-        return monkeyPatch(ref, evt, callback);
-      });
-    });
-  });
-};
-
-exports.createGoogleTagEvents = createGoogleTagEvents;

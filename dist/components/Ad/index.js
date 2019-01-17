@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.MaybeHiddenAd = exports.Ad = void 0;
+exports.default = exports.MaybeHiddenAd = exports.Ad = exports.stateToProps = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
@@ -110,7 +110,7 @@ function (_Component) {
 
     _this.slot = null;
     /**
-     * List of event listeners removing functions.
+     * List of event listener removing functions.
      * @type {Array}
      */
 
@@ -134,7 +134,7 @@ function (_Component) {
 
     _this.refreshWhenVisible = (0, _withRaf.default)(_this.refreshWhenVisible.bind(_assertThisInitialized(_assertThisInitialized(_this))));
     /**
-     * The ad's unique id. We only want the Id to be generated once, so we run
+     * The ad's unique id. We only want the id to be generated once, so we run
      * generateId in the constructor.
      *  @type {String}
      */
@@ -181,7 +181,7 @@ function (_Component) {
       this.refreshedOnce = true;
     }
     /**
-     * Will trigger a refresh whenever it this slot enters into a new breakpoint.
+     * Will trigger a refresh whenever this slot enters into a new breakpoint.
      * @funtion
      * @returns {void}
      */
@@ -501,8 +501,7 @@ Ad.propTypes = {
     addEventListener: _propTypes.default.func.isRequired
   })
 };
-var MaybeHiddenAd = (0, _hide.default)(Ad); // TEST
-
+var MaybeHiddenAd = (0, _hide.default)(Ad);
 exports.MaybeHiddenAd = MaybeHiddenAd;
 
 var stateToProps = function stateToProps(_ref6, props) {
@@ -513,9 +512,15 @@ var stateToProps = function stateToProps(_ref6, props) {
       bidHandler = _ref6.bidHandler,
       rest = _objectWithoutProperties(_ref6, ["adUnitPath", "generateId", "lazyOffset", "networkId", "bidHandler"]);
 
+  var withSlash = function withSlash(x) {
+    return x ? '/'.concat(x) : x;
+  };
+
   var _networkId = props.networkId || networkId;
 
-  var _adUnitPath = adUnitPath ? ['', _networkId, adUnitPath].join('/') : ['', _networkId, props.adUnitPath].join('/');
+  var _adUnitPath = [_networkId, props.adUnitPath || adUnitPath].map(function (x) {
+    return withSlash(x);
+  }).join('');
 
   var _lazyOffset = props.lazyOffset && props.lazyOffset >= 0 ? props.lazyOffset : lazyOffset;
 
@@ -535,6 +540,8 @@ var stateToProps = function stateToProps(_ref6, props) {
   };
   return results;
 };
+
+exports.stateToProps = stateToProps;
 
 var _default = (0, _connector.default)(_context.AdsContext, stateToProps)(MaybeHiddenAd);
 

@@ -13,22 +13,22 @@ const resolved = data => ({ data, status: status.fulfilled });
 
 /**
  * Resolve promise handler.
- * @param {*} data 
+ * @param {*} err 
  * @returns {void}
  */
 const rejected = err => ({ err, status: status.rejected });
 
 /**
- * Resolve promise handler
- * @param {*} data
+ * Resolve promise handler.
+ * @param {*} p
  * @returns {Object} 
  */
 const reflect = p => p.then(resolved, rejected);
 
 /**
- * 
  * @param {Promise[]} promises
- * @param {Number} ms - Amoun of time to wait for bid calls.
+ * @param {Number} ms - Amount of time to wait for bid calls.
+ * @returns {Object}
  */
 const timedPromise = (promises, ms = DEFAULT_TIMEOUT) => Promise
   .all([].concat(promises).map((promise) => {

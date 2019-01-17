@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import JobQueue from '../../lib/JobQueue';
-import _timedPromise from '../timedPromise';
+import _timedPromise, { status } from '../timedPromise';
 
 /**
  * This function will make bid requests and then call the bidders functions
@@ -11,6 +11,8 @@ import _timedPromise from '../timedPromise';
  * @param {Function} props.dispatchBidders - function that fetches the bids.
  * @param {Function} q - The items that the job passed to thie processing fn.
  * @param {Function} done - Resolves a promise and ends the job.
+ * @function
+ * @returns {void}
  */
 export const processFn = (bidProviders, bidTimeout, refresh, timedPromise = _timedPromise) => (q, done) => {
   const slots = [];
@@ -44,12 +46,12 @@ export const processFn = (bidProviders, bidTimeout, refresh, timedPromise = _tim
   )
     .then((responses) => {
       responses.forEach((res, i) => {
-        if (res.status === 'fulfilled') {
+        if (res.status === status.fulfilled) {
           bidProviders[i].onBidWon();
           bidProviders[i].handleResponse(res.data);
         }
 
-        if (res.status === 'rejected') {
+        if (res.status === status.rejected) {
           bidProviders[i].onTimeout();
         }
       });
@@ -86,7 +88,7 @@ const bidManager = (props = {}) => {
     processFn: processFn(bidProviders, bidTimeout, refresh),
     canProcess: false
   });
-  
+
   // Wait for the bidders to be ready before starting the job.
   onBiddersReady(refreshJob.start);
 
