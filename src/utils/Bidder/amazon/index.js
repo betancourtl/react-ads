@@ -1,12 +1,9 @@
 /* eslint-disable no-console */
 import Bidder from '../';
-import loadScript from './initialize';
-
 const bidder = new Bidder('amazon');
 
-bidder.init = (addScript = loadScript) => {
+bidder.init = () => {
   if (bidder.isReady) return;
-  addScript();
   window.apstag.init({
     pubID: 123,
     adServer: 'googletag',

@@ -26,6 +26,7 @@
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.4",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.23",
     "babel-preset-minify": "^0.5.0",
     "css-loader": "^2.1.0",
     "enzyme": "^3.8.0",
@@ -59,9 +60,9 @@
     "test:watch": "node node_modules/.bin/jest --watch --verbose false",
     "prebuild": "rm -rf ./dist",
     "build": "babel src --out-dir dist --ignore **/*.spec.js",
-    "build:dev": "NODE_ENV=development && npm run build",
-    "build:prod": "NODE_ENV=production && npm run build",
-    "build:watch": "NODE_ENV=development && npm run build -- --watch",
+    "build:dev": "NODE_ENV=development BABEL_ENV=development npm run build",
+    "build:prod": "NODE_ENV=production BABEL_ENV=production npm run build",
+    "build:watch": "NODE_ENV=development BABEL_ENV=development npm run build -- --watch",
     "release": "np"
   },
   "keywords": [
