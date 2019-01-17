@@ -197,7 +197,7 @@ export const getVersion = () => {
  * Will fetch the google ad from DFP. When SRA is enabled this will
  * fetch ALL the ads that called the defineSlot function, but have
  * not been displayed.
- * @param {String |  Slot} id - The slotElementId or the Slot Object.
+ * @param {String|Slot} id - The slotElementId or the Slot Object.
  */
 export const display = id => {
   cmdPush(() => {
@@ -226,65 +226,5 @@ export const setTargeting = (targeting = {}) => {
     Object
       .entries(targeting)
       .map(([k, v]) => window.googletag.pubads().setTargeting(k, v));
-  });
-};
-
-/**
- * Will monkey patch the global googletag functions so that we can subscribe to
- * events whenever a GPT fn is called.
- * @function
- * @param {callback} pubSub - PubSub instance used to emit events.
- * @returns {void}
- */
-export const createGoogleTagEvents = (pubSub, log = false) => {
-  cmdPush(() => {
-
-    // Pass this outside the function. There is no need to know about the inner
-    // workings of the pubSub.
-    const callback = (evtName, result) => {
-      if (log) console.log('fired ', evtName);
-      pubSub.emit(evtName, result);
-    };
-
-    const fns = [
-      {
-        ref: window.googletag,
-        events: [
-          'defineSlot',
-          'destroySlots',
-          'enableServices',
-          'display',
-        ],
-      },
-      {
-        ref: window.googletag.pubads(),
-        events: [
-          'disableInitialLoad',
-          'enableAsyncRendering',
-          'enableSyncRendering',
-          'enableLazyLoad',
-          'enableSingleRequest',
-          'enableVideoAds',
-          'setCentering',
-          'collapseEmptyDivs',
-          'getVersion',
-          'refresh',
-        ],
-      },
-    ];
-
-    const monkeyPatch = (obj, fnName, cb) => {
-      const fn = obj[fnName];
-      obj[fnName] = function () {
-        const result = fn.apply(this, arguments);
-        cb(fnName, result, arguments);
-        return result;
-      };
-    };
-
-    fns
-      .forEach(({ ref, events }) => {
-        events.forEach(evt => monkeyPatch(ref, evt, callback));
-      });
   });
 };

@@ -17,7 +17,6 @@ import {
   disableInitialLoad,
   enableSingleRequest,
   enableAsyncRendering,
-  createGoogleTagEvents,
 } from '../../utils/googletag';
 
 class Provider extends Component {
@@ -27,17 +26,7 @@ class Provider extends Component {
     if (!props.enableAds) return;
     this.pubsub = props.pubsub;
     this.slotCount = {};
-    gpt.createGPTScript();
-    gpt.createGoogleTagEvents(this.pubsub);
-    gpt.setCentering(props.setCentering);
-    gpt.enableVideoAds(props.enableVideoAds);
-    gpt.collapseEmptyDivs(props.collapseEmptyDivs);
-    gpt.enableAsyncRendering(true);
-    gpt.enableSingleRequest(true);
-    gpt.disableInitialLoad(true);
-    gpt.setTargeting(props.targeting);
-    gpt.enableServices();
-    gpt.destroySlots();
+    this.initGPT();
     this.bidManager = bidManager({
       refresh: gpt.refresh,
       chunkSize: props.chunkSize,
@@ -49,6 +38,28 @@ class Provider extends Component {
     this.initBidders();
   }
 
+  /**
+   * Initializes GPT.
+   */
+  initGPT = () => {
+    const { props } = this;
+    const { gpt } = props;
+    gpt.createGPTScript();
+    gpt.setCentering(props.setCentering);
+    gpt.enableVideoAds(props.enableVideoAds);
+    gpt.collapseEmptyDivs(props.collapseEmptyDivs);
+    gpt.enableAsyncRendering(true);
+    gpt.enableSingleRequest(true);
+    gpt.disableInitialLoad(true);
+    gpt.setTargeting(props.targeting);
+    gpt.enableServices();
+    gpt.destroySlots();
+  }
+
+  /**
+   * It calls the bidProvider's init fns and when the bidders are ready it lets 
+   * the bidManager know that it can start bidding.
+   */
   initBidders = () => {
     if (!this.props.bidProviders.length) this.pubsub.emit('bidders-ready', true);
     else {
@@ -56,20 +67,9 @@ class Provider extends Component {
         this.props.bidProviders.map(bidder => bidder._init()),
         this.props.initTimeout
       )
-        .then(results => {
-          results.forEach(x => {
-            if (x.status === 'fulfilled') console.log('fulfilled', x.data);
-            if (x.status === 'rejected') console.log('rejected', x.err);
-          });
-        })
         .catch(err => console.log('Error initializing bidders', err))
         .finally(() => this.pubsub.emit('bidders-ready', true));
     }
-  }
-
-  componentWillUnmount() {
-    if (!this.props.enableAds) return;
-    this.pubsub.clear();
   }
 
   /**
@@ -83,6 +83,11 @@ class Provider extends Component {
     else this.slotCount[type] = this.slotCount[type] + 1;
     return `${type}${this.props.divider}${this.slotCount[type]}`;
   };
+
+  componentWillUnmount() {
+    if (!this.props.enableAds) return;
+    this.pubsub.clear();
+  }
 
   render() {
     return (
@@ -131,7 +136,6 @@ Provider.defaultProps = {
     disableInitialLoad,
     enableSingleRequest,
     enableAsyncRendering,
-    createGoogleTagEvents,
   }
 };
 
@@ -167,7 +171,6 @@ Provider.propTypes = {
     disableInitialLoad: PropTypes.func.isRequired,
     enableSingleRequest: PropTypes.func.isRequired,
     enableAsyncRendering: PropTypes.func.isRequired,
-    createGoogleTagEvents: PropTypes.func.isRequired,
   })
 };
 

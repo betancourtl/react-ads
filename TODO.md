@@ -23,7 +23,7 @@ ___
 | 17. Create a prebid Handler configuration              | ok  |
 | 18. Implement Ad to Ad communication for firing events | x   |
 | 19. Implement Instream Video                           | x   |
-| 20. Wait for init scripts to finish loading            | x   |
+| 20. Wait for init scripts to finish loading            | ok  |
 
 
 ### Ad Loading strategies

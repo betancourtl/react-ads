@@ -30,7 +30,7 @@ class Ad extends Component {
     this.slot = null;
 
     /**
-     * List of event listeners removing functions.
+     * List of event listener removing functions.
      * @type {Array}
      */
     this.listeners = [];
@@ -54,7 +54,7 @@ class Ad extends Component {
     this.refreshWhenVisible = withRaf(this.refreshWhenVisible.bind(this));
 
     /**
-     * The ad's unique id. We only want the Id to be generated once, so we run
+     * The ad's unique id. We only want the id to be generated once, so we run
      * generateId in the constructor.
      *  @type {String}
      */
@@ -136,7 +136,7 @@ class Ad extends Component {
   }
 
   /**
-   * Will trigger a refresh whenever it this slot enters into a new breakpoint.
+   * Will trigger a refresh whenever this slot enters into a new breakpoint.
    * @funtion
    * @returns {void}
    */
@@ -419,7 +419,6 @@ Ad.propTypes = {
 
 const MaybeHiddenAd = hideHOC(Ad);
 
-// TEST
 const stateToProps = ({ adUnitPath, generateId, lazyOffset, networkId, bidHandler, ...rest }, props) => {
   const _networkId = props.networkId || networkId;
   const _adUnitPath = adUnitPath

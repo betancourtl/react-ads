@@ -15,7 +15,6 @@ const createProps = ({ gpt = {}, ...props } = {}) => ({
     disableInitialLoad: jest.fn(),
     enableSingleRequest: jest.fn(),
     enableAsyncRendering: jest.fn(),
-    createGoogleTagEvents: jest.fn(),
     ...gpt,
   },
   ...props,
@@ -68,14 +67,12 @@ describe('<Provider />', () => {
         collapseEmptyDivs: () => mockFn('collapseEmptyDivs'),
         disableInitialLoad: x => mockFn('disableInitialLoad', x),
         enableSingleRequest: x => mockFn('enableSingleRequest', x),
-        createGoogleTagEvents: () => mockFn('createGoogleTagEvents'),
         enableAsyncRendering: x => mockFn('enableAsyncRendering', x),
       }
     });
     mount(<Provider {...props} />);
     expect(mockFn.mock.calls).toEqual([
       ['createGPTScript'],
-      ['createGoogleTagEvents'],
       ['setCentering'],
       ['enableVideoAds'],
       ['collapseEmptyDivs'],

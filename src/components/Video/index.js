@@ -16,7 +16,7 @@ class Video extends Component {
   /**
  * Will call the bidder function.
  * @funtion
- * @returns {Function | Null}
+ * @returns {Function|Null}
  */
   get bidHandler() {
     return this.props.bidHandler
