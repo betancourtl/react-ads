@@ -19,7 +19,7 @@ const resolved = data => ({ data, status: status.fulfilled });
 const rejected = err => ({ err, status: status.rejected });
 
 /**
- * Resolve promise handler.
+ * Reject promise handler.
  * @param {*} p
  * @returns {Object} 
  */

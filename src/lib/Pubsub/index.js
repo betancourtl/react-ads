@@ -14,6 +14,7 @@ class PubSub {
  * @function
  * @param {String} name - The event that we want to emit.
  * @param {*} props - parameters to pass to the callback.
+ * @returns {void}
  */
   emit = (name, ...props) => {
     if (this.events[name]) this.events[name].forEach(fn => fn(...props));
@@ -25,6 +26,7 @@ class PubSub {
    * @function
    * @param {String} name - The event name that we want to subscript to.
    * @param {Function} handler - The function that we want to call when an event happens.
+   * @returns {void}
    */
   on = (name, handler) => {
     if (!this.events[name]) this.events[name] = [];
@@ -36,6 +38,7 @@ class PubSub {
    * @function
    * @param {String} name - The event name that we want to unsubscribe freom.
    * @param {Function} handler - The function to remove from the event.
+   * @returns {void}
    */
   off = (name, handler) => {
     if (this.events[name]) this
