@@ -12,7 +12,6 @@ ___
 | 5. Integrate Prebid.JS                                 | ok  |
 | 6. Add Unit Testing Framework                          | ok  |
 | 7. Add Line Item Generator Utils                       | x   |
-| 9. Add provider gpt event hooks                        | x   |
 | 10. Disable loading ads                                | ok  |
 | 11. Create dynamic ids                                 | ok  |
 | 12. Add sizes dynamically on pregid bid request        | ok  |
