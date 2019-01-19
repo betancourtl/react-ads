@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/webdeveloperpr/react-ads.svg?branch=master)](https://travis-ci.com/webdeveloperpr/react-ads)
-# react-gpt-prebid-ads
+# react-ads
 
 This package allows you to render ads with DFP and Prebid.
 
