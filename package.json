@@ -1,6 +1,6 @@
 {
   "name": "react-ads",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "reactjs implementation of googletag (gpt) and prebid.",
   "main": "./dist/index.js",
   "peerDependencies": {
