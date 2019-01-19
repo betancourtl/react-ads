@@ -4,7 +4,6 @@
   "description": "reactjs implementation of googletag (gpt) and prebid.",
   "main": "./dist/index.js",
   "peerDependencies": {
-    "prop-types": "^15.x",
     "react": "^16.x",
     "react-dom": "^16.x"
   },
