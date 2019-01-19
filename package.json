@@ -1,5 +1,5 @@
 {
-  "name": "react-bids",
+  "name": "react-ads",
   "version": "1.0.0",
   "description": "reactjs implementation of googletag (gpt) and prebid.",
   "main": "./dist/index.js",
