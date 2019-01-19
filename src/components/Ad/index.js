@@ -95,10 +95,7 @@ class Ad extends Component {
   * @returns {Boolean}
   */
   get isVisible() {
-    return inViewport(
-      ReactDOM.findDOMNode(this),
-      this.props.lazyOffset
-    );
+    return inViewport(this.ref, this.props.lazyOffset);
   }
 
   /**
