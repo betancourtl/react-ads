@@ -30,8 +30,6 @@ module.exports = {
   coveragePathIgnorePatterns: [
     'src/index.js',
     'src/devTools',
-    'src/utils/Bidder/amazon/initialize.js',
-    'src/utils/Bidder/amazon',
     'src/utils/Bidder/prebid',
   ],
 

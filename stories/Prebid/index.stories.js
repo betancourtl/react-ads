@@ -1,7 +1,7 @@
 import React from 'react';
 import { Provider, Ad } from '../../src';
 import { storiesOf } from '@storybook/react';
-import prebid from '../../src/utils/Bidder/prebid';
+import prebid from '../utils/index';
 
 const bidHandler = ({ id, sizes }) => ({
   prebid: {

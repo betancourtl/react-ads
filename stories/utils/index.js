@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import Bidder from '../';
+import Bidder from '../../src/utils/Bidder';
 
 const bidder = new Bidder('prebid');
 

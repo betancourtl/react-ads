@@ -1,1 +1,0 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.formatSizes=void 0;var formatSizes=function(a){if("string"==typeof a)return[];var b=Array.isArray(a),c=b&&a.every(function(a){return Array.isArray(a)});return b&&!c?[a]:a};exports.formatSizes=formatSizes;
