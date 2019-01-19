@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable react/no-find-dom-node */
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import hideHOC from '../../hoc/hide';
 import { AdsContext } from '../context';
@@ -52,6 +51,13 @@ class Ad extends Component {
      * @type {Function}
      */
     this.refreshWhenVisible = withRaf(this.refreshWhenVisible.bind(this));
+
+    /**
+     * Will refresh the Ad.
+     * @type {Function}
+     */
+    this.refresh = this.refresh.bind(this);
+
 
     /**
      * The ad's unique id. We only want the id to be generated once, so we run
@@ -314,6 +320,7 @@ class Ad extends Component {
   }
 
   componentDidMount() {
+    this.ref.refresh = this.refresh;
     if (!this.props.lazy) this.define();
     else {
       this.refreshWhenVisible();

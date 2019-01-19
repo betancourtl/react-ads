@@ -22,6 +22,7 @@ ___
 | 18. Implement Ad to Ad communication for firing events | x   |
 | 19. Implement Instream Video                           | x   |
 | 20. Wait for init scripts to finish loading            | ok  |
+| 21. Refresh the element using its ref.                 | ok  |
 
 
 ### Ad Loading strategies
@@ -753,5 +754,25 @@ quickly move to making a request if the init script takes too long.
 - Add Provider tests.
 - Add JobQueue tests.
 - Add a PubSub to the JobQueue in order to notify events for testing purposes.
+
+## External refreshes.
+
+In some cases it is necessary for ads to be refreshed externally. A perfect
+case would be on slideshows. Sometimes you have to click the next button and it
+should refresh ads on a rail or leaderboard. 
+
+An Imperative approach is idea IMO but a declarative approach is also possible.
+
+**Imperative approach.**
+
+The imperative approach could be use to refresh the ad by grabbing the element
+from the DOM via the querySelector API. Then the element could be refreshshed
+by calling the `el.refresh()`. Note that the refresh fn being called is not the
+same as `window.googletag.pubads().refresh`. It is a wrapped versin of it that
+gets queued and processed by the bidManager.
+
+**Declarative approach.**
+
+The declarative approach could be used 
 
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)

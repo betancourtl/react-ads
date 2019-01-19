@@ -9,9 +9,8 @@ API
 
 Example
 - [Example](#example)
+- [Manual Refresh](#refresh)
 - [Storybook](https://webdeveloperpr.github.io/react-ads)
-
-
 
 ## Example
 
@@ -208,6 +207,19 @@ ___
 | onSlotRenderEnded       | Function                   |                       | This event is fired when the creative code is injected into a slot. This event will occur before the creative's resources are fetched, so the creative may not be visible yet. The event is fired by the service that rendered the slot. Example: To listen to companion ads, add a listener to the companion ads service, not the pubads service. Note: If you need to know when the creative hasfired its load event, consider the SlotOnloadEvent. |
 | onImpressionViewable    | Function                   |                       | This event is fired when an impression becomes viewable, according to the ActiveView criteria.                                                                                                                                                                                                                                                                                                                                                        |
 | onSlotVisibilityChanged | Function                   |                       | This event is fired whenever the on-screen percentage of an ad slot's area changes. The event is throttled and will not fire more often than once every 200ms.                                                                                                                                                                                                                                                                                        |
+
+## Examples:
+
+**Manual Refresh**
+
+To trigger a manual refresh on an element on the page. You can get the element
+via the DOM and then call the `.refresh()` fn. This is probably not the best 
+solution but it works well.
+
+```javascript
+  const el = document.getElementById('ad-1);
+  el && el.refresh();
+```
 
 **sizeMapping**
 
