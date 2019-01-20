@@ -114,7 +114,8 @@ class Provider extends Component {
         refresh: this.bidManager.refresh,
         adUnitPath: this.props.adUnitPath,
         bidHandler: this.props.bidHandler,
-        lazyOffset: this.props.lazyOffset
+        lazyOffset: this.props.lazyOffset,
+        refreshAdById: this.refreshAdById,
       }}
       >
         <div>

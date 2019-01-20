@@ -336,7 +336,8 @@ class Ad extends Component {
    * @returns {void}
    */
   handleCustomRefreshEvent = ({ detail }) => {
-    if (detail.id === this.id) return;
+    console.log('called', detail);
+    if (detail.id !== this.id) return;
 
     if (!this.canRefresh) {
       console.log('Ad has to call window.googletag.display before triggering a refresh.');

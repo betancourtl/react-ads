@@ -1,11 +1,11 @@
 import Ad from './components/Ad';
 import Bidder from './utils/Bidder';
 import Provider from './components/Provider';
-import { AdsContext } from './components/context';
+import withAdRefresh from './hoc/withAdRefresh';
 
 export {
   Ad,
   Bidder,
   Provider,
-  AdsContext,
+  withAdRefresh,
 };
