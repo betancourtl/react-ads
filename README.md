@@ -6,10 +6,14 @@ This package allows you to render ads with DFP and Prebid.
 API
 - [Provider](#provider)
 - [Ad](#ad)
+- [Bider](#bidder)
+- [withAdRefresh](#withAdRefresh)
+
+Reference
+- [Refreshing ads](#refresh)
 
 Example
 - [Example](#example)
-- [Manual Refresh](#refresh)
 - [Storybook](https://webdeveloperpr.github.io/react-ads)
 
 ## Example
@@ -208,22 +212,151 @@ ___
 | onImpressionViewable    | Function                   |                       | This event is fired when an impression becomes viewable, according to the ActiveView criteria.                                                                                                                                                                                                                                                                                                                                                        |
 | onSlotVisibilityChanged | Function                   |                       | This event is fired whenever the on-screen percentage of an ad slot's area changes. The event is throttled and will not fire more often than once every 200ms.                                                                                                                                                                                                                                                                                        |
 
-## Examples:
+## Bidder
 
-**Manual Refresh**
+Bidder is a class that is used to get bids. It provides an interface that makes it easier
+to communicate with the bidManager.  This library is mainly intended to be used
+with prebid but there are other bidders like amazon that do not want to be part
+of the prebid project. For this reason this Bidder class can be used to include them
+or any other bidders that are not part of prebid.js. The bidder class accepts 
+the bidder name when it is instantiated. `new Bidder('prebid')`. Then you must
+define the Bidder methods below to handle the bidding process.
 
-To trigger a manual refresh on an element on the page. You can get the element
-via the DOM and then call the `.refresh()` fn. This is probably not the best 
-solution but it works well.
+
+| Name                  | Type     | Default  | Description |
+|-----------------------|----------|----------|-------------|
+| init                  | Promise \| Function  |  | Init is the function that is used to initiate the bidder. You might be adding async scripts into the DOM here or loading bidding modules. |
+| handleResponse        | Function   |        | This fn handles the bid response. It gets the results of the bid.|
+| onTimeout             | Function   |        | Do something whenever the bid times out.|
+| onBidWon              | Function   |        | Do something whenever the bids got back.|
+| fetchBids             | Promise    |        | Makes the Bid call and returns the result as a promise. |
+
+## withAdRefresh
+
+withAdRefresh will pass the custom refresh function to a component.
+This can be used to refresh ads by their id.
 
 ```javascript
-  const el = document.getElementById('ad-1);
+const Button = withAdRefresh(UnwrappedComponent);
+```
+
+## Refresh
+
+Refresh can be called in 5 different ways.
+
+**Imperative refresh**
+
+An Imperative refresh can be done by reching into the DOM and directly
+refreshing the ad.
+
+```javascript
+  const el = document.querySelector('#ad-1');
   el && el.refresh();
 ```
 
+**Dispatched custom event**
+
+You can refresh an ad by dispatching a custom event and providing the id of the
+ad that you want to refresh.
+
+```javascript
+  window.dispatchEvent(new CustomEvent('refresh-ad', { detail: { id: 'leaderboard_1' } }));
+```
+
+**Media query refresh**
+
+When an ad has a defined sizeMapping it will refresh automatically whenever it 
+enters a ceratin breakpoint.
+
+```javascript
+        <Ad
+          lazy
+          type="lazy"
+          bidHandler={bidHandler}
+          adUnitPath="header-bid-tag-0"
+          size={[300, 250]}
+          sizeMap={[
+            { viewPort: [0, 0], slots: [300, 250] },
+            { viewPort: [800, 200], slots: [300, 600] },
+          ]}
+        />
+
+```
+
+**Lazy load refresh**
+
+Lazy loaded ads can call the refresh fn whenever it goes into the 
+visible threashold.
+
+```javascript
+        <Ad
+          lazy
+          bidHandler={bidHandler}
+          adUnitPath="header-bid-tag-0"
+          size={[300, 250]}
+        />
+
+```
+
+**withAdRefresh hoc refresh**
+
+Some developers might prefer wrapping their components with an HOC that can
+pass the refresh function to some other component. You can use the 
+`withAdRefresh` hoc to receive the refreshAdById fn.
+
+```javascript
+class UnwrappedComponent extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      value: 'leaderboard_1',
+    };
+  }
+
+  render() {
+    return (
+      <div>
+
+        <div>
+          <label>
+            Refresh ad
+          </label>
+          <input
+            type="text"
+            value={this.state.value}
+            onChange={e => this.setState({ value: e.target.value })}
+          />
+          <button onClick={() => this.props.refreshAdById(this.state.value)}>
+            Refresh
+          </button>
+        </div>
+       
+        <br/>
+       
+        <div>
+          <label>
+            Refresh All Ads
+          </label>
+          <button onClick={() => {
+            const adIds = [...document.querySelectorAll('[data-react-ad]')].map(x => x.id);
+            this.props.refreshAdById(adIds);
+          }}>
+            Refresh
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
+
+const Button = withAdRefresh(UnwrappedComponent);
+```
+
+
+## Examples:
+
 **sizeMapping**
 
-example:
 
 ```javascript
 [ 
@@ -238,8 +371,6 @@ example:
 
 **onSlotOnLoad**
 
-example:
-
 ```javascript
 const onSlotLoadEvent = ({id, ref, ... e}) => ({
     console.log(`slot id is ${id}`);
@@ -248,7 +379,6 @@ const onSlotLoadEvent = ({id, ref, ... e}) => ({
 
 **onSlotRenderEnded**
 
-example:
 
 ```javascript
 const onSlotLoadEvent = ({id, ref, ...e}) => ({
@@ -258,7 +388,6 @@ const onSlotLoadEvent = ({id, ref, ...e}) => ({
 
 **onImpressionViewable**
 
-example:
 
 ```javascript
 const onSlotLoadEvent = ({id, ref, ...e}) => ({
@@ -268,7 +397,6 @@ const onSlotLoadEvent = ({id, ref, ...e}) => ({
 
 **onSlotVisibilityChanged**
 
-example:
 
 ```javascript
 const onSlotLoadEvent = ({id, ref, ...e}) => ({
