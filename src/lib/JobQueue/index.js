@@ -160,7 +160,8 @@ class JobQueue {
       this.emit.jobEnd();
     };
     
-    return this.processFn(this.grab(), done);
+    const q = this.grab();
+    return this.processFn(q, done);
   });
 }
 

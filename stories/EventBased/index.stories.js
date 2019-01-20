@@ -14,7 +14,7 @@ class Story extends React.Component {
   render() {
     return (
       <Provider
-        refreshDelay={1000}
+        refreshDelay={100}
         adUnitPath="travel"
         networkId={6355419}
       >
@@ -37,6 +37,7 @@ class Story extends React.Component {
                 key={i}
                 lazy={true}
                 size={[728, 90]}
+                type="leaderboard"
                 targeting={{ test: 'infinitescroll' }}
                 sizeMap={[
                   { viewPort: [850, 200], slots: [728, 90] },

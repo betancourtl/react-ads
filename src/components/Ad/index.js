@@ -336,7 +336,6 @@ class Ad extends Component {
    * @returns {void}
    */
   handleCustomRefreshEvent = ({ detail }) => {
-    console.log('called', detail);
     if (detail.id !== this.id) return;
 
     if (!this.canRefresh) {
@@ -387,6 +386,7 @@ class Ad extends Component {
         ref={ref => this.ref = ref}
         style={{ ...this.props.style }}
         className={this.props.className}
+        data-react-ad
       />
     );
   }

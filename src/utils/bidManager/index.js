@@ -21,15 +21,16 @@ export const processFn = (bidProviders, bidTimeout, refresh, timedPromise = _tim
   while (!q.isEmpty) {
     const { slot, bids } = q.dequeue().data;
     slots.push(slot);
-
-    if (!bids) break;
-
-    Object
-      .entries(bids)
-      .forEach(([key, val]) => {
-        if (!nextBids[key]) nextBids[key] = [];
-        nextBids[key].push(val);
-      });
+    
+    // test
+    if (bids) {
+      Object
+        .entries(bids)
+        .forEach(([key, val]) => {
+          if (!nextBids[key]) nextBids[key] = [];
+          nextBids[key].push(val);
+        });
+    }
   }
 
   const noBidsOrProviders = [bidProviders, Object.keys(nextBids)]
@@ -44,7 +45,7 @@ export const processFn = (bidProviders, bidTimeout, refresh, timedPromise = _tim
     bidProviders.map(bidder => bidder._fetchBids(nextBids[bidder.name])),
     bidTimeout
   )
-    .then((responses) => {
+    .then(responses => {
       responses.forEach((res, i) => {
         if (res.status === status.fulfilled) {
           bidProviders[i].onBidWon();
