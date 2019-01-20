@@ -93,6 +93,18 @@ class Provider extends Component {
     this.pubsub.clear();
   }
 
+  /**
+   * Will fire the custom refresh-ad event, when fired.   
+   * @param {String|String[]} ids - An Array of ids'
+   * @function
+   * @returns {void}
+   */
+  refreshAdById = ids => {
+    [].concat(ids).forEach(id => {
+      window.dispatchEvent(new CustomEvent('refresh-ad', { detail: { id } }));
+    });
+  }
+
   render() {
     return (
       <AdsContext.Provider value={{
@@ -102,10 +114,12 @@ class Provider extends Component {
         refresh: this.bidManager.refresh,
         adUnitPath: this.props.adUnitPath,
         bidHandler: this.props.bidHandler,
-        lazyOffset: this.props.lazyOffset,
+        lazyOffset: this.props.lazyOffset
       }}
       >
-        {this.props.children}
+        <div>
+          {this.props.children}
+        </div>
       </AdsContext.Provider>
     );
   }

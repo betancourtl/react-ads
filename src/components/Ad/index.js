@@ -68,6 +68,16 @@ class Ad extends Component {
   }
 
   /**
+   * Will return a flag that signal if an ad can be refreshed via a CustomEvent
+   * or via an imperative event.
+   * @function
+   * @returns {Boolean}
+   */
+  get canRefresh() {
+    return this.displayed;
+  }
+
+  /**
    * Get the slot map sizes based on the current media query breakpoint.
    * @function
    * @returns {Array}
@@ -144,7 +154,7 @@ class Ad extends Component {
    * @returns {void}
    */
   breakPointRefresh = () => {
-    if (this.displayed) this.refresh();
+    if (this.canRefresh) this.refresh();
   }
 
   /**
@@ -319,8 +329,42 @@ class Ad extends Component {
     });
   }
 
+  /**
+   * Will refresh the ad when a CustomEvent is fired.
+   * @function
+   * @param {Object} option.detail.id - The id of the ad to refresh.
+   * @returns {void}
+   */
+  handleCustomRefreshEvent = ({ detail }) => {
+    if (detail.id === this.id) return;
+
+    if (!this.canRefresh) {
+      console.log('Ad has to call window.googletag.display before triggering a refresh.');
+      return;
+    }
+
+    this.refresh();
+  }
+
+  /**
+   * Will trigger a manual refresh of this ad. The developer can call this via
+   * document.querySelector('#ad-id').refresh();
+   * @function
+   * @returns {void}
+   */
+  imperativeRefresh = () => {
+    if (!this.canRefresh) {
+      console.log('Ad has to call window.googletag.display before triggering a refresh.');
+      return;
+    }
+    
+    this.refresh();
+  }
+
   componentDidMount() {
-    this.ref.refresh = this.refresh;
+    this.ref.refresh = this.imperativeRefresh;
+    window.addEventListener('refresh-ad', this.handleCustomRefreshEvent);
+
     if (!this.props.lazy) this.define();
     else {
       this.refreshWhenVisible();
@@ -331,6 +375,7 @@ class Ad extends Component {
   componentWillUnmount() {
     this.unsetMQListeners();
     window.removeEventListener('scroll', this.refreshWhenVisible);
+    window.removeEventListener('refresh-ad', this.handleCustomRefreshEvent);
     this.props.gpt.destroySlots(this.slot);
   }
 
