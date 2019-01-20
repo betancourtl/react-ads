@@ -31,6 +31,7 @@ class Story extends React.Component {
   render() {
     return (
       <Provider
+        adIframeTitle="infinite-scroll"
         refreshDelay={100}
         enableVideoAds={false}
         collapseEmptyDivs={false}

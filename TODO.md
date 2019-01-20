@@ -23,6 +23,8 @@ ___
 | 19. Implement Instream Video                           | x   |
 | 20. Wait for init scripts to finish loading            | ok  |
 | 21. Refresh the element using its ref.                 | ok  |
+| 22. Set iframe title                                   | ok  |
+
 
 
 ### Ad Loading strategies

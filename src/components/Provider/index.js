@@ -13,6 +13,7 @@ import {
   enableServices,
   enableVideoAds,
   createGPTScript,
+  setAdIframeTitle,
   collapseEmptyDivs,
   disableInitialLoad,
   enableSingleRequest,
@@ -48,6 +49,7 @@ class Provider extends Component {
     const { gpt } = props;
     gpt.createGPTScript();
     gpt.setCentering(props.setCentering);
+    gpt.setAdIframeTitle(props.adIframeTitle);
     gpt.enableVideoAds(props.enableVideoAds);
     gpt.collapseEmptyDivs(props.collapseEmptyDivs);
     gpt.enableAsyncRendering(true);
@@ -137,6 +139,7 @@ Provider.defaultProps = {
   bidTimeout: 1000,
   initTimeout: 350,
   refreshDelay: 200,
+  adIframeTitle: '',
   setCentering: true,
   pubsub: new PubSub(),
   bidHandler: undefined,
@@ -151,6 +154,7 @@ Provider.defaultProps = {
     enableServices,
     enableVideoAds,
     createGPTScript,
+    setAdIframeTitle,
     collapseEmptyDivs,
     disableInitialLoad,
     enableSingleRequest,
@@ -172,6 +176,7 @@ Provider.propTypes = {
   initTimeout: PropTypes.number,
   refreshDelay: PropTypes.number,
   enableVideoAds: PropTypes.bool,
+  adIframeTitle: PropTypes.string,
   collapseEmptyDivs: PropTypes.bool,
   pubsub: PropTypes.instanceOf(PubSub),
   networkId: PropTypes.number.isRequired,
@@ -186,6 +191,7 @@ Provider.propTypes = {
     setTargeting: PropTypes.func.isRequired,
     enableServices: PropTypes.func.isRequired,
     createGPTScript: PropTypes.func.isRequired,
+    setAdIframeTitle: PropTypes.func.isRequired,
     collapseEmptyDivs: PropTypes.func.isRequired,
     disableInitialLoad: PropTypes.func.isRequired,
     enableSingleRequest: PropTypes.func.isRequired,

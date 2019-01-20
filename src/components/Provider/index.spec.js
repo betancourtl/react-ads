@@ -11,6 +11,7 @@ const createProps = ({ gpt = {}, ...props } = {}) => ({
     enableServices: jest.fn(),
     enableVideoAds: jest.fn(),
     createGPTScript: jest.fn(),
+    setAdIframeTitle: jest.fn(),
     collapseEmptyDivs: jest.fn(),
     disableInitialLoad: jest.fn(),
     enableSingleRequest: jest.fn(),
@@ -65,6 +66,7 @@ describe('<Provider />', () => {
         enableVideoAds: () => mockFn('enableVideoAds'),
         createGPTScript: () => mockFn('createGPTScript'),
         collapseEmptyDivs: () => mockFn('collapseEmptyDivs'),
+        setAdIframeTitle: () => mockFn('setAdIframeTitle'),
         disableInitialLoad: x => mockFn('disableInitialLoad', x),
         enableSingleRequest: x => mockFn('enableSingleRequest', x),
         enableAsyncRendering: x => mockFn('enableAsyncRendering', x),
@@ -74,6 +76,7 @@ describe('<Provider />', () => {
     expect(mockFn.mock.calls).toEqual([
       ['createGPTScript'],
       ['setCentering'],
+      ['setAdIframeTitle'],
       ['enableVideoAds'],
       ['collapseEmptyDivs'],
       ['enableAsyncRendering', true],
@@ -111,7 +114,7 @@ describe('<Provider />', () => {
   test('Calls biddersReady when bidProviders are have loaded or timed out.', done => {
     const pubsub = new PubSub();
     const bidder1 = new Bidder('bidder1');
-    
+
     bidder1.init = () => new Promise((resolve) => {
       setTimeout(resolve, 10);
     });
@@ -129,13 +132,13 @@ describe('<Provider />', () => {
     setTimeout(() => {
       expect(biddersReady).not.toBeCalled();
       done();
-    }, 5); 
+    }, 5);
 
     // Make sure that the event is called once it is resolved.
     setTimeout(() => {
       expect(biddersReady).toBeCalledTimes(1);
       done();
-    }, 15);    
+    }, 15);
   });
 });
 

@@ -18,6 +18,11 @@ export const getWindowWidth = () => window.innerWidth;
  */
 export const cmdPush = cb => window.googletag.cmd.push(cb);
 
+export const setAdIframeTitle = title => {
+  if (!title) return;
+  cmdPush(() => window.googletag.setAdIframeTitle(title));
+};
+
 /**
  * Destroys google slots.
  * @param {Slot[]} - Array of slots to destroy.
