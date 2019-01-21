@@ -3,29 +3,29 @@
  ### Future Features
 ___
 
-| Features                                            | Status |
-|-----------------------------------------------------|--------|
-| 1. Create initial ads Heap                             | ok  |
-| 2. Create Lazy Loaded Ads Heap                         | ok  |
-| 3. Create Custom Lazy Loading functionality            | ok  |
-| 4. Create Heap extraction/fetching/re-extraction logic | ok  |
-| 5. Integrate Prebid.JS                                 | ok  |
-| 6. Add Unit Testing Framework                          | ok  |
-| 10. Disable loading ads                                | ok  |
-| 11. Create dynamic ids                                 | ok  |
-| 12. Add sizes dynamically on pregid bid request        | ok  |
-| 13. Update prebid.js bidder to use the new config size | ok  |
-| 14. Update the visibility function to use offsets      | ok  |
-| 15. Add ix bidder helper                               | ok  |
-| 16. Add a way to handle custom bids (amazon)           | ok  |
-| 17. Create a prebid Handler configuration              | ok  |
-| 18. Implement Ad to Ad communication for firing events | x   |
-| 19. Implement Instream Video                           | x   |
-| 20. Wait for init scripts to finish loading            | ok  |
-| 21. Refresh the element using its ref.                 | ok  |
-| 22. Set iframe title                                   | ok  |
-
-
+| Features                                               | Status |
+|--------------------------------------------------------|--------|
+| Create initial ads Heap                                | ok     |
+| Create Lazy Loaded Ads Heap                            | ok     |
+| Create Custom Lazy Loading functionality               | ok     |
+| Create Heap extraction/fetching/re-extraction logic    | ok     |
+| Integrate Prebid.JS                                    | ok     |
+| Add Unit Testing Framework                             | ok     |
+| Disable loading ads                                    | ok     |
+| Create dynamic ids                                     | ok     |
+| Add sizes dynamically on pregid bid request            | ok     |
+| Update prebid.js bidder to use the new config size     | ok     |
+| Update the visibility function to use offsets          | ok     |
+| Add ix bidder helper                                   | ok     |
+| Add a way to handle custom bids (amazon)               | ok     |
+| Create a prebid Handler configuration                  | ok     |
+| Create events for firing refresh fn outside the ad     | ok     |
+| Implement Outstream Video                              | ok     |
+| Wait for init scripts to finish loading                | ok     |
+| Refresh the element using its ref.                     | ok     |
+| Set iframe title                                       | ok     |
+| Event based ad adTypes [ 'lazy', 'event', 'initial']   | x      |
+| Implement Instream Video                               | x      |
 
 ### Ad Loading strategies
 ___
