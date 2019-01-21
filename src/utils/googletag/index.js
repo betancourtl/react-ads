@@ -7,6 +7,7 @@ export const events = {
   slotRenderEnded: 'slotRenderEnded',
   impressionViewable: 'impressionViewable',
   slotVisibilityChanged: 'slotVisibilityChanged',
+  slotRequested: 'slotRequested'
 };
 
 export const getWindowWidth = () => window.innerWidth;

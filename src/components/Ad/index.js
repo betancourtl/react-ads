@@ -256,13 +256,13 @@ class Ad extends Component {
   }
 
   /**
-   * Will listen to the slotOnload event and then call the passed function.
+   * Will listen to the onSlotOnload event and then call the passed function.
    * @function   
    * @returns {void}
    */
   onSlotOnload = () => this.handleGPTEvent(
-    events.slotOnLoad,
-    this.props.onSlotOnLoad
+    events.slotOnload,
+    this.props.onSlotOnload
   );
 
   /**
@@ -299,6 +299,17 @@ class Ad extends Component {
   );
 
   /**
+   * Will listen to the onSlotRequested event and then call the passed 
+   * function.
+   * @function   
+   * @returns {void}
+   */
+  onSlotRequested = () => this.handleGPTEvent(
+    events.slotRequested,
+    this.props.onSlotRequested
+  );
+
+  /**
    * Will initialize the adSlot.
    * @function
    * @returns {void}
@@ -316,6 +327,7 @@ class Ad extends Component {
       this.onSlotRenderEnded();
       this.onImpressionViewable();
       this.onSlotVisibilityChanged();
+      this.onSlotRequested();
 
       // configures the slot.
       this.setMappingSize();
@@ -357,7 +369,7 @@ class Ad extends Component {
       console.log('Ad has to call window.googletag.display before triggering a refresh.');
       return;
     }
-    
+
     this.refresh();
   }
 
@@ -406,9 +418,10 @@ Ad.defaultProps = {
   lazyOffset: -1,
   type: 'default',
   bidHandler: null,
-  onSlotOnLoad: null,
+  onSlotOnload: null,
   outOfPageSlot: false,
   networkId: undefined,
+  onSlotRequested: null,
   onSlotRenderEnded: null,
   setCollapseEmpty: false,
   onImpressionViewable: null,
@@ -434,9 +447,10 @@ Ad.propTypes = {
   networkId: PropTypes.number,
   targeting: PropTypes.object,
   lazyOffset: PropTypes.number,
-  onSlotOnLoad: PropTypes.func,
+  onSlotOnload: PropTypes.func,
   outOfPageSlot: PropTypes.bool,
   id: PropTypes.string.isRequired,
+  onSlotRequested: PropTypes.func,
   setCollapseEmpty: PropTypes.bool,
   onSlotRenderEnded: PropTypes.func,
   onImpressionViewable: PropTypes.func,

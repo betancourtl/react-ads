@@ -33,11 +33,11 @@ class Story extends React.Component {
             More Ads
           </button>
         </div>
-        
+
         <br />
-        
-        <Button />        
-    
+
+        <Button />
+
         <div>
           {Array(this.state.qty).fill('').map((x, i) => {
             return (
@@ -52,7 +52,7 @@ class Story extends React.Component {
                   { viewPort: [0, 0], slots: [] },
                 ]}
               />
-            );
+            );  
           })}
         </div>
       </Provider>
@@ -86,9 +86,9 @@ class UnwrappedComponent extends React.Component {
             Refresh
           </button>
         </div>
-       
-        <br/>
-       
+
+        <br />
+
         <div>
           <label>
             Refresh All Ads

@@ -9,12 +9,12 @@ class Story extends React.Component {
         adUnitPath="travel"
         networkId={6355419}
       >
-        <div style={{ height: '250vh' }} /> 
+        <div style={{ height: '250vh' }} />
         <Ad
           lazy={true}
           lazyOffset={1}
-          targeting={{ test: 'infinitescroll' }}
           size={[728, 90]}
+          targeting={{ test: 'infinitescroll' }}
           sizeMap={[
             { viewPort: [750, 200], slots: [728, 90] },
             { viewPort: [0, 0], slots: [] }

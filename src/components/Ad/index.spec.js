@@ -23,7 +23,6 @@ const createProps = ({ gpt, ...props } = {}) => ({
 });
 
 describe('<Ad />', () => {
-  // mock RAF
   beforeEach(() => {
     jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => cb());
   });
@@ -47,8 +46,9 @@ describe('<Ad />', () => {
       adUnitPath,
       generateId,
       lazyOffset,
-      onSlotOnLoad,
+      onSlotOnload,
       outOfPageSlot,
+      onSlotRequested,
       setCollapseEmpty,
       onSlotRenderEnded,
       onImpressionViewable,
@@ -65,7 +65,8 @@ describe('<Ad />', () => {
     expect(lazyOffset).toBe(-1);
     expect(type).toBe('default');
     expect(targeting).toEqual({});
-    expect(onSlotOnLoad).toBe(null);
+    expect(onSlotOnload).toBe(null);
+    expect(onSlotRequested).toBe(null);
     expect(outOfPageSlot).toBe(false);
     expect(setCollapseEmpty).toBe(false);
     expect(onSlotRenderEnded).toBe(null);
@@ -93,7 +94,7 @@ describe('<Ad />', () => {
       gpt: {
         cmdPush: (fn) => fn(),
       },
-      onSlotOnLoad: jest.fn(),
+      onSlotOnload: jest.fn(),
       onSlotRenderEnded: jest.fn(),
       onImpressionViewable: jest.fn(),
       onSlotVisibilityChanged: jest.fn(),
@@ -109,7 +110,7 @@ describe('<Ad />', () => {
     const setCollapseEmpty = jest.spyOn(Ad.prototype, 'setCollapseEmpty');
     const wrapper = mount(<Ad {...props} />);
     expect(props.gpt.define).toBeCalledTimes(1);
-    expect(handleGPTEvent).toBeCalledTimes(4);
+    expect(handleGPTEvent).toBeCalledTimes(5);
     expect(setMappingSize).toBeCalledTimes(1);
     expect(setMQListeners).toBeCalledTimes(1);
     expect(setCollapseEmpty).toBeCalledTimes(1);
