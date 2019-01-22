@@ -51,7 +51,7 @@ class Story extends React.Component {
   }
 }
 
-storiesOf('Video', module)
+storiesOf('Outstream Video', module)
   .add('Outstream', () => (
     <Story />
   ));
