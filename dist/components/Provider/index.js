@@ -17,6 +17,8 @@ var _bidManager = _interopRequireDefault(require("../../utils/bidManager"));
 
 var _timedPromise = _interopRequireDefault(require("../../utils/timedPromise"));
 
+var _VideoProvider = _interopRequireDefault(require("../VideoProvider"));
+
 var _googletag = require("../../utils/googletag");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -158,7 +160,7 @@ function (_Component) {
           lazyOffset: this.props.lazyOffset,
           refreshAdById: this.refreshAdById
         }
-      }, _react.default.createElement("div", null, this.props.children));
+      }, _react.default.createElement(_VideoProvider.default, null, this.props.children));
     }
   }]);
 

@@ -5,6 +5,7 @@ import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
 import bidManager from '../../utils/bidManager';
 import timedPromise from '../../utils/timedPromise';
+import VideoProvider from '../VideoProvider';
 import {
   refresh,
   destroySlots,
@@ -120,9 +121,9 @@ class Provider extends Component {
         refreshAdById: this.refreshAdById,
       }}
       >
-        <div>
+        <VideoProvider>
           {this.props.children}
-        </div>
+        </VideoProvider>
       </AdsContext.Provider>
     );
   }

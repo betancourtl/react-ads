@@ -3,13 +3,23 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.default = exports.VideoPlayer = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
+
+var _context = require("../context");
+
+var _connector = _interopRequireDefault(require("../../hoc/connector"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -34,109 +44,47 @@ var VideoPlayer =
 function (_Component) {
   _inherits(VideoPlayer, _Component);
 
-  function VideoPlayer() {
-    var _getPrototypeOf2;
-
+  function VideoPlayer(_props) {
     var _this;
 
     _classCallCheck(this, VideoPlayer);
 
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(VideoPlayer)).call.apply(_getPrototypeOf2, [this].concat(args)));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadScripts", function (scripts) {
-      var postFix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'postfix';
-      return new Promise(function (resolve, reject) {
-        var timeout = setTimeout(reject, 4000);
-        var remaining = scripts.length;
-
-        var onLoad = function onLoad() {
-          remaining = remaining - 1;
-
-          if (remaining <= 0) {
-            clearTimeout(timeout);
-            resolve();
-          }
-        };
-
-        var fragment = document.createDocumentFragment();
-        scripts.forEach(function (src, index) {
-          var id = "instream-js-".concat(index + postFix);
-          var exists = document.getElementById(id);
-          if (exists) return onLoad();
-          var el = document.createElement('script');
-          el.src = src;
-          el.id = id;
-          el.async = true;
-          el.defer = true;
-          el.onload = onLoad;
-          el.onerror = onLoad;
-          fragment.appendChild(el);
-        });
-        document.head.appendChild(fragment);
-      });
-    });
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadCss", function () {
-      return new Promise(function (resolve, reject) {
-        var timeout = setTimeout(reject, 4000);
-        var stylesheets = ['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video-js.min.css', '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.css', '//googleads.github.io/videojs-ima/dist/videojs.ima.css'];
-        var remaining = stylesheets.length;
-
-        var onLoad = function onLoad() {
-          remaining = remaining - 1;
-
-          if (remaining <= 0) {
-            clearTimeout(timeout);
-            resolve();
-          }
-        };
-
-        var fragment = document.createDocumentFragment();
-        stylesheets.forEach(function (href, index) {
-          var id = "instream-css-".concat(index);
-          var exists = document.getElementById(id);
-          if (exists) return onLoad();
-          var el = document.createElement('link');
-          el.href = href;
-          el.id = id;
-          el.rel = 'stylesheet';
-          el.onload = onLoad;
-          el.onerror = onLoad;
-          fragment.appendChild(el);
-        });
-        document.head.appendChild(fragment);
-      });
-    });
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(VideoPlayer).call(this, _props));
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadPlayer", function () {
-      return _this.loadScripts(['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video.min.js'], '-1').then(function () {
-        return _this.loadScripts(['//imasdk.googleapis.com/js/sdkloader/ima3.js', '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.min.js', '//googleads.github.io/videojs-ima/dist/videojs.ima.js']);
-      }, '-2').then(function () {
-        return _this.loadCss();
-      });
+      var _this$props = _this.props,
+          id = _this$props.id,
+          props = _objectWithoutProperties(_this$props, ["id"]);
+
+      var options = {
+        id: id,
+        adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod%26deployment%3Dgmf-js&cmsid=496&vid=short_onecue&correlator='
+      };
+      _this.player = window.videojs(_this.videoNode, props);
+
+      _this.player.ima(options);
     });
 
+    _this.state = {
+      playerLoaded: _props.isReady
+    };
     return _this;
   }
 
   _createClass(VideoPlayer, [{
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (prevState.playerLoaded === false && this.props.isReady === true) {
+        this.loadPlayer();
+        console.log('player loaded');
+      }
+    }
+  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      var _this2 = this;
-
-      var options = {
-        id: 'content-video',
-        adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod%26deployment%3Dgmf-js&cmsid=496&vid=short_onecue&correlator='
-      };
-      this.loadPlayer().then(function () {
-        _this2.player = window.videojs(_this2.videoNode, _this2.props);
-
-        _this2.player.ima(options);
-      });
+      if (this.state.playerLoaded) {
+        this.loadPlayer();
+      }
     } // destroy player on unmount
 
   }, {
@@ -149,23 +97,35 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       return _react.default.createElement("div", null, _react.default.createElement("div", {
         "data-vjs-player": true
       }, _react.default.createElement("video", {
-        id: "content-video",
+        id: this.props.id,
         ref: function ref(node) {
-          return _this3.videoNode = node;
+          return _this2.videoNode = node;
         },
         className: "video-js"
       })));
+    }
+  }], [{
+    key: "getDerivedStateFromProps",
+    value: function getDerivedStateFromProps(props, state) {
+      if (state.playerLoaded === false && props.isReady === true) {
+        return {
+          playerLoaded: true
+        };
+      }
+
+      return null;
     }
   }]);
 
   return VideoPlayer;
 }(_react.Component);
 
+exports.VideoPlayer = VideoPlayer;
 VideoPlayer.defaultProps = {
   autoplay: true,
   controls: true,
@@ -183,5 +143,12 @@ VideoPlayer.defaultProps = {
     type: 'video/3gp'
   }]
 };
-var _default = VideoPlayer;
+
+var _default = (0, _connector.default)(_context.VideoContext, function (_ref) {
+  var isReady = _ref.isReady;
+  return {
+    isReady: isReady
+  };
+})(VideoPlayer);
+
 exports.default = _default;
