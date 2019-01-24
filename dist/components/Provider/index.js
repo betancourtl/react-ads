@@ -1,1 +1,235 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;var _react=_interopRequireWildcard(require("react")),_propTypes=_interopRequireDefault(require("prop-types")),_Pubsub=_interopRequireDefault(require("../../lib/Pubsub")),_context=require("../context"),_bidManager=_interopRequireDefault(require("../../utils/bidManager")),_timedPromise=_interopRequireDefault(require("../../utils/timedPromise")),_googletag=require("../../utils/googletag");function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}function _interopRequireWildcard(a){if(a&&a.__esModule)return a;var b={};if(null!=a)for(var c in a)if(Object.prototype.hasOwnProperty.call(a,c)){var d=Object.defineProperty&&Object.getOwnPropertyDescriptor?Object.getOwnPropertyDescriptor(a,c):{};d.get||d.set?Object.defineProperty(b,c,d):b[c]=a[c]}return b.default=a,b}function _typeof(a){return _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(a){return typeof a}:function(a){return a&&"function"==typeof Symbol&&a.constructor===Symbol&&a!==Symbol.prototype?"symbol":typeof a},_typeof(a)}function _classCallCheck(a,b){if(!(a instanceof b))throw new TypeError("Cannot call a class as a function")}function _defineProperties(a,b){for(var c,d=0;d<b.length;d++)c=b[d],c.enumerable=c.enumerable||!1,c.configurable=!0,"value"in c&&(c.writable=!0),Object.defineProperty(a,c.key,c)}function _createClass(a,b,c){return b&&_defineProperties(a.prototype,b),c&&_defineProperties(a,c),a}function _possibleConstructorReturn(a,b){return b&&("object"===_typeof(b)||"function"==typeof b)?b:_assertThisInitialized(a)}function _getPrototypeOf(a){return _getPrototypeOf=Object.setPrototypeOf?Object.getPrototypeOf:function(a){return a.__proto__||Object.getPrototypeOf(a)},_getPrototypeOf(a)}function _inherits(a,b){if("function"!=typeof b&&null!==b)throw new TypeError("Super expression must either be null or a function");a.prototype=Object.create(b&&b.prototype,{constructor:{value:a,writable:!0,configurable:!0}}),b&&_setPrototypeOf(a,b)}function _setPrototypeOf(a,b){return _setPrototypeOf=Object.setPrototypeOf||function(a,b){return a.__proto__=b,a},_setPrototypeOf(a,b)}function _assertThisInitialized(a){if(void 0===a)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return a}function _defineProperty(a,b,c){return b in a?Object.defineProperty(a,b,{value:c,enumerable:!0,configurable:!0,writable:!0}):a[b]=c,a}var Provider=function(a){function b(a){var c;_classCallCheck(this,b),c=_possibleConstructorReturn(this,_getPrototypeOf(b).call(this,a)),_defineProperty(_assertThisInitialized(_assertThisInitialized(c)),"initGPT",function(){var a=_assertThisInitialized(_assertThisInitialized(c)),b=a.props,d=b.gpt;d.createGPTScript(),d.setCentering(b.setCentering),d.setAdIframeTitle(b.adIframeTitle),d.enableVideoAds(b.enableVideoAds),d.collapseEmptyDivs(b.collapseEmptyDivs),d.enableAsyncRendering(!0),d.enableSingleRequest(!0),d.disableInitialLoad(!0),d.setTargeting(b.targeting),d.enableServices(),d.destroySlots()}),_defineProperty(_assertThisInitialized(_assertThisInitialized(c)),"initBidders",function(){c.props.bidProviders.length?(0,_timedPromise.default)(c.props.bidProviders.map(function(a){return a._init()}),c.props.initTimeout).catch(function(a){return console.log("Error initializing bidders",a)}).finally(function(){return c.pubsub.emit("bidders-ready",!0)}):c.pubsub.emit("bidders-ready",!0)}),_defineProperty(_assertThisInitialized(_assertThisInitialized(c)),"generateId",function(){var a=0<arguments.length&&void 0!==arguments[0]?arguments[0]:"ad";return c.slotCount[a],isNaN(c.slotCount[a])?c.slotCount[a]=1:++c.slotCount[a],"".concat(a).concat(c.props.divider).concat(c.slotCount[a])}),_defineProperty(_assertThisInitialized(_assertThisInitialized(c)),"refreshAdById",function(a){[].concat(a).forEach(function(a){window.dispatchEvent(new CustomEvent("refresh-ad",{detail:{id:a}}))})});var d=a.gpt;return a.enableAds?(c.pubsub=a.pubsub,c.slotCount={},c.initGPT(),c.bidManager=(0,_bidManager.default)({refresh:d.refresh,chunkSize:a.chunkSize,bidTimeout:a.bidTimeout,bidProviders:a.bidProviders,refreshDelay:a.refreshDelay,onBiddersReady:function b(a){return c.pubsub.on("bidders-ready",a)}}),c.initBidders(),c):_possibleConstructorReturn(c)}return _inherits(b,a),_createClass(b,[{key:"componentWillUnmount",value:function a(){this.props.enableAds&&this.pubsub.clear()}},{key:"render",value:function a(){return _react.default.createElement(_context.AdsContext.Provider,{value:{generateId:this.generateId,enableAds:this.props.enableAds,networkId:this.props.networkId,refresh:this.bidManager.refresh,adUnitPath:this.props.adUnitPath,bidHandler:this.props.bidHandler,lazyOffset:this.props.lazyOffset,refreshAdById:this.refreshAdById}},_react.default.createElement("div",null,this.props.children))}}]),b}(_react.Component);Provider.defaultProps={divider:"_",networkId:0,chunkSize:5,targeting:{},enableAds:!0,lazyOffset:800,bidProviders:[],bidTimeout:1e3,initTimeout:350,refreshDelay:200,adIframeTitle:"",setCentering:!0,pubsub:new _Pubsub.default,bidHandler:void 0,enableVideoAds:!1,collapseEmptyDivs:!1,gpt:{refresh:_googletag.refresh,setCentering:_googletag.setCentering,setTargeting:_googletag.setTargeting,destroySlots:_googletag.destroySlots,enableServices:_googletag.enableServices,enableVideoAds:_googletag.enableVideoAds,createGPTScript:_googletag.createGPTScript,setAdIframeTitle:_googletag.setAdIframeTitle,collapseEmptyDivs:_googletag.collapseEmptyDivs,disableInitialLoad:_googletag.disableInitialLoad,enableSingleRequest:_googletag.enableSingleRequest,enableAsyncRendering:_googletag.enableAsyncRendering}};var _default=Provider;exports.default=_default;
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(require("react"));
+
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
+var _Pubsub = _interopRequireDefault(require("../../lib/Pubsub"));
+
+var _context = require("../context");
+
+var _bidManager = _interopRequireDefault(require("../../utils/bidManager"));
+
+var _timedPromise = _interopRequireDefault(require("../../utils/timedPromise"));
+
+var _googletag = require("../../utils/googletag");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Provider =
+/*#__PURE__*/
+function (_Component) {
+  _inherits(Provider, _Component);
+
+  function Provider(_props) {
+    var _this;
+
+    _classCallCheck(this, Provider);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Provider).call(this, _props));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "initGPT", function () {
+      var _assertThisInitialize = _assertThisInitialized(_assertThisInitialized(_this)),
+          props = _assertThisInitialize.props;
+
+      var gpt = props.gpt;
+      gpt.createGPTScript();
+      gpt.setCentering(props.setCentering);
+      gpt.setAdIframeTitle(props.adIframeTitle);
+      gpt.enableVideoAds(props.enableVideoAds);
+      gpt.collapseEmptyDivs(props.collapseEmptyDivs);
+      gpt.enableAsyncRendering(true);
+      gpt.enableSingleRequest(true);
+      gpt.disableInitialLoad(true);
+      gpt.setTargeting(props.targeting);
+      gpt.enableServices();
+      gpt.destroySlots();
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "initBidders", function () {
+      if (!_this.props.bidProviders.length) _this.pubsub.emit('bidders-ready', true);else {
+        (0, _timedPromise.default)(_this.props.bidProviders.map(function (bidder) {
+          return bidder._init();
+        }), _this.props.initTimeout).catch(function (err) {
+          return console.log('Error initializing bidders', err);
+        }).finally(function () {
+          return _this.pubsub.emit('bidders-ready', true);
+        });
+      }
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "generateId", function () {
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'ad';
+      _this.slotCount[type];
+      if (isNaN(_this.slotCount[type])) _this.slotCount[type] = 1;else _this.slotCount[type] = _this.slotCount[type] + 1;
+      return "".concat(type).concat(_this.props.divider).concat(_this.slotCount[type]);
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "refreshAdById", function (ids) {
+      [].concat(ids).forEach(function (id) {
+        window.dispatchEvent(new CustomEvent('refresh-ad', {
+          detail: {
+            id: id
+          }
+        }));
+      });
+    });
+
+    var _gpt = _props.gpt;
+    if (!_props.enableAds) return _possibleConstructorReturn(_this);
+    _this.pubsub = _props.pubsub;
+    _this.slotCount = {};
+
+    _this.initGPT();
+
+    _this.bidManager = (0, _bidManager.default)({
+      refresh: _gpt.refresh,
+      chunkSize: _props.chunkSize,
+      bidTimeout: _props.bidTimeout,
+      bidProviders: _props.bidProviders,
+      refreshDelay: _props.refreshDelay,
+      onBiddersReady: function onBiddersReady(fn) {
+        return _this.pubsub.on('bidders-ready', fn);
+      }
+    });
+
+    _this.initBidders();
+
+    return _this;
+  }
+  /**
+   * Initializes GPT.
+   * @function
+   * @returns {void}
+   */
+
+
+  _createClass(Provider, [{
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      if (!this.props.enableAds) return;
+      this.pubsub.clear();
+    }
+    /**
+     * Will fire the custom refresh-ad event, when fired.   
+     * @param {String|String[]} ids - An Array of ids'
+     * @function
+     * @returns {void}
+     */
+
+  }, {
+    key: "render",
+    value: function render() {
+      return _react.default.createElement(_context.AdsContext.Provider, {
+        value: {
+          generateId: this.generateId,
+          enableAds: this.props.enableAds,
+          networkId: this.props.networkId,
+          refresh: this.bidManager.refresh,
+          adUnitPath: this.props.adUnitPath,
+          bidHandler: this.props.bidHandler,
+          lazyOffset: this.props.lazyOffset,
+          refreshAdById: this.refreshAdById
+        }
+      }, _react.default.createElement("div", null, this.props.children));
+    }
+  }]);
+
+  return Provider;
+}(_react.Component);
+
+Provider.defaultProps = {
+  divider: '_',
+  networkId: 0,
+  chunkSize: 5,
+  targeting: {},
+  enableAds: true,
+  lazyOffset: 800,
+  bidProviders: [],
+  bidTimeout: 1000,
+  initTimeout: 350,
+  refreshDelay: 200,
+  adIframeTitle: '',
+  setCentering: true,
+  pubsub: new _Pubsub.default(),
+  bidHandler: undefined,
+  enableVideoAds: false,
+  collapseEmptyDivs: false,
+  // GPT
+  gpt: {
+    refresh: _googletag.refresh,
+    setCentering: _googletag.setCentering,
+    setTargeting: _googletag.setTargeting,
+    destroySlots: _googletag.destroySlots,
+    enableServices: _googletag.enableServices,
+    enableVideoAds: _googletag.enableVideoAds,
+    createGPTScript: _googletag.createGPTScript,
+    setAdIframeTitle: _googletag.setAdIframeTitle,
+    collapseEmptyDivs: _googletag.collapseEmptyDivs,
+    disableInitialLoad: _googletag.disableInitialLoad,
+    enableSingleRequest: _googletag.enableSingleRequest,
+    enableAsyncRendering: _googletag.enableAsyncRendering
+  }
+};
+Provider.propTypes = {
+  divider: _propTypes.default.string,
+  enableAds: _propTypes.default.bool,
+  bidHandler: _propTypes.default.func,
+  targeting: _propTypes.default.object,
+  chunkSize: _propTypes.default.number,
+  adUnitPath: _propTypes.default.string,
+  bidTimeout: _propTypes.default.number,
+  lazyOffset: _propTypes.default.number,
+  setCentering: _propTypes.default.bool,
+  bidProviders: _propTypes.default.array,
+  initTimeout: _propTypes.default.number,
+  refreshDelay: _propTypes.default.number,
+  enableVideoAds: _propTypes.default.bool,
+  adIframeTitle: _propTypes.default.string,
+  collapseEmptyDivs: _propTypes.default.bool,
+  pubsub: _propTypes.default.instanceOf(_Pubsub.default),
+  networkId: _propTypes.default.number.isRequired,
+  children: _propTypes.default.oneOfType([_propTypes.default.node, _propTypes.default.arrayOf(_propTypes.default.node)]),
+  gpt: _propTypes.default.shape({
+    refresh: _propTypes.default.func.isRequired,
+    destroySlots: _propTypes.default.func.isRequired,
+    setCentering: _propTypes.default.func.isRequired,
+    setTargeting: _propTypes.default.func.isRequired,
+    enableServices: _propTypes.default.func.isRequired,
+    createGPTScript: _propTypes.default.func.isRequired,
+    setAdIframeTitle: _propTypes.default.func.isRequired,
+    collapseEmptyDivs: _propTypes.default.func.isRequired,
+    disableInitialLoad: _propTypes.default.func.isRequired,
+    enableSingleRequest: _propTypes.default.func.isRequired,
+    enableAsyncRendering: _propTypes.default.func.isRequired
+  })
+};
+var _default = Provider;
+exports.default = _default;

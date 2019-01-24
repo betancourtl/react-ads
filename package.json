@@ -9,7 +9,8 @@
   "dependencies": {
     "lodash.debounce": "^4.0.8",
     "video.js": "^7.4.1",
-    "videojs-vast-vpaid": "^3.0.0-beta.8"
+    "videojs-contrib-ads": "^6.6.1",
+    "videojs-ima": "^1.5.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",

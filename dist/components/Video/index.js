@@ -7,19 +7,9 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
-var _video = _interopRequireDefault(require("video.js"));
-
-require("video.js/dist/video-js.min.css");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -29,13 +19,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var VideoPlayer =
 /*#__PURE__*/
@@ -43,31 +35,108 @@ function (_Component) {
   _inherits(VideoPlayer, _Component);
 
   function VideoPlayer() {
+    var _getPrototypeOf2;
+
     var _this;
 
     _classCallCheck(this, VideoPlayer);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(VideoPlayer).call(this));
-    _this.adTag = 'http://demo.tremorvideo.com/proddev/vast/vast2VPAIDLinear.xml';
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(VideoPlayer)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadScripts", function (scripts) {
+      var postFix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'postfix';
+      return new Promise(function (resolve, reject) {
+        var timeout = setTimeout(reject, 4000);
+        var remaining = scripts.length;
+
+        var onLoad = function onLoad() {
+          remaining = remaining - 1;
+
+          if (remaining <= 0) {
+            clearTimeout(timeout);
+            resolve();
+          }
+        };
+
+        var fragment = document.createDocumentFragment();
+        scripts.forEach(function (src, index) {
+          var id = "instream-js-".concat(index + postFix);
+          var exists = document.getElementById(id);
+          if (exists) return onLoad();
+          var el = document.createElement('script');
+          el.src = src;
+          el.id = id;
+          el.async = true;
+          el.defer = true;
+          el.onload = onLoad;
+          el.onerror = onLoad;
+          fragment.appendChild(el);
+        });
+        document.head.appendChild(fragment);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadCss", function () {
+      return new Promise(function (resolve, reject) {
+        var timeout = setTimeout(reject, 4000);
+        var stylesheets = ['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video-js.min.css', '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.css', '//googleads.github.io/videojs-ima/dist/videojs.ima.css'];
+        var remaining = stylesheets.length;
+
+        var onLoad = function onLoad() {
+          remaining = remaining - 1;
+
+          if (remaining <= 0) {
+            clearTimeout(timeout);
+            resolve();
+          }
+        };
+
+        var fragment = document.createDocumentFragment();
+        stylesheets.forEach(function (href, index) {
+          var id = "instream-css-".concat(index);
+          var exists = document.getElementById(id);
+          if (exists) return onLoad();
+          var el = document.createElement('link');
+          el.href = href;
+          el.id = id;
+          el.rel = 'stylesheet';
+          el.onload = onLoad;
+          el.onerror = onLoad;
+          fragment.appendChild(el);
+        });
+        document.head.appendChild(fragment);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadPlayer", function () {
+      return _this.loadScripts(['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video.min.js'], '-1').then(function () {
+        return _this.loadScripts(['//imasdk.googleapis.com/js/sdkloader/ima3.js', '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.min.js', '//googleads.github.io/videojs-ima/dist/videojs.ima.js']);
+      }, '-2').then(function () {
+        return _this.loadCss();
+      });
+    });
+
     return _this;
   }
 
   _createClass(VideoPlayer, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      window.videojs = _video.default;
+      var _this2 = this;
 
-      require('videojs-vast-vpaid/dist/videojs_5.vast.vpaid');
+      var options = {
+        id: 'content-video',
+        adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod%26deployment%3Dgmf-js&cmsid=496&vid=short_onecue&correlator='
+      };
+      this.loadPlayer().then(function () {
+        _this2.player = window.videojs(_this2.videoNode, _this2.props);
 
-      var props = _objectSpread({}, this.props, {
-        adTag: this.adTag,
-        adCancelTimeout: 5000,
-        adsEnabled: true,
-        playAdAlways: true
+        _this2.player.ima(options);
       });
-
-      this.player = (0, _video.default)(this.videoNode, props);
-      console.log(this.player);
     } // destroy player on unmount
 
   }, {
@@ -80,16 +149,16 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
       return _react.default.createElement("div", null, _react.default.createElement("div", {
         "data-vjs-player": true
       }, _react.default.createElement("video", {
+        id: "content-video",
         ref: function ref(node) {
-          return _this2.videoNode = node;
+          return _this3.videoNode = node;
         },
-        className: "video-js",
-        "data-setup": "{ \"plugins\": { \"vastClient\": { \"adTag\": \"https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=\", \"adCancelTimeout\": 5000, \"adsEnabled\": true } } }"
+        className: "video-js"
       })));
     }
   }]);
