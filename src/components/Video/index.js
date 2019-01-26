@@ -2,11 +2,23 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { AdsContext } from '../context';
 import connect from '../../hoc/connector';
+import inViewport from '../../utils/inViewport';
 
 class VideoPlayer extends Component {
   constructor(props) {
     super(props);
     this.unmounted = false;
+    this.refreshWhenVisible = this.refreshWhenVisible.bind(this);
+  }
+
+  /**
+* Returns true if the slot is visible on the page. This is used for refreshing
+* lazy loaded ads.
+* @funtion
+* @returns {Boolean}
+*/
+  get isVisible() {
+    return inViewport(this.videoNode, this.props.lazyOffset);
   }
 
   // Make the prebid API call.
@@ -43,8 +55,25 @@ class VideoPlayer extends Component {
     });
   };
 
+  /**
+* Event listener for lazy loaded ads that triggers the refresh function when
+* the ad becomes visible.
+* @function   
+* @returns {void}
+*/
+  refreshWhenVisible() {
+    if (this.props.lazy && this.isVisible) {
+      this.props.loadVideoPlayer(this.refresh);
+      window.removeEventListener('scroll', this.refreshWhenVisible);
+    }
+  }
+
   componentDidMount() {
-    this.props.loadVideoPlayer(this.refresh);
+    if (!this.props.lazy) this.props.loadVideoPlayer(this.videoNode);
+    else {
+      this.refreshWhenVisible();
+      window.addEventListener('scroll', this.refreshWhenVisible);
+    }
   }
 
   // destroy player on unmount
@@ -57,14 +86,12 @@ class VideoPlayer extends Component {
 
   render() {
     return (
-      <div>
-        <div data-vjs-player>
-          <video
-            id={this.props.id}
-            ref={node => this.videoNode = node}
-            className="video-js"
-          />
-        </div>
+      <div data-vjs-player>
+        <video
+          id={this.props.id}
+          ref={node => this.videoNode = node}
+          className="video-js"
+        />
       </div>
     );
   }
@@ -101,9 +128,10 @@ VideoPlayer.defaultProps = {
   },
 };
 
-
 VideoPlayer.propTypes = {
   id: PropTypes.string,
+  lazy: PropTypes.boolean,
+  lazyOffset: PropTypes.number,
   // https://support.google.com/admanager/answer/1068325?hl=en
   params: PropTypes.shape({
     // required

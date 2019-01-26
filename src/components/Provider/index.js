@@ -105,10 +105,8 @@ class Provider extends Component {
         const id = `instream-js-${index + postFix}`;
         const exists = document.getElementById(id);
 
-        if (exists) {
-          console.log('Already loaded');
-          return onLoad();
-        }
+        if (exists) return onLoad();
+
         const el = document.createElement('script');
         el.src = src;
         el.id = id;
@@ -166,6 +164,7 @@ class Provider extends Component {
   }
 
   loadVideoPlayer = cb => {
+
     if (this.videoStatus === FAIL) return;
     if (this.videoStatus === STARTED) return this.videoQue.push(cb);
     if (this.videoStatus === SUCCESS) return cb();
@@ -187,7 +186,6 @@ class Provider extends Component {
       })
       .catch(() => {
         this.videoStatus = FAIL;
-        this.videoQue.forEach(fn => fn());
       });
   }
 
