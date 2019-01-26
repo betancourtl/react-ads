@@ -108,12 +108,7 @@ function (_Component) {
         scripts.forEach(function (src, index) {
           var id = "instream-js-".concat(index + postFix);
           var exists = document.getElementById(id);
-
-          if (exists) {
-            console.log('Already loaded');
-            return onLoad();
-          }
-
+          if (exists) return onLoad();
           var el = document.createElement('script');
           el.src = src;
           el.id = id;
@@ -130,7 +125,7 @@ function (_Component) {
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadVideoCss", function () {
       return new Promise(function (resolve, reject) {
         var timeout = setTimeout(reject, 4000);
-        var stylesheets = ['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video-js.min.css', '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.css', '//googleads.github.io/videojs-ima/dist/videojs.ima.css'];
+        var stylesheets = ['https://cdnjs.cloudflare.com/ajax/libs/video.js/7.5.0/video-js.min.css', 'https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-ads/6.6.1/videojs-contrib-ads.min.css', 'https://cdnjs.cloudflare.com/ajax/libs/videojs-ima/1.5.2/videojs.ima.min.css'];
         var remaining = stylesheets.length;
 
         var onLoad = function onLoad() {
@@ -170,8 +165,8 @@ function (_Component) {
         _this.videoStatus = STARTED;
       }
 
-      return _this.loadVideoScripts(['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video.min.js'], '-1').then(function () {
-        return _this.loadVideoScripts(['//imasdk.googleapis.com/js/sdkloader/ima3.js', '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.min.js', '//googleads.github.io/videojs-ima/dist/videojs.ima.js']);
+      return _this.loadVideoScripts(['https://cdnjs.cloudflare.com/ajax/libs/video.js/7.5.0/video.min.js'], '-1').then(function () {
+        return _this.loadVideoScripts(['//imasdk.googleapis.com/js/sdkloader/ima3.js', 'https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-ads/6.6.1/videojs-contrib-ads.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/videojs-ima/1.5.2/videojs.ima.min.js']);
       }, '-2').then(function () {
         return _this.loadVideoCss();
       }).then(function () {
@@ -182,10 +177,6 @@ function (_Component) {
         });
       }).catch(function () {
         _this.videoStatus = FAIL;
-
-        _this.videoQue.forEach(function (fn) {
-          return fn();
-        });
       });
     });
 

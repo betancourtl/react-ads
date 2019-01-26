@@ -13,6 +13,8 @@ var _context = require("../context");
 
 var _connector = _interopRequireDefault(require("../../hoc/connector"));
 
+var _inViewport = _interopRequireDefault(require("../../utils/inViewport"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
@@ -85,14 +87,39 @@ function (_Component) {
     });
 
     _this.unmounted = false;
+    _this.refreshWhenVisible = _this.refreshWhenVisible.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     return _this;
-  } // Make the prebid API call.
+  }
+  /**
+  * Returns true if the slot is visible on the page. This is used for refreshing
+  * lazy loaded ads.
+  * @funtion
+  * @returns {Boolean}
+  */
 
 
   _createClass(VideoPlayer, [{
+    key: "refreshWhenVisible",
+
+    /**
+    * Event listener for lazy loaded ads that triggers the refresh function when
+    * the ad becomes visible.
+    * @function   
+    * @returns {void}
+    */
+    value: function refreshWhenVisible() {
+      if (this.props.lazy && this.isVisible) {
+        this.props.loadVideoPlayer(this.refresh);
+        window.removeEventListener('scroll', this.refreshWhenVisible);
+      }
+    }
+  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.props.loadVideoPlayer(this.refresh);
+      if (!this.props.lazy) this.props.loadVideoPlayer(this.refresh);else {
+        this.refreshWhenVisible();
+        window.addEventListener('scroll', this.refreshWhenVisible);
+      }
     } // destroy player on unmount
 
   }, {
@@ -109,7 +136,7 @@ function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      return _react.default.createElement("div", null, _react.default.createElement("div", {
+      return _react.default.createElement("div", {
         "data-vjs-player": true
       }, _react.default.createElement("video", {
         id: this.props.id,
@@ -117,8 +144,14 @@ function (_Component) {
           return _this2.videoNode = node;
         },
         className: "video-js"
-      })));
+      }));
     }
+  }, {
+    key: "isVisible",
+    get: function get() {
+      return (0, _inViewport.default)(this.videoNode, this.props.lazyOffset);
+    } // Make the prebid API call.
+
   }]);
 
   return VideoPlayer;
@@ -152,6 +185,8 @@ VideoPlayer.defaultProps = {
 };
 VideoPlayer.propTypes = {
   id: _propTypes.default.string,
+  lazy: _propTypes.default.bool,
+  lazyOffset: _propTypes.default.number,
   // https://support.google.com/admanager/answer/1068325?hl=en
   params: _propTypes.default.shape({
     // required
