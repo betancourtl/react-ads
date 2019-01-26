@@ -69,7 +69,7 @@ class VideoPlayer extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.lazy) this.props.loadVideoPlayer(this.videoNode);
+    if (!this.props.lazy) this.props.loadVideoPlayer(this.refresh);
     else {
       this.refreshWhenVisible();
       window.addEventListener('scroll', this.refreshWhenVisible);
@@ -130,7 +130,7 @@ VideoPlayer.defaultProps = {
 
 VideoPlayer.propTypes = {
   id: PropTypes.string,
-  lazy: PropTypes.boolean,
+  lazy: PropTypes.bool,
   lazyOffset: PropTypes.number,
   // https://support.google.com/admanager/answer/1068325?hl=en
   params: PropTypes.shape({
