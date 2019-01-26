@@ -5,7 +5,6 @@ import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
 import bidManager from '../../utils/bidManager';
 import timedPromise from '../../utils/timedPromise';
-import VideoProvider from '../VideoProvider';
 import {
   refresh,
   destroySlots,
@@ -20,6 +19,10 @@ import {
   enableSingleRequest,
   enableAsyncRendering,
 } from '../../utils/googletag';
+
+const STARTED = 'STARTED';
+const SUCCESS = 'SUCCESS';
+const FAIL = 'FAIL';
 
 class Provider extends Component {
   constructor(props) {
@@ -38,6 +41,10 @@ class Provider extends Component {
       onBiddersReady: fn => this.pubsub.on('bidders-ready', fn),
     });
     this.initBidders();
+
+    // video
+    this.videoStatus = '';
+    this.videoQue = [];
   }
 
   /**
@@ -77,6 +84,111 @@ class Provider extends Component {
         .catch(err => console.log('Error initializing bidders', err))
         .finally(() => this.pubsub.emit('bidders-ready', true));
     }
+  }
+
+  loadVideoScripts = (scripts, postFix = 'postfix') => {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(reject, 4000);
+      let remaining = scripts.length;
+
+      const onLoad = () => {
+        remaining = remaining - 1;
+        if (remaining <= 0) {
+          clearTimeout(timeout);
+          resolve();
+        }
+      };
+
+      const fragment = document.createDocumentFragment();
+
+      scripts.forEach((src, index) => {
+        const id = `instream-js-${index + postFix}`;
+        const exists = document.getElementById(id);
+
+        if (exists) {
+          console.log('Already loaded');
+          return onLoad();
+        }
+        const el = document.createElement('script');
+        el.src = src;
+        el.id = id;
+        el.async = true;
+        el.defer = true;
+        el.onload = onLoad;
+        el.onerror = onLoad;
+        fragment.appendChild(el);
+      });
+
+      document.head.appendChild(fragment);
+    });
+  }
+
+  loadVideoCss = () => {
+    return new Promise((resolve, reject) => {
+
+      const timeout = setTimeout(reject, 4000);
+      const stylesheets = [
+        '//googleads.github.io/videojs-ima/node_modules/video.js/dist/video-js.min.css',
+        '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.css',
+        '//googleads.github.io/videojs-ima/dist/videojs.ima.css'
+      ];
+
+      let remaining = stylesheets.length;
+
+      const onLoad = () => {
+        remaining = remaining - 1;
+
+        if (remaining <= 0) {
+          clearTimeout(timeout);
+          resolve();
+        }
+      };
+
+      const fragment = document.createDocumentFragment();
+
+      stylesheets.forEach((href, index) => {
+        const id = `instream-css-${index}`;
+        const exists = document.getElementById(id);
+
+        if (exists) return onLoad();
+
+        const el = document.createElement('link');
+        el.href = href;
+        el.id = id;
+        el.rel = 'stylesheet';
+        el.onload = onLoad;
+        el.onerror = onLoad;
+        fragment.appendChild(el);
+      });
+
+      document.head.appendChild(fragment);
+    });
+  }
+
+  loadVideoPlayer = cb => {
+    if (this.videoStatus === FAIL) return;
+    if (this.videoStatus === STARTED) return this.videoQue.push(cb);
+    if (this.videoStatus === SUCCESS) return cb();
+    if (this.videoStatus === '') {
+      this.videoQue.push(cb);
+      this.videoStatus = STARTED;
+    }
+
+    return this.loadVideoScripts(['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video.min.js'], '-1')
+      .then(() => this.loadVideoScripts([
+        '//imasdk.googleapis.com/js/sdkloader/ima3.js',
+        '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.min.js',
+        '//googleads.github.io/videojs-ima/dist/videojs.ima.js'
+      ]), '-2')
+      .then(() => this.loadVideoCss())
+      .then(() => {
+        this.videoStatus = SUCCESS;
+        this.videoQue.forEach(fn => fn());
+      })
+      .catch(() => {
+        this.videoStatus = FAIL;
+        this.videoQue.forEach(fn => fn());
+      });
   }
 
   /**
@@ -119,11 +231,10 @@ class Provider extends Component {
         bidHandler: this.props.bidHandler,
         lazyOffset: this.props.lazyOffset,
         refreshAdById: this.refreshAdById,
+        loadVideoPlayer: this.loadVideoPlayer,
       }}
       >
-        <VideoProvider>
-          {this.props.children}
-        </VideoProvider>
+        {this.props.children}
       </AdsContext.Provider>
     );
   }

@@ -17,8 +17,6 @@ var _bidManager = _interopRequireDefault(require("../../utils/bidManager"));
 
 var _timedPromise = _interopRequireDefault(require("../../utils/timedPromise"));
 
-var _VideoProvider = _interopRequireDefault(require("../VideoProvider"));
-
 var _googletag = require("../../utils/googletag");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -44,6 +42,10 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var STARTED = 'STARTED';
+var SUCCESS = 'SUCCESS';
+var FAIL = 'FAIL';
 
 var Provider =
 /*#__PURE__*/
@@ -87,6 +89,106 @@ function (_Component) {
       }
     });
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadVideoScripts", function (scripts) {
+      var postFix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'postfix';
+      return new Promise(function (resolve, reject) {
+        var timeout = setTimeout(reject, 4000);
+        var remaining = scripts.length;
+
+        var onLoad = function onLoad() {
+          remaining = remaining - 1;
+
+          if (remaining <= 0) {
+            clearTimeout(timeout);
+            resolve();
+          }
+        };
+
+        var fragment = document.createDocumentFragment();
+        scripts.forEach(function (src, index) {
+          var id = "instream-js-".concat(index + postFix);
+          var exists = document.getElementById(id);
+
+          if (exists) {
+            console.log('Already loaded');
+            return onLoad();
+          }
+
+          var el = document.createElement('script');
+          el.src = src;
+          el.id = id;
+          el.async = true;
+          el.defer = true;
+          el.onload = onLoad;
+          el.onerror = onLoad;
+          fragment.appendChild(el);
+        });
+        document.head.appendChild(fragment);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadVideoCss", function () {
+      return new Promise(function (resolve, reject) {
+        var timeout = setTimeout(reject, 4000);
+        var stylesheets = ['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video-js.min.css', '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.css', '//googleads.github.io/videojs-ima/dist/videojs.ima.css'];
+        var remaining = stylesheets.length;
+
+        var onLoad = function onLoad() {
+          remaining = remaining - 1;
+
+          if (remaining <= 0) {
+            clearTimeout(timeout);
+            resolve();
+          }
+        };
+
+        var fragment = document.createDocumentFragment();
+        stylesheets.forEach(function (href, index) {
+          var id = "instream-css-".concat(index);
+          var exists = document.getElementById(id);
+          if (exists) return onLoad();
+          var el = document.createElement('link');
+          el.href = href;
+          el.id = id;
+          el.rel = 'stylesheet';
+          el.onload = onLoad;
+          el.onerror = onLoad;
+          fragment.appendChild(el);
+        });
+        document.head.appendChild(fragment);
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadVideoPlayer", function (cb) {
+      if (_this.videoStatus === FAIL) return;
+      if (_this.videoStatus === STARTED) return _this.videoQue.push(cb);
+      if (_this.videoStatus === SUCCESS) return cb();
+
+      if (_this.videoStatus === '') {
+        _this.videoQue.push(cb);
+
+        _this.videoStatus = STARTED;
+      }
+
+      return _this.loadVideoScripts(['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video.min.js'], '-1').then(function () {
+        return _this.loadVideoScripts(['//imasdk.googleapis.com/js/sdkloader/ima3.js', '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.min.js', '//googleads.github.io/videojs-ima/dist/videojs.ima.js']);
+      }, '-2').then(function () {
+        return _this.loadVideoCss();
+      }).then(function () {
+        _this.videoStatus = SUCCESS;
+
+        _this.videoQue.forEach(function (fn) {
+          return fn();
+        });
+      }).catch(function () {
+        _this.videoStatus = FAIL;
+
+        _this.videoQue.forEach(function (fn) {
+          return fn();
+        });
+      });
+    });
+
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "generateId", function () {
       var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'ad';
       _this.slotCount[type];
@@ -122,8 +224,11 @@ function (_Component) {
       }
     });
 
-    _this.initBidders();
+    _this.initBidders(); // video
 
+
+    _this.videoStatus = '';
+    _this.videoQue = [];
     return _this;
   }
   /**
@@ -158,9 +263,10 @@ function (_Component) {
           adUnitPath: this.props.adUnitPath,
           bidHandler: this.props.bidHandler,
           lazyOffset: this.props.lazyOffset,
-          refreshAdById: this.refreshAdById
+          refreshAdById: this.refreshAdById,
+          loadVideoPlayer: this.loadVideoPlayer
         }
-      }, _react.default.createElement(_VideoProvider.default, null, this.props.children));
+      }, this.props.children);
     }
   }]);
 

@@ -7,6 +7,8 @@ exports.default = exports.VideoPlayer = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
 var _context = require("../context");
 
 var _connector = _interopRequireDefault(require("../../hoc/connector"));
@@ -17,9 +19,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
-
-function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -44,52 +44,62 @@ var VideoPlayer =
 function (_Component) {
   _inherits(VideoPlayer, _Component);
 
-  function VideoPlayer(_props) {
+  function VideoPlayer(props) {
     var _this;
 
     _classCallCheck(this, VideoPlayer);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(VideoPlayer).call(this, _props));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(VideoPlayer).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadPlayer", function () {
-      var _this$props = _this.props,
-          id = _this$props.id,
-          props = _objectWithoutProperties(_this$props, ["id"]);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadPlayer", function (adTagUrl) {
+      if (_this.unmounted) return;
 
-      var options = {
-        id: id,
-        adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod%26deployment%3Dgmf-js&cmsid=496&vid=short_onecue&correlator='
-      };
-      _this.player = window.videojs(_this.videoNode, props);
+      var options = _objectSpread({}, _this.props.imaProps, {
+        id: _this.props.id,
+        adTagUrl: _this.props.imaProps.adTagUrl || null
+      });
+
+      _this.player = window.videojs(_this.videoNode, _this.props.videoProps);
 
       _this.player.ima(options);
     });
 
-    _this.state = {
-      playerLoaded: _props.isReady
-    };
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "refresh", function () {
+      var pbjs = window.pbjs || {};
+      pbjs.que = pbjs.que || [];
+      pbjs.que.push(function () {
+        var videoAdUnit = _this.props.bidHandler(_this.props.id, _this.props.playerSize).prebid;
+
+        pbjs.addAdUnits(videoAdUnit);
+        window.pbjs.requestBids({
+          bidsBackHandler: function bidsBackHandler(bids) {
+            var adTagUrl = pbjs.adServers.dfp.buildVideoUrl({
+              adUnit: videoAdUnit,
+              params: _objectSpread({}, _this.props.params)
+            });
+
+            _this.loadPlayer(adTagUrl);
+          }
+        });
+      });
+    });
+
+    _this.unmounted = false;
     return _this;
-  }
+  } // Make the prebid API call.
+
 
   _createClass(VideoPlayer, [{
-    key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProps, prevState) {
-      if (prevState.playerLoaded === false && this.props.isReady === true) {
-        this.loadPlayer();
-        console.log('player loaded');
-      }
-    }
-  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      if (this.state.playerLoaded) {
-        this.loadPlayer();
-      }
+      this.props.loadVideoPlayer(this.refresh);
     } // destroy player on unmount
 
   }, {
     key: "componentWillUnmount",
     value: function componentWillUnmount() {
+      this.unmounted = true;
+
       if (this.player) {
         this.player.dispose();
       }
@@ -109,17 +119,6 @@ function (_Component) {
         className: "video-js"
       })));
     }
-  }], [{
-    key: "getDerivedStateFromProps",
-    value: function getDerivedStateFromProps(props, state) {
-      if (state.playerLoaded === false && props.isReady === true) {
-        return {
-          playerLoaded: true
-        };
-      }
-
-      return null;
-    }
   }]);
 
   return VideoPlayer;
@@ -127,27 +126,103 @@ function (_Component) {
 
 exports.VideoPlayer = VideoPlayer;
 VideoPlayer.defaultProps = {
-  autoplay: true,
-  controls: true,
-  sources: [{
-    src: 'http://techslides.com/demos/sample-videos/small.webm',
-    type: 'video/webm'
-  }, {
-    src: 'http://techslides.com/demos/sample-videos/small.ogv',
-    type: 'video/ogv'
-  }, {
-    src: 'http://techslides.com/demos/sample-videos/small.mp4',
-    type: 'video/mp4'
-  }, {
-    src: 'http://techslides.com/demos/sample-videos/small.3gp',
-    type: 'video/3gp'
-  }]
+  id: '',
+  params: {},
+  loadVideoPlayer: Promise.reject,
+  imaProps: {
+    adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod%26deployment%3Dgmf-js&cmsid=496&vid=short_onecue&correlator='
+  },
+  videoProps: {
+    autoplay: true,
+    controls: true,
+    sources: [{
+      src: 'http://techslides.com/demos/sample-videos/small.webm',
+      type: 'video/webm'
+    }, {
+      src: 'http://techslides.com/demos/sample-videos/small.ogv',
+      type: 'video/ogv'
+    }, {
+      src: 'http://techslides.com/demos/sample-videos/small.mp4',
+      type: 'video/mp4'
+    }, {
+      src: 'http://techslides.com/demos/sample-videos/small.3gp',
+      type: 'video/3gp'
+    }]
+  }
+};
+VideoPlayer.propTypes = {
+  id: _propTypes.default.string,
+  // https://support.google.com/admanager/answer/1068325?hl=en
+  params: _propTypes.default.shape({
+    // required
+    env: _propTypes.default.string,
+    gdfp_req: _propTypes.default.number,
+    unviewed_position_start: _propTypes.default.number,
+    // required variable
+    output: _propTypes.default.oneOf(['vast', 'xml_vast3', 'vmap', 'xml_vmap1', 'xml_vast4']),
+    iu: _propTypes.default.string,
+    sz: _propTypes.default.string,
+    description_url: _propTypes.default.string,
+    url: _propTypes.default.string,
+    correlator: _propTypes.default.number,
+    // optional
+    ad_rule: _propTypes.default.number,
+    ciu_szs: _propTypes.default.string,
+    cmsid: _propTypes.default.number,
+    vid: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.number]),
+    // http://prebid.org/dev-docs/publisher-api-reference.html#pbjsadserversdfpbuildvideourloptions 
+    cust_params: _propTypes.default.object,
+    hl: _propTypes.default.string,
+    msid: _propTypes.default.string,
+    an: _propTypes.default.string,
+    nofb: _propTypes.default.string,
+    pp: _propTypes.default.string,
+    ppid: _propTypes.default.number,
+    rdid: _propTypes.default.string,
+    idtype: _propTypes.default.string,
+    is_lat: _propTypes.default.string,
+    tfcd: _propTypes.default.string,
+    npa: _propTypes.default.string,
+    // ima props these are included by IMA by default do not use them.
+    pod: _propTypes.default.number,
+    ppos: _propTypes.default.number,
+    vpos: _propTypes.default.oneOf(['preroll', 'midroll', 'postroll']),
+    mridx: _propTypes.default.string,
+    lip: _propTypes.default.boolean,
+    min_ad_duration: _propTypes.default.number,
+    max_ad_duration: _propTypes.default.number,
+    pmnd: _propTypes.default.number,
+    pmxd: _propTypes.default.number,
+    pmad: _propTypes.default.number,
+    // These parameters are specific to optimized pods, which are available to 
+    // publishers with an advanced video package. They also should not be used 
+    // for VMAP (when ad_rule=1). 
+    vpmute: _propTypes.default.string,
+    vpa: _propTypes.default.string,
+    scor: _propTypes.default.number,
+    vad_type: _propTypes.default.oneOf(['linear', 'nonlinear']),
+    excl_cat: _propTypes.default.string
+  }),
+  bidHandler: _propTypes.default.func,
+  imaProps: _propTypes.default.shape({
+    adTagUrl: _propTypes.default.string
+  }),
+  videoProps: _propTypes.default.shape({
+    autoplay: _propTypes.default.bool,
+    controls: _propTypes.default.bool,
+    sources: _propTypes.default.arrayOf(_propTypes.default.shape({
+      src: _propTypes.default.string,
+      type: _propTypes.default.string
+    }))
+  }),
+  loadVideoPlayer: _propTypes.default.func.isRequired,
+  playerSize: _propTypes.default.arrayOf(_propTypes.default.number)
 };
 
-var _default = (0, _connector.default)(_context.VideoContext, function (_ref) {
-  var isReady = _ref.isReady;
+var _default = (0, _connector.default)(_context.AdsContext, function (_ref) {
+  var loadVideoPlayer = _ref.loadVideoPlayer;
   return {
-    isReady: isReady
+    loadVideoPlayer: loadVideoPlayer
   };
 })(VideoPlayer);
 

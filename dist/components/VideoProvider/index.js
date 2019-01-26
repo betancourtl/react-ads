@@ -31,6 +31,10 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+var STARTED = 'STARTED';
+var SUCCESS = 'SUCCESS';
+var FAIL = 'FAIL';
+
 var VideoProvider =
 /*#__PURE__*/
 function (_React$Component) {
@@ -43,7 +47,7 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(VideoProvider).call(this));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadScripts", function (scripts) {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadVideoScripts", function (scripts) {
       var postFix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'postfix';
       return new Promise(function (resolve, reject) {
         var timeout = setTimeout(reject, 4000);
@@ -81,7 +85,7 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadCss", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadVideoCss", function () {
       return new Promise(function (resolve, reject) {
         var timeout = setTimeout(reject, 4000);
         var stylesheets = ['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video-js.min.css', '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.css', '//googleads.github.io/videojs-ima/dist/videojs.ima.css'];
@@ -113,37 +117,50 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadPlayer", function () {
-      return _this.loadScripts(['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video.min.js'], '-1').then(function () {
-        return _this.loadScripts(['//imasdk.googleapis.com/js/sdkloader/ima3.js', '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.min.js', '//googleads.github.io/videojs-ima/dist/videojs.ima.js']);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadVideoPlayer", function (cb) {
+      if (_this.state.videoStatus === FAIL) return;
+      if (_this.state.videoStatus === STARTED) return _this.state.videoQue.push(cb);
+      if (_this.state.videoStatus === SUCCESS) return cb();
+
+      if (_this.state.videoStatus === '') {
+        _this.state.videoQue.push(cb);
+
+        _this.state.videoStatus = STARTED;
+      }
+
+      return _this.loadVideoScripts(['//googleads.github.io/videojs-ima/node_modules/video.js/dist/video.min.js'], '-1').then(function () {
+        return _this.loadVideoScripts(['//imasdk.googleapis.com/js/sdkloader/ima3.js', '//googleads.github.io/videojs-ima/node_modules/videojs-contrib-ads/dist/videojs.ads.min.js', '//googleads.github.io/videojs-ima/dist/videojs.ima.js']);
       }, '-2').then(function () {
-        return _this.loadCss();
+        return _this.loadVideoCss();
+      }).then(function () {
+        return _this.setState({
+          status: SUCCESS
+        }, function () {
+          return _this.state.videoQue.forEach(function (fn) {
+            return fn();
+          });
+        });
+      }).catch(function () {
+        return _this.setState({
+          status: FAIL
+        });
       });
     });
 
     _this.state = {
-      isReady: false
+      videoStatus: '',
+      videoQue: [] // children callbacks.
+
     };
     return _this;
   }
 
   _createClass(VideoProvider, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      this.loadPlayer().then(function () {
-        return _this2.setState({
-          isReady: true
-        });
-      });
-    }
-  }, {
     key: "render",
     value: function render() {
       return _react.default.createElement(_context.VideoContext.Provider, {
         value: {
-          isReady: this.state.isReady
+          loadVideoPlayer: this.loadVideoPlayer
         }
       }, this.props.children);
     }
