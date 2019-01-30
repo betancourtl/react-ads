@@ -20,6 +20,10 @@ import {
   enableAsyncRendering,
 } from '../../utils/googletag';
 
+const STARTED = 'STARTED';
+const SUCCESS = 'SUCCESS';
+const FAIL = 'FAIL';
+
 class Provider extends Component {
   constructor(props) {
     super(props);
@@ -37,6 +41,10 @@ class Provider extends Component {
       onBiddersReady: fn => this.pubsub.on('bidders-ready', fn),
     });
     this.initBidders();
+
+    // video
+    this.videoStatus = '';
+    this.videoQue = [];
   }
 
   /**
@@ -76,6 +84,109 @@ class Provider extends Component {
         .catch(err => console.log('Error initializing bidders', err))
         .finally(() => this.pubsub.emit('bidders-ready', true));
     }
+  }
+
+  loadVideoScripts = (scripts, postFix = 'postfix') => {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(reject, 4000);
+      let remaining = scripts.length;
+
+      const onLoad = () => {
+        remaining = remaining - 1;
+        if (remaining <= 0) {
+          clearTimeout(timeout);
+          resolve();
+        }
+      };
+
+      const fragment = document.createDocumentFragment();
+
+      scripts.forEach((src, index) => {
+        const id = `instream-js-${index + postFix}`;
+        const exists = document.getElementById(id);
+
+        if (exists) return onLoad();
+
+        const el = document.createElement('script');
+        el.src = src;
+        el.id = id;
+        el.async = true;
+        el.defer = true;
+        el.onload = onLoad;
+        el.onerror = onLoad;
+        fragment.appendChild(el);
+      });
+
+      document.head.appendChild(fragment);
+    });
+  }
+
+  loadVideoCss = () => {
+    return new Promise((resolve, reject) => {
+
+      const timeout = setTimeout(reject, 4000);
+      const stylesheets = [
+        'https://cdnjs.cloudflare.com/ajax/libs/video.js/7.5.0/video-js.min.css',
+        'https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-ads/6.6.1/videojs-contrib-ads.min.css',
+        'https://cdnjs.cloudflare.com/ajax/libs/videojs-ima/1.5.2/videojs.ima.min.css'
+      ];
+
+      let remaining = stylesheets.length;
+
+      const onLoad = () => {
+        remaining = remaining - 1;
+
+        if (remaining <= 0) {
+          clearTimeout(timeout);
+          resolve();
+        }
+      };
+
+      const fragment = document.createDocumentFragment();
+
+      stylesheets.forEach((href, index) => {
+        const id = `instream-css-${index}`;
+        const exists = document.getElementById(id);
+
+        if (exists) return onLoad();
+
+        const el = document.createElement('link');
+        el.href = href;
+        el.id = id;
+        el.rel = 'stylesheet';
+        el.onload = onLoad;
+        el.onerror = onLoad;
+        fragment.appendChild(el);
+      });
+
+      document.head.appendChild(fragment);
+    });
+  }
+
+  loadVideoPlayer = cb => {
+
+    if (this.videoStatus === FAIL) return;
+    if (this.videoStatus === STARTED) return this.videoQue.push(cb);
+    if (this.videoStatus === SUCCESS) return cb();
+    if (this.videoStatus === '') {
+      this.videoQue.push(cb);
+      this.videoStatus = STARTED;
+    }
+
+    return this.loadVideoScripts(['https://cdnjs.cloudflare.com/ajax/libs/video.js/7.5.0/video.min.js'], '-1')
+      .then(() => this.loadVideoScripts([
+        '//imasdk.googleapis.com/js/sdkloader/ima3.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-ads/6.6.1/videojs-contrib-ads.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/videojs-ima/1.5.2/videojs.ima.min.js'
+      ]), '-2')
+      .then(() => this.loadVideoCss())
+      .then(() => {
+        this.videoStatus = SUCCESS;
+        this.videoQue.forEach(fn => fn());
+      })
+      .catch(() => {
+        this.videoStatus = FAIL;
+      });
   }
 
   /**
@@ -118,11 +229,10 @@ class Provider extends Component {
         bidHandler: this.props.bidHandler,
         lazyOffset: this.props.lazyOffset,
         refreshAdById: this.refreshAdById,
+        loadVideoPlayer: this.loadVideoPlayer,
       }}
       >
-        <div>
-          {this.props.children}
-        </div>
+        {this.props.children}
       </AdsContext.Provider>
     );
   }

@@ -775,6 +775,12 @@ gets queued and processed by the bidManager.
 
 **Declarative approach.**
 
+
+## Instream
+
+The instream player will have a provider that will be in charge of loading the
+player scripts. Then it will 
+
 The declarative approach could be used 
 
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)

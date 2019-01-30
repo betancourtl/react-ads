@@ -9,8 +9,8 @@ import _timedPromise, { status } from '../timedPromise';
  * @param {Bidder[]} props.bidProviders - Array of bidProviders.
  * @param {Number} props.bidTimeout - Ammount of time to wait for bidders.
  * @param {Function} props.dispatchBidders - function that fetches the bids.
- * @param {Function} q - The items that the job passed to thie processing fn.
- * @param {Function} done - Resolves a promise and ends the job.
+ * @param {Queue} q - The items that the job passed to thie processing fn.
+ * @param {Promise.resolve} done - Resolves a promise and ends the job.
  * @function
  * @returns {void}
  */
