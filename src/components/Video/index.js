@@ -77,7 +77,7 @@ class VideoPlayer extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.lazy) this.props.loadVideoPlayer(this.videoNode);
+    if (!this.props.lazy) this.props.loadVideoPlayer(this.refresh);
     else {
       this.refreshWhenVisible();
       window.addEventListener('scroll', this.refreshWhenVisible);

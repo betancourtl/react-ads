@@ -15,16 +15,7 @@ class Story extends React.Component {
             playerSize: playerSize,
           },
         },
-        bids: [{
-          bidder: 'criteo',
-          params: {
-            placementId: 13232361,
-            video: {
-              skippable: true,
-              playback_methods: ['auto_play_sound_off']
-            }
-          }
-        }]
+        bids: []
       }
     });
 
@@ -34,8 +25,6 @@ class Story extends React.Component {
       >
         <Video
           id="video_1"
-          networkId={4020}
-          adUnitPath="video/test"
           bidHandler={bidHandler}
           playerSize={[640, 480]}
         />
