@@ -27,7 +27,7 @@ class VideoPlayer extends Component {
     var options = {
       ...this.props.imaProps,
       id: this.props.id,
-      adTagUrl: this.props.imaProps.adTagUrl || null,
+      adTagUrl,
     };
 
     this.player = window.videojs(this.videoNode, this.props.videoProps);
@@ -35,13 +35,21 @@ class VideoPlayer extends Component {
   }
 
   refresh = () => {
+    if (this.props.adTagUrl) return this.loadPlayer(this.props.adTagUrl);
+
     const pbjs = window.pbjs || {};
     pbjs.que = pbjs.que || [];
     pbjs.que.push(() => {
-      const videoAdUnit = this.props.bidHandler(this.props.id, this.props.playerSize).prebid;
+      
+      const videoAdUnit = this.props.bidHandler({
+        id: this.props.id,
+        playerSize: this.props.playerSize
+      }).prebid;
+      
       pbjs.addAdUnits(videoAdUnit);
 
       window.pbjs.requestBids({
+        adUnitCodes: [videoAdUnit.code],
         bidsBackHandler: bids => {
           var adTagUrl = pbjs.adServers.dfp.buildVideoUrl({
             adUnit: videoAdUnit,
@@ -130,7 +138,7 @@ VideoPlayer.defaultProps = {
 
 VideoPlayer.propTypes = {
   id: PropTypes.string,
-  lazy: PropTypes.boolean,
+  lazy: PropTypes.bool,
   lazyOffset: PropTypes.number,
   // https://support.google.com/admanager/answer/1068325?hl=en
   params: PropTypes.shape({
@@ -171,7 +179,7 @@ VideoPlayer.propTypes = {
     ppos: PropTypes.number,
     vpos: PropTypes.oneOf(['preroll', 'midroll', 'postroll']),
     mridx: PropTypes.string,
-    lip: PropTypes.boolean,
+    lip: PropTypes.bool,
     min_ad_duration: PropTypes.number,
     max_ad_duration: PropTypes.number,
     pmnd: PropTypes.number,
