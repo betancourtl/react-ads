@@ -25,7 +25,8 @@ ___
 | Refresh the element using its ref.                     | ok     |
 | Set iframe title                                       | ok     |
 | Event based ad adTypes [ 'lazy', 'event', 'initial']   | x      |
-| Implement Instream Video                               | x      |
+| Implement Instream Video                               | ok     |
+| Queue Instream Videos                                  | ok     |
 
 ### Ad Loading strategies
 ___
@@ -36,7 +37,7 @@ ___
 | googletag.pubads().enableSingleRequest(); 	                        |
 | googletag.pubads().disableInitialLoad();  	                        |
 | googletag.enableServices();               	                        |
-| googletag.display(slotName); && googletag.pubads().refresh([slot]);   |
+| googletag.display(slotName); && googletag.pubads().refresh([slot]); |
 
 | Event-based ad requesting/rendering                                   |
 |-----------------------------------------------------------------------|
@@ -781,6 +782,16 @@ gets queued and processed by the bidManager.
 The instream player will have a provider that will be in charge of loading the
 player scripts. Then it will 
 
-The declarative approach could be used 
+## Queing video calls
+
+It would be nice if it was possible to queue up the video calls, to follow the 
+existing convention.
+
+What needs to happen?
+
+1. Refresh is called and gets stored in the the heap.
+2. The heap is processed and video calls are made.
+3. The Prebid video handler will process the video bids and execures the callback.
+
 
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)

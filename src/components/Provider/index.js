@@ -164,7 +164,6 @@ class Provider extends Component {
   }
 
   loadVideoPlayer = cb => {
-
     if (this.videoStatus === FAIL) return;
     if (this.videoStatus === STARTED) return this.videoQue.push(cb);
     if (this.videoStatus === SUCCESS) return cb();

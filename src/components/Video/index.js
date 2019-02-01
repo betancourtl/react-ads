@@ -26,7 +26,7 @@ class VideoPlayer extends Component {
     var options = {
       ...this.props.imaProps,
       id: this.props.id,
-      adTagUrl: this.props.imaProps.adTagUrl || null,
+      adTagUrl: this.props.imaProps.adTagUrl || adTagUrl,
     };
 
     this.player = window.videojs(this.videoNode, this.props.videoProps);

@@ -1,27 +1,21 @@
 /* eslint-disable no-console */
 import JobQueue from '../../lib/JobQueue';
-import _timedPromise, { status } from '../timedPromise';
+import timedPromise, { status } from '../timedPromise';
+import Queue from '../../lib/Queue';
 
-/**
- * This function will make bid requests and then call the bidders functions
- * for callbacks for a successfull bid call.
- * @param {Function} props.refresh - Googletag refresh fn.
- * @param {Bidder[]} props.bidProviders - Array of bidProviders.
- * @param {Number} props.bidTimeout - Ammount of time to wait for bidders.
- * @param {Function} props.dispatchBidders - function that fetches the bids.
- * @param {Queue} q - The items that the job passed to thie processing fn.
- * @param {Promise.resolve} done - Resolves a promise and ends the job.
- * @function
- * @returns {void}
- */
-export const processFn = (bidProviders, bidTimeout, refresh, timedPromise = _timedPromise) => (q, done) => {
+export const processVideo = (bidProviders, bidTimeout, refresh, q) => new Promise((resolve) => {
+  resolve();
+});
+
+export const processDisplay = (bidProviders, bidTimeout, refresh, q) => new Promise((resolve) => {
+  console.log('q', q);
   const slots = [];
   const nextBids = {};
 
   while (!q.isEmpty) {
     const { slot, bids } = q.dequeue().data;
     slots.push(slot);
-    
+
     // test
     if (bids) {
       Object
@@ -38,7 +32,7 @@ export const processFn = (bidProviders, bidTimeout, refresh, timedPromise = _tim
 
   if (noBidsOrProviders) {
     refresh(slots);
-    return done();
+    return resolve();
   }
 
   timedPromise(
@@ -60,8 +54,36 @@ export const processFn = (bidProviders, bidTimeout, refresh, timedPromise = _tim
     .catch(err => console.log('error', err))
     .finally(() => {
       refresh(slots);
-      done();
+      resolve();
     });
+});
+
+/**
+ * This function will make bid requests and then call the bidders functions
+ * for callbacks for a successfull bid call.
+ * @param {Function} props.refresh - Googletag refresh fn.
+ * @param {Bidder[]} props.bidProviders - Array of bidProviders.
+ * @param {Number} props.bidTimeout - Ammount of time to wait for bidders.
+ * @param {Function} props.dispatchBidders - function that fetches the bids.
+ * @param {Queue} q - The items that the job passed to thie processing fn.
+ * @param {Promise.resolve} done - Resolves a promise and ends the job.
+ * @function
+ * @returns {void}
+ */
+export const processFn = (bidProviders, bidTimeout, refresh) => (q, done) => {
+  const displayQueue = new Queue();
+  const videoQueue = new Queue();
+
+  while (!q.isEmpty) {
+    const item = q.dequeue();
+    if (item.data.type === 'video') videoQueue.enqueue(item);
+    else if (item.data.type === 'display') displayQueue.enqueue(item);
+  }
+
+  Promise.all([
+    processDisplay(bidProviders, bidTimeout, refresh, displayQueue),
+    processVideo(bidProviders, bidTimeout, refresh, videoQueue),
+  ]).then(done);
 };
 
 /** 
