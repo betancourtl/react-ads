@@ -23,7 +23,6 @@ class VideoPlayer extends Component {
 
   // Make the prebid API call.
   loadPlayer = adTagUrl => {
-    if (this.unmounted) return;
     var options = {
       ...this.props.imaProps,
       id: this.props.id,
@@ -79,19 +78,23 @@ class VideoPlayer extends Component {
   // destroy player on unmount
   componentWillUnmount() {
     this.unmounted = true;
-    if (this.player) {
-      this.player.dispose();
-    }
+    if (this.player) this.player.dispose();
   }
 
+  /**
+   * Renders the videojs player. Do not remove the outer empty div. This is
+   * used when unmounting videojs.
+   */
   render() {
     return (
-      <div data-vjs-player>
-        <video
-          id={this.props.id}
-          ref={node => this.videoNode = node}
-          className="video-js"
-        />
+      <div>
+        <div data-vjs-player>
+          <video
+            id={this.props.id}
+            ref={node => this.videoNode = node}
+            className="video-js"
+          />
+        </div>
       </div>
     );
   }
@@ -107,6 +110,7 @@ VideoPlayer.defaultProps = {
   videoProps: {
     autoplay: true,
     controls: true,
+    muted: true,
     sources: [
       {
         src: 'http://techslides.com/demos/sample-videos/small.webm',
