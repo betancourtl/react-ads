@@ -33,13 +33,31 @@ class VideoPlayer extends Component {
     this.player.ima(options);
   }
 
+  /**
+   * Will refresh this slot using the refresh function passed by the provider.
+   * component.
+   * @function   
+   * @returns {void}
+   */
   refresh = () => {
+    this.props.refresh({
+      priority: this.props.priority,
+      data: {
+        bids: this.bidHandler,
+        id: this.id,
+        callback: this.handleRefresh,
+        type: 'video',
+      }
+    });
+  }
+
+  handleRefresh = () => {
+    console.log('handleRefresh called');
     const pbjs = window.pbjs || {};
     pbjs.que = pbjs.que || [];
     pbjs.que.push(() => {
       const videoAdUnit = this.props.bidHandler(this.props.id, this.props.playerSize).prebid;
       pbjs.addAdUnits(videoAdUnit);
-
       window.pbjs.requestBids({
         bidsBackHandler: bids => {
           var adTagUrl = pbjs.adServers.dfp.buildVideoUrl({
@@ -60,7 +78,7 @@ class VideoPlayer extends Component {
 * @function   
 * @returns {void}
 */
-  refreshWhenVisible() {
+  refreshWhenVisible = () => {
     if (this.props.lazy && this.isVisible) {
       this.props.loadVideoPlayer(this.refresh);
       window.removeEventListener('scroll', this.refreshWhenVisible);
@@ -102,6 +120,7 @@ class VideoPlayer extends Component {
 
 VideoPlayer.defaultProps = {
   id: '',
+  priority: 5,
   params: {},
   loadVideoPlayer: Promise.reject,
   imaProps: {
@@ -135,7 +154,9 @@ VideoPlayer.defaultProps = {
 VideoPlayer.propTypes = {
   id: PropTypes.string,
   lazy: PropTypes.bool,
+  priority: PropTypes.number,
   lazyOffset: PropTypes.number,
+  refresh: PropTypes.func.isRequired,
   // https://support.google.com/admanager/answer/1068325?hl=en
   params: PropTypes.shape({
     // required
@@ -212,4 +233,9 @@ export {
   VideoPlayer,
 };
 
-export default connect(AdsContext, ({ loadVideoPlayer }) => ({ loadVideoPlayer }))(VideoPlayer);
+export default connect(AdsContext, ({ loadVideoPlayer, refresh }) => {
+  return {
+    refresh,
+    loadVideoPlayer,
+  };
+})(VideoPlayer);
