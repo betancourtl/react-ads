@@ -4,6 +4,8 @@ import { AdsContext } from '../context';
 import connect from '../../hoc/connector';
 import inViewport from '../../utils/inViewport';
 
+// TODO [] - Add tests
+
 class VideoPlayer extends Component {
   constructor(props) {
     super(props);

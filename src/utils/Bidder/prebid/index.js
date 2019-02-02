@@ -3,6 +3,10 @@ import Bidder from '../';
 
 const bidder = new Bidder('prebid');
 
+/**
+ * Initializes the bidder.
+ * @returns {Promise}
+ */
 bidder.init = () => {
   if (bidder.isReady) return;
   var pbjs = window.pbjs || {};
@@ -22,6 +26,8 @@ bidder.onBidWon = () => { };
 
 bidder.onTimeout = () => { };
 
+bidder.onVideoBidTimeout = () => { };
+
 /**
  * Will fetch the prebid display bids.
  * @param {Number} timeout 
@@ -29,7 +35,7 @@ bidder.onTimeout = () => { };
  * @param {Object} adUnits 
  * @returns {Promise}
  */
-bidder.fetchBids = adUnits => new Promise(resolve => {
+bidder.fetchDisplayBids = adUnits => new Promise(resolve => {
   var pbjs = window.pbjs || {};
   pbjs.que.push(function () {
     // Set new adUnits
@@ -52,6 +58,22 @@ bidder.fetchBids = adUnits => new Promise(resolve => {
     });
   });
 });
+
+/**
+ * 
+ * @function
+ * @param {Object} response.adUnitCodes
+ * @returns {void}
+ */
+bidder.handleResponse = ({ adUnitCodes }) => {
+  var pbjs = window.pbjs || {};
+  var googletag = window.googletag || {};
+  googletag.cmd.push(function () {
+    pbjs.que.push(function () {
+      pbjs.setTargetingForGPTAsync(adUnitCodes);
+    });
+  });
+};
 
 /**
  * Will fetch the video bids and return an adTagURL.
@@ -79,25 +101,16 @@ bidder.fetchVideoBids = (adUnit, params) => new Promise(resolve => {
   });
 });
 
+/**
+ * @param {Object} param.adTagUrl - AdTag url returned from fetchVideoBids.
+ * @param {Function} callback - Callback function, this should probably be the 
+ * function used to initialize the videoPlayer with the adTagUrl
+ * @param {void}
+ */
 bidder.handleVideoResponse = ({ adTagUrl } = {}, callback) => {
   console.log('tagUrl', adTagUrl);
   callback(adTagUrl);
 };
 
-/**
- * 
- * @function
- * @param {Object} response.adUnitCodes
- * @returns {void}
- */
-bidder.handleResponse = ({ adUnitCodes }) => {
-  var pbjs = window.pbjs || {};
-  var googletag = window.googletag || {};
-  googletag.cmd.push(function () {
-    pbjs.que.push(function () {
-      pbjs.setTargetingForGPTAsync(adUnitCodes);
-    });
-  });
-};
 
 export default bidder;

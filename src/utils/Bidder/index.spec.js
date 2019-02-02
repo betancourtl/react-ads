@@ -40,25 +40,47 @@ describe('Bidder', () => {
     }, 5);
   });
 
-  test('Should timeout the bidder when it exceeds the failsafe timeout.', async () => {
+  test('Should timeout the display bidder when it exceeds the failsafe timeout.', async () => {
     const bidder = new Bidder('test');
     bidder.isReady = true;
     bidder.safeTimeout = 5;
-    bidder.fetchBids = () => new Promise(resolve => {
+    bidder.fetchDisplayBids = () => new Promise(resolve => {
       setTimeout(() => resolve('resolved'), 50);
     });
 
-    await expect(bidder._fetchBids()).rejects.toEqual('Timed Out');
+    await expect(bidder._fetchDisplayBids()).rejects.toEqual('Timed Out');
   });
 
-  test('Should resolve when the promise resolves before the safeTimeout.', async () => {    
+  test('Should resolve the display bidder when promise resolves before the safeTimeout.', async () => {
     const bidder = new Bidder('test');
     bidder.isReady = true;
     bidder.safeTimeout = 50;
-    bidder.fetchBids = () => new Promise(resolve => {
+    bidder.fetchDisplayBids = () => new Promise(resolve => {
       setTimeout(() => resolve('resolved'), 5);
     });
 
-    await expect(bidder._fetchBids()).resolves.toEqual('resolved');
+    await expect(bidder._fetchDisplayBids()).resolves.toEqual('resolved');
+  });
+
+  test('Should timeout the video bidder when it exceeds the failsafe timeout.', async () => {
+    const bidder = new Bidder('test');
+    bidder.isReady = true;
+    bidder.safeTimeout = 5;
+    bidder.fetchVideoBids = () => new Promise(resolve => {
+      setTimeout(() => resolve('resolved'), 50);
+    });
+
+    await expect(bidder._fetchVideoBids()).rejects.toEqual('Timed Out');
+  });
+
+  test('Should resolve video bidder when the promise resolves before the safeTimeout.', async () => {
+    const bidder = new Bidder('test');
+    bidder.isReady = true;
+    bidder.safeTimeout = 50;
+    bidder.fetchVideoBids = () => new Promise(resolve => {
+      setTimeout(() => resolve('resolved'), 5);
+    });
+
+    await expect(bidder._fetchVideoBids()).resolves.toEqual('resolved');
   });
 });

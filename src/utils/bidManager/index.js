@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
 import Queue from '../../lib/Queue';
 import JobQueue from '../../lib/JobQueue';
-import processVideo from './processVideo';
-import processDisplay from './processDisplay';
+import processVideo from './video';
+import processDisplay from './display';
+
+// TODO [] - Add tests
 
 /**
  * This function will make bid requests and then call the bidders functions

@@ -1,8 +1,20 @@
-import timedPromise, { status } from '../timedPromise';
+import timedPromise, { status } from '../../timedPromise';
 
+// TODO [] - Add tests
+/**
+ * 
+ * @param {Bidder[]} bidProviders 
+ * @param {Number} bidTimeout 
+ * @param {Function} refresh 
+ * @param {Queue} q 
+ * @returns {Promise}
+ */
 const processDisplay = (bidProviders, bidTimeout, refresh, q) => new Promise(resolve => {
   const slots = [];
   const nextBids = {};
+
+  // tested
+  if (q.isEmpty) return resolve();
 
   while (!q.isEmpty) {
     const { slot, bids } = q.dequeue().data;
@@ -26,19 +38,22 @@ const processDisplay = (bidProviders, bidTimeout, refresh, q) => new Promise(res
     return resolve();
   }
 
+  // expect bidder.fetchDisplayBids to be called.
+  // expect bidder.handleResponse to be called.
+  // expect refresh.toBeCalledTimes(1)
   timedPromise(
-    bidProviders.map(bidder => bidder._fetchBids(nextBids[bidder.name])),
+    bidProviders.map(bidder => bidder._fetchDisplayBids(nextBids[bidder.name])),
     bidTimeout
   )
     .then(responses => {
       responses.forEach((res, i) => {
-        if (res.status === status.fulfilled) {
-          bidProviders[i].onBidWon();
+        if (res.status === status.fulfilled) {          
+          bidProviders[i].onBidWon(res.data);
           bidProviders[i].handleResponse(res.data);
         }
 
         if (res.status === status.rejected) {
-          bidProviders[i].onTimeout();
+          bidProviders[i].onTimeout(res.err);
         }
       });
     })

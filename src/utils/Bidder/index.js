@@ -96,6 +96,16 @@ class Bidder {
   }
 
   /**
+   * Handles the video bidder timeout. This happens when the bidder gets no
+   * response from the server in x amount of time.
+   * @function
+   * @returns {*}
+   */
+  onVideoBidTimeout = () => {
+    this._interfaceError('onVideoBidTimeout');
+  }
+
+  /**
    * Handles the bidders onBidWon event. This happens when the bidder bids back
    * from the server.
    * @function
@@ -110,7 +120,7 @@ class Bidder {
    * that it exceeds the ammount of time that it should take to
    * get bids back from the server.
    */
-  _fetchBids = (...props) => new Promise((resolve, reject) => {
+  _fetchDisplayBids = (...props) => new Promise((resolve, reject) => {
     if (!this.isReady) {
       console.log(`${this.name} Bidder is not ready`);
       return reject('Bidder is not ready.');
@@ -120,7 +130,7 @@ class Bidder {
       reject('Timed Out');
     }, this.safeTimeout);
 
-    return this.fetchBids(...props)
+    return this.fetchDisplayBids(...props)
       .then(resolve)
       .catch(reject)
       .finally(() => {
@@ -133,8 +143,8 @@ class Bidder {
    * @function
    * @returns {Promise}
    */
-  fetchBids = () => {
-    this._interfaceError('fetchBids');
+  fetchDisplayBids = () => {
+    this._interfaceError('fetchDisplayBids');
   };
 
   /**

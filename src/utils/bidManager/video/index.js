@@ -1,7 +1,10 @@
-import timedPromise, { status } from '../timedPromise';
+import timedPromise, { status } from '../../timedPromise';
 
-const processVideo = (bidProviders, bidTimeout, q) => new Promise((resolve) => {
+// TODO [] - Add tests
+const processVideo = (bidProviders, bidTimeout, q) => new Promise(resolve => {
   let promises = [];
+
+  if (q.isEmpty) return resolve('Que is empty');
 
   // Get the bid params.
   while (!q.isEmpty) {
@@ -17,7 +20,7 @@ const processVideo = (bidProviders, bidTimeout, q) => new Promise((resolve) => {
           if (!nextBids[key]) nextBids[key] = val;
         });
     }
-
+    
     const noBidsOrProviders = [bidProviders, Object.keys(nextBids)]
       .some(x => x.length === 0);
 
@@ -38,7 +41,8 @@ const processVideo = (bidProviders, bidTimeout, q) => new Promise((resolve) => {
           }
 
           if (res.status === status.rejected) {
-            bidProviders[i].onTimeout();
+            bidProviders[i].onVideoBidTimeout(res);
+            bidProviders[i].handleVideoResponse(undefined, callback);
           }
         });
       })
