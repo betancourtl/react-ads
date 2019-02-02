@@ -3,8 +3,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
+import prebid from '../../utils/Bidder/prebid';
 import bidManager from '../../utils/bidManager';
 import timedPromise from '../../utils/timedPromise';
+
 import {
   refresh,
   destroySlots,
@@ -86,6 +88,7 @@ class Provider extends Component {
     }
   }
 
+  // TODO [] - Add tests
   loadVideoScripts = (scripts, postFix = 'postfix') => {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(reject, 4000);
@@ -121,6 +124,7 @@ class Provider extends Component {
     });
   }
 
+  // TODO [] - Add tests
   loadVideoCss = () => {
     return new Promise((resolve, reject) => {
 
@@ -163,8 +167,8 @@ class Provider extends Component {
     });
   }
 
+  // TODO [] - Add tests
   loadVideoPlayer = cb => {
-
     if (this.videoStatus === FAIL) return;
     if (this.videoStatus === STARTED) return this.videoQue.push(cb);
     if (this.videoStatus === SUCCESS) return cb();
@@ -245,7 +249,7 @@ Provider.defaultProps = {
   targeting: {},
   enableAds: true,
   lazyOffset: 800,
-  bidProviders: [],
+  bidProviders: [prebid],
   bidTimeout: 1000,
   initTimeout: 350,
   refreshDelay: 200,

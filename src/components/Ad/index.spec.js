@@ -154,9 +154,10 @@ describe('<Ad />', () => {
       data: {
         bids: {
           id: 'ad-1',
-          sizes: [728, 90],
+          sizes: [728, 90],          
         },
         slot: 'Im a slot',
+        type: 'display',
       }
     });
   });

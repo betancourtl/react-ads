@@ -46,7 +46,7 @@ describe('<Provider />', () => {
     expect(enableAds).toBe(true);
     expect(lazyOffset).toBe(800);
     expect(targeting).toEqual({});
-    expect(bidProviders).toEqual([]);
+    expect(bidProviders[0] instanceof Bidder).toEqual(true);
     expect(bidTimeout).toEqual(1000);
     expect(refreshDelay).toEqual(200);
     expect(bidHandler).toBe(undefined);
@@ -105,6 +105,7 @@ describe('<Provider />', () => {
     pubsub.on('bidders-ready', biddersReady);
     const props = createProps({
       pubsub,
+      bidProviders: [],
     });
     const wrapper = mount(<Provider {...props} />);
     wrapper.instance();

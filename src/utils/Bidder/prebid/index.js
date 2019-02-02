@@ -1,8 +1,12 @@
 /* eslint-disable no-console */
-import Bidder from '../../src/utils/Bidder';
+import Bidder from '../';
 
 const bidder = new Bidder('prebid');
 
+/**
+ * Initializes the bidder.
+ * @returns {Promise}
+ */
 bidder.init = () => {
   if (bidder.isReady) return;
   var pbjs = window.pbjs || {};
@@ -22,14 +26,16 @@ bidder.onBidWon = () => { };
 
 bidder.onTimeout = () => { };
 
+bidder.onVideoBidTimeout = () => { };
+
 /**
- * Will fetch the prebid bids.
+ * Will fetch the prebid display bids.
  * @param {Number} timeout 
  * @param {Number} failSafeTimeout 
  * @param {Object} adUnits 
  * @returns {Promise}
  */
-bidder.fetchBids = adUnits => new Promise(resolve => {
+bidder.fetchDisplayBids = adUnits => new Promise(resolve => {
   var pbjs = window.pbjs || {};
   pbjs.que.push(function () {
     // Set new adUnits
@@ -68,5 +74,43 @@ bidder.handleResponse = ({ adUnitCodes }) => {
     });
   });
 };
+
+/**
+ * Will fetch the video bids and return an adTagURL.
+ * @param {Object} adUnit 
+ * @param {Object} - VideoJS params
+ * @returns {Promise}
+ */
+bidder.fetchVideoBids = (adUnit, params) => new Promise(resolve => {
+  const pbjs = window.pbjs || {};
+  pbjs.que = pbjs.que || [];
+  pbjs.que.push(() => {
+
+    // remove adUnit
+    window.pbjs.removeAdUnit(adUnit.code);
+    // add adUnit
+    pbjs.addAdUnits(adUnit);
+    pbjs.requestBids({
+      timeout: bidder.timeout,
+      bidsBackHandler: () => {
+        resolve({
+          adTagUrl: pbjs.adServers.dfp.buildVideoUrl({ adUnit, params })
+        });
+      }
+    });
+  });
+});
+
+/**
+ * @param {Object} param.adTagUrl - AdTag url returned from fetchVideoBids.
+ * @param {Function} callback - Callback function, this should probably be the 
+ * function used to initialize the videoPlayer with the adTagUrl
+ * @param {void}
+ */
+bidder.handleVideoResponse = ({ adTagUrl } = {}, callback) => {
+  console.log('tagUrl', adTagUrl);
+  callback(adTagUrl);
+};
+
 
 export default bidder;

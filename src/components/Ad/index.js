@@ -143,6 +143,7 @@ class Ad extends Component {
       data: {
         bids: this.bidHandler,
         slot: this.slot,
+        type: 'display',
       }
     });
     this.refreshedOnce = true;

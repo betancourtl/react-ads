@@ -4,6 +4,8 @@ import { AdsContext } from '../context';
 import connect from '../../hoc/connector';
 import inViewport from '../../utils/inViewport';
 
+// TODO [] - Add tests
+
 class VideoPlayer extends Component {
   constructor(props) {
     super(props);
@@ -23,45 +25,34 @@ class VideoPlayer extends Component {
 
   // Make the prebid API call.
   loadPlayer = adTagUrl => {
-    if (this.unmounted) return;
-    var options = {
+    this.player = window.videojs(this.videoNode, this.props.videoProps);
+    this.player.ima({
       ...this.props.imaProps,
       id: this.props.id,
-      adTagUrl,
-    };
-
-    this.player = window.videojs(this.videoNode, this.props.videoProps);
-    this.player.ima(options);
+      adTagUrl: this.props.imaProps.adTagUrl || adTagUrl,
+    });
   }
 
+  /**
+   * Will refresh this slot using the refresh function passed by the provider.
+   * component.
+   * @function   
+   * @returns {void}
+   */
   refresh = () => {
-    if (this.props.adTagUrl) return this.loadPlayer(this.props.adTagUrl);
-
-    const pbjs = window.pbjs || {};
-    pbjs.que = pbjs.que || [];
-    pbjs.que.push(() => {
-      
-      const videoAdUnit = this.props.bidHandler({
-        id: this.props.id,
-        playerSize: this.props.playerSize
-      }).prebid;
-      
-      pbjs.addAdUnits(videoAdUnit);
-
-      window.pbjs.requestBids({
-        adUnitCodes: [videoAdUnit.code],
-        bidsBackHandler: bids => {
-          var adTagUrl = pbjs.adServers.dfp.buildVideoUrl({
-            adUnit: videoAdUnit,
-            params: {
-              ...this.props.params,
-            }
-          });
-          this.loadPlayer(adTagUrl);
-        }
-      });
+    this.props.refresh({
+      priority: this.props.priority,
+      data: {
+        bids: this.props.bidHandler({
+          id: this.props.id,
+          playerSize: this.props.playerSize,
+        }),
+        params: this.props.params,
+        callback: this.loadPlayer,
+        type: 'video',
+      }
     });
-  };
+  }
 
   /**
 * Event listener for lazy loaded ads that triggers the refresh function when
@@ -69,7 +60,7 @@ class VideoPlayer extends Component {
 * @function   
 * @returns {void}
 */
-  refreshWhenVisible() {
+  refreshWhenVisible = () => {
     if (this.props.lazy && this.isVisible) {
       this.props.loadVideoPlayer(this.refresh);
       window.removeEventListener('scroll', this.refreshWhenVisible);
@@ -87,19 +78,23 @@ class VideoPlayer extends Component {
   // destroy player on unmount
   componentWillUnmount() {
     this.unmounted = true;
-    if (this.player) {
-      this.player.dispose();
-    }
+    if (this.player) this.player.dispose();
   }
 
+  /**
+   * Renders the videojs player. Do not remove the outer empty div. This is
+   * used when unmounting videojs.
+   */
   render() {
     return (
-      <div data-vjs-player>
-        <video
-          id={this.props.id}
-          ref={node => this.videoNode = node}
-          className="video-js"
-        />
+      <div>
+        <div data-vjs-player>
+          <video
+            id={this.props.id}
+            ref={node => this.videoNode = node}
+            className="video-js"
+          />
+        </div>
       </div>
     );
   }
@@ -107,6 +102,7 @@ class VideoPlayer extends Component {
 
 VideoPlayer.defaultProps = {
   id: '',
+  priority: 5,
   params: {},
   loadVideoPlayer: Promise.reject,
   imaProps: {
@@ -115,6 +111,7 @@ VideoPlayer.defaultProps = {
   videoProps: {
     autoplay: true,
     controls: true,
+    muted: true,
     sources: [
       {
         src: 'http://techslides.com/demos/sample-videos/small.webm',
@@ -139,7 +136,9 @@ VideoPlayer.defaultProps = {
 VideoPlayer.propTypes = {
   id: PropTypes.string,
   lazy: PropTypes.bool,
+  priority: PropTypes.number,
   lazyOffset: PropTypes.number,
+  refresh: PropTypes.func.isRequired,
   // https://support.google.com/admanager/answer/1068325?hl=en
   params: PropTypes.shape({
     // required
@@ -179,7 +178,7 @@ VideoPlayer.propTypes = {
     ppos: PropTypes.number,
     vpos: PropTypes.oneOf(['preroll', 'midroll', 'postroll']),
     mridx: PropTypes.string,
-    lip: PropTypes.bool,
+    lip: PropTypes.boolean,
     min_ad_duration: PropTypes.number,
     max_ad_duration: PropTypes.number,
     pmnd: PropTypes.number,
@@ -216,4 +215,9 @@ export {
   VideoPlayer,
 };
 
-export default connect(AdsContext, ({ loadVideoPlayer }) => ({ loadVideoPlayer }))(VideoPlayer);
+export default connect(AdsContext, ({ loadVideoPlayer, refresh }) => {
+  return {
+    refresh,
+    loadVideoPlayer,
+  };
+})(VideoPlayer);

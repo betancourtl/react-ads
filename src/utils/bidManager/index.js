@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
+import Queue from '../../lib/Queue';
 import JobQueue from '../../lib/JobQueue';
-import _timedPromise, { status } from '../timedPromise';
+import processVideo from './video';
+import processDisplay from './display';
+
+// TODO [] - Add tests
 
 /**
  * This function will make bid requests and then call the bidders functions
@@ -14,54 +18,20 @@ import _timedPromise, { status } from '../timedPromise';
  * @function
  * @returns {void}
  */
-export const processFn = (bidProviders, bidTimeout, refresh, timedPromise = _timedPromise) => (q, done) => {
-  const slots = [];
-  const nextBids = {};
+export const processFn = (bidProviders, bidTimeout, refresh) => (q, done) => {
+  const displayQueue = new Queue();
+  const videoQueue = new Queue();
 
   while (!q.isEmpty) {
-    const { slot, bids } = q.dequeue().data;
-    slots.push(slot);
-    
-    // test
-    if (bids) {
-      Object
-        .entries(bids)
-        .forEach(([key, val]) => {
-          if (!nextBids[key]) nextBids[key] = [];
-          nextBids[key].push(val);
-        });
-    }
+    const item = q.dequeue();
+    if (item.data.type === 'video') videoQueue.enqueue(item);
+    else if (item.data.type === 'display') displayQueue.enqueue(item);
   }
 
-  const noBidsOrProviders = [bidProviders, Object.keys(nextBids)]
-    .some(x => x.length === 0);
-
-  if (noBidsOrProviders) {
-    refresh(slots);
-    return done();
-  }
-
-  timedPromise(
-    bidProviders.map(bidder => bidder._fetchBids(nextBids[bidder.name])),
-    bidTimeout
-  )
-    .then(responses => {
-      responses.forEach((res, i) => {
-        if (res.status === status.fulfilled) {
-          bidProviders[i].onBidWon();
-          bidProviders[i].handleResponse(res.data);
-        }
-
-        if (res.status === status.rejected) {
-          bidProviders[i].onTimeout();
-        }
-      });
-    })
-    .catch(err => console.log('error', err))
-    .finally(() => {
-      refresh(slots);
-      done();
-    });
+  Promise.all([
+    processVideo(bidProviders, bidTimeout, videoQueue),
+    processDisplay(bidProviders, bidTimeout, refresh, displayQueue),
+  ]).then(done);
 };
 
 /** 
@@ -84,10 +54,10 @@ const bidManager = (props = {}) => {
   } = props;
 
   const refreshJob = new JobQueue({
+    canProcess: false,
     delay: refreshDelay,
     chunkSize: chunkSize,
     processFn: processFn(bidProviders, bidTimeout, refresh),
-    canProcess: false
   });
 
   // Wait for the bidders to be ready before starting the job.
