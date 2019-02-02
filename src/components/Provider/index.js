@@ -3,8 +3,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PubSub from '../../lib/Pubsub';
 import { AdsContext } from '../context';
+import prebid from '../../utils/Bidder/prebid';
 import bidManager from '../../utils/bidManager';
 import timedPromise from '../../utils/timedPromise';
+
 import {
   refresh,
   destroySlots,
@@ -244,7 +246,7 @@ Provider.defaultProps = {
   targeting: {},
   enableAds: true,
   lazyOffset: 800,
-  bidProviders: [],
+  bidProviders: [prebid],
   bidTimeout: 1000,
   initTimeout: 350,
   refreshDelay: 200,

@@ -27,7 +27,7 @@ export const processFn = (bidProviders, bidTimeout, refresh) => (q, done) => {
   }
 
   Promise.all([
-    processVideo(bidProviders, bidTimeout, refresh, videoQueue),
+    processVideo(bidProviders, bidTimeout, videoQueue),
     processDisplay(bidProviders, bidTimeout, refresh, displayQueue),
   ]).then(done);
 };

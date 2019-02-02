@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import Bidder from '../../src/utils/Bidder';
+import Bidder from '../';
 
 const bidder = new Bidder('prebid');
 
@@ -23,7 +23,7 @@ bidder.onBidWon = () => { };
 bidder.onTimeout = () => { };
 
 /**
- * Will fetch the prebid bids.
+ * Will fetch the prebid display bids.
  * @param {Number} timeout 
  * @param {Number} failSafeTimeout 
  * @param {Object} adUnits 
@@ -52,6 +52,37 @@ bidder.fetchBids = adUnits => new Promise(resolve => {
     });
   });
 });
+
+/**
+ * Will fetch the video bids and return an adTagURL.
+ * @param {Object} adUnit 
+ * @param {Object} - VideoJS params
+ * @returns {Promise}
+ */
+bidder.fetchVideoBids = (adUnit, params) => new Promise(resolve => {
+  const pbjs = window.pbjs || {};
+  pbjs.que = pbjs.que || [];
+  pbjs.que.push(() => {
+
+    // remove adUnit
+    window.pbjs.removeAdUnit(adUnit.code);
+    // add adUnit
+    pbjs.addAdUnits(adUnit);
+    pbjs.requestBids({
+      timeout: bidder.timeout,
+      bidsBackHandler: () => {
+        resolve({
+          adTagUrl: pbjs.adServers.dfp.buildVideoUrl({ adUnit, params })
+        });
+      }
+    });
+  });
+});
+
+bidder.handleVideoResponse = ({ adTagUrl } = {}, callback) => {
+  console.log('tagUrl', adTagUrl);
+  callback(adTagUrl);
+};
 
 /**
  * 

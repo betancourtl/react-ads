@@ -1,6 +1,5 @@
 import React from 'react';
 import { Video } from '../../src';
-import prebid from '../utils';
 import { storiesOf } from '@storybook/react';
 import Provider from '../../src/components/Provider';
 
@@ -20,11 +19,9 @@ class Story extends React.Component {
     });
 
     return (
-      <Provider
-        bidProviders={[prebid]}        
-      >
+      <Provider>
         <Video
-          id="video_1"
+          id="video1"
           bidHandler={bidHandler}
           playerSize={[640, 480]}
         />

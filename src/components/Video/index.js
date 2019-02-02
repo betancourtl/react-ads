@@ -23,14 +23,12 @@ class VideoPlayer extends Component {
 
   // Make the prebid API call.
   loadPlayer = adTagUrl => {
-    var options = {
+    this.player = window.videojs(this.videoNode, this.props.videoProps);
+    this.player.ima({
       ...this.props.imaProps,
       id: this.props.id,
       adTagUrl: this.props.imaProps.adTagUrl || adTagUrl,
-    };
-
-    this.player = window.videojs(this.videoNode, this.props.videoProps);
-    this.player.ima(options);
+    });
   }
 
   /**
@@ -43,34 +41,16 @@ class VideoPlayer extends Component {
     this.props.refresh({
       priority: this.props.priority,
       data: {
-        bids: this.bidHandler,
-        id: this.id,
-        callback: this.handleRefresh,
+        bids: this.props.bidHandler({
+          id: this.props.id,
+          playerSize: this.props.playerSize,
+        }),
+        params: this.props.params,
+        callback: this.loadPlayer,
         type: 'video',
       }
     });
   }
-
-  handleRefresh = () => {
-    console.log('handleRefresh called');
-    const pbjs = window.pbjs || {};
-    pbjs.que = pbjs.que || [];
-    pbjs.que.push(() => {
-      const videoAdUnit = this.props.bidHandler(this.props.id, this.props.playerSize).prebid;
-      pbjs.addAdUnits(videoAdUnit);
-      window.pbjs.requestBids({
-        bidsBackHandler: bids => {
-          var adTagUrl = pbjs.adServers.dfp.buildVideoUrl({
-            adUnit: videoAdUnit,
-            params: {
-              ...this.props.params,
-            }
-          });
-          this.loadPlayer(adTagUrl);
-        }
-      });
-    });
-  };
 
   /**
 * Event listener for lazy loaded ads that triggers the refresh function when

@@ -791,7 +791,7 @@ What needs to happen?
 
 1. Refresh is called and gets stored in the the heap.
 2. The heap is processed and video calls are made.
-3. The Prebid video handler will process the video bids and execures the callback.
-
+3. The Prebid video handler will process the video bids and executes the callback.
+4. Only support prebid videos bids for now.
 
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)

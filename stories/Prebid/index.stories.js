@@ -1,7 +1,6 @@
 import React from 'react';
 import { Provider, Ad } from '../../src';
 import { storiesOf } from '@storybook/react';
-import prebid from '../utils';
 
 const bidHandler = ({ id, sizes }) => ({
   prebid: {
@@ -24,7 +23,6 @@ class Story extends React.Component {
   render() {
     return (
       <Provider
-        bidProviders={[prebid]}
         bidHandler={bidHandler}
         chunkSize={5}
         adUnitPath="header-bid-tag-0"

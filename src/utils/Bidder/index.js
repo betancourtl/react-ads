@@ -115,7 +115,7 @@ class Bidder {
       console.log(`${this.name} Bidder is not ready`);
       return reject('Bidder is not ready.');
     }
-    
+
     const id = setTimeout(() => {
       reject('Timed Out');
     }, this.safeTimeout);
@@ -135,6 +135,38 @@ class Bidder {
    */
   fetchBids = () => {
     this._interfaceError('fetchBids');
+  };
+
+  /**
+   * Will automatically handle timing out the promise in the case
+   * that it exceeds the ammount of time that it should take to
+   * get bids back from the server.
+   */
+  _fetchVideoBids = (...props) => new Promise((resolve, reject) => {
+    if (!this.isReady) {
+      console.log(`${this.name} Bidder is not ready`);
+      return reject('Bidder is not ready.');
+    }
+
+    const id = setTimeout(() => {
+      reject('Timed Out');
+    }, this.safeTimeout);
+
+    return this.fetchVideoBids(...props)
+      .then(resolve)
+      .catch(reject)
+      .finally(() => {
+        clearTimeout(id);
+      });
+  });
+
+  /**
+   * Will make the API call to fetch the bids.
+   * @function
+   * @returns {Promise}
+   */
+  fetchVideoBids = () => {
+    this._interfaceError('fetchVideoBids');
   };
 }
 
