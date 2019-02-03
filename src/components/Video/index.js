@@ -10,6 +10,7 @@ class VideoPlayer extends Component {
   constructor(props) {
     super(props);
     this.unmounted = false;
+    this.refreshedOnce = false;
     this.refreshWhenVisible = this.refreshWhenVisible.bind(this);
   }
 
@@ -29,7 +30,7 @@ class VideoPlayer extends Component {
     this.player.ima({
       ...this.props.imaProps,
       id: this.props.id,
-      adTagUrl: this.props.imaProps.adTagUrl || adTagUrl,
+      adTagUrl,
     });
   }
 
@@ -52,6 +53,7 @@ class VideoPlayer extends Component {
         type: 'video',
       }
     });
+    this.refreshedOnce = true;
   }
 
   /**
@@ -61,7 +63,7 @@ class VideoPlayer extends Component {
 * @returns {void}
 */
   refreshWhenVisible = () => {
-    if (this.props.lazy && this.isVisible) {
+    if (this.props.lazy && this.isVisible && !this.refreshedOnce) {
       this.props.loadVideoPlayer(this.refresh);
       window.removeEventListener('scroll', this.refreshWhenVisible);
     }
@@ -106,7 +108,7 @@ VideoPlayer.defaultProps = {
   params: {},
   loadVideoPlayer: Promise.reject,
   imaProps: {
-    adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod%26deployment%3Dgmf-js&cmsid=496&vid=short_onecue&correlator=',
+    // adTagUrl: 'http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=xml_vmap1&unviewed_position_start=1&cust_params=sample_ar%3Dpremidpostpod%26deployment%3Dgmf-js&cmsid=496&vid=short_onecue&correlator=',
   },
   videoProps: {
     autoplay: true,

@@ -21,7 +21,6 @@ import processDisplay from './display';
 export const processFn = (bidProviders, bidTimeout, refresh) => (q, done) => {
   const displayQueue = new Queue();
   const videoQueue = new Queue();
-
   while (!q.isEmpty) {
     const item = q.dequeue();
     if (item.data.type === 'video') videoQueue.enqueue(item);

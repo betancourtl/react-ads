@@ -42,7 +42,6 @@ const processVideo = (bidProviders, bidTimeout, q) => new Promise(resolve => {
 
           if (res.status === status.rejected) {
             bidProviders[i].onVideoBidTimeout(res);
-            bidProviders[i].handleVideoResponse(undefined, callback);
           }
         });
       })

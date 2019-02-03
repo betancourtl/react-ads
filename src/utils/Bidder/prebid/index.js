@@ -14,7 +14,7 @@ bidder.init = () => {
 
   return new Promise((resolve, reject) => {
     const el = document.createElement('script');
-    el.src = `https://acdn.adnxs.com/prebid/not-for-prod/1/prebid.js?${Math.random(1, 10)}`;
+    el.src = 'https://acdn.adnxs.com/prebid/not-for-prod/1/prebid.js';
     el.async = true;
     el.onload = resolve;
     el.onerror = reject;
@@ -40,6 +40,8 @@ bidder.fetchDisplayBids = adUnits => new Promise(resolve => {
   pbjs.que.push(function () {
     // Set new adUnits
     const adUnitCodes = adUnits.map(x => x.code);
+    // remove the adUnits
+    adUnitCodes.forEach(adUnitCode => window.pbjs.removeAdUnit(adUnitCode));
     pbjs.addAdUnits(adUnits);
 
     // Make the request
@@ -52,8 +54,6 @@ bidder.fetchDisplayBids = adUnits => new Promise(resolve => {
           bids: pbjs.getBidResponses(),
           adUnitCodes,
         });
-        // remove the adUnits
-        adUnitCodes.forEach(adUnitCode => window.pbjs.removeAdUnit(adUnitCode));
       },
     });
   });
@@ -85,14 +85,16 @@ bidder.fetchVideoBids = (adUnit, params) => new Promise(resolve => {
   const pbjs = window.pbjs || {};
   pbjs.que = pbjs.que || [];
   pbjs.que.push(() => {
-
+    console.log('fetching video ads');
     // remove adUnit
     window.pbjs.removeAdUnit(adUnit.code);
     // add adUnit
     pbjs.addAdUnits(adUnit);
     pbjs.requestBids({
+      adUnitCodes: [adUnit.code],
       timeout: bidder.timeout,
-      bidsBackHandler: () => {
+      bidsBackHandler: (bids) => {
+        console.log('video bids', bids);
         resolve({
           adTagUrl: pbjs.adServers.dfp.buildVideoUrl({ adUnit, params })
         });
