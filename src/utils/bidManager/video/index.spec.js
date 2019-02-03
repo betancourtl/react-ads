@@ -90,7 +90,6 @@ describe('video', () => {
     // timesout the promise in 10ms
     const promise = processVideo([bidder], 10, q);
     promise.then(res => {
-      expect(bidder.handleVideoResponse).toBeCalledTimes(1);
       expect(bidder.onVideoBidTimeout).toBeCalledTimes(1);
       expect(bidder.onVideoBidTimeout).toBeCalledWith({ err: 'Timed out in 10ms.', status: 'rejected' });
       done();
