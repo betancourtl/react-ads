@@ -65,6 +65,8 @@ class Ad extends Component {
      *  @type {String}
      */
     this.id = props.id || props.generateId(props.type);
+    
+    // this.prefetch();
   }
 
   /**
@@ -138,15 +140,35 @@ class Ad extends Component {
    * @returns {void}
    */
   refresh() {
+    console.log('refreshing!');
     this.props.refresh({
       priority: this.props.priority,
       data: {
-        bids: this.bidHandler,
-        slot: this.slot,
+        id: this.id,
         type: 'display',
+        slot: this.slot,
+        bids: this.bidHandler,
       }
     });
     this.refreshedOnce = true;
+  }
+
+  /**
+ * Will refresh this slot using the refresh function passed by the provider.
+ * component.
+ * @function   
+ * @returns {void}
+ */
+  prefetch = () => {
+    console.log('prefetch called');
+    this.props.refresh({
+      priority: this.props.priority,
+      data: {
+        id: this.id,
+        bids: this.bidHandler,
+        type: 'prefetch',
+      }
+    });
   }
 
   /**

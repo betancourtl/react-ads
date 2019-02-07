@@ -27,18 +27,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
  * @param {Queue} q 
  * @returns {Promise}
  */
-var processDisplay = function processDisplay(bidProviders, bidTimeout, refresh, q) {
+var processDisplay = function processDisplay(bidProviders, bidTimeout, q) {
   return new Promise(function (resolve) {
-    var slots = [];
     var nextBids = {}; // tested
 
     if (q.isEmpty) return resolve();
 
     while (!q.isEmpty) {
-      var _q$dequeue$data = q.dequeue().data,
-          slot = _q$dequeue$data.slot,
-          bids = _q$dequeue$data.bids;
-      slots.push(slot);
+      var bids = q.dequeue().data.bids;
 
       if (bids) {
         Object.entries(bids).forEach(function (_ref) {
@@ -57,12 +53,8 @@ var processDisplay = function processDisplay(bidProviders, bidTimeout, refresh, 
     });
 
     if (noBidsOrProviders) {
-      refresh(slots);
       return resolve();
-    } // expect bidder.fetchDisplayBids to be called.
-    // expect bidder.handleResponse to be called.
-    // expect refresh.toBeCalledTimes(1)
-
+    }
 
     (0, _timedPromise.default)(bidProviders.map(function (bidder) {
       return bidder._fetchDisplayBids(nextBids[bidder.name]);
@@ -80,7 +72,6 @@ var processDisplay = function processDisplay(bidProviders, bidTimeout, refresh, 
     }).catch(function (err) {
       return console.log('error', err);
     }).finally(function () {
-      refresh(slots);
       resolve();
     });
   });

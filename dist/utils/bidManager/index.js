@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.processFn = void 0;
+exports.default = exports.getBidsFn = void 0;
 
 var _Queue = _interopRequireDefault(require("../../lib/Queue"));
 
@@ -13,8 +13,6 @@ var _video = _interopRequireDefault(require("./video"));
 
 var _display = _interopRequireDefault(require("./display"));
 
-var _prefetch = _interopRequireDefault(require("./prefetch"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint-disable no-console */
@@ -22,26 +20,35 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /**
  * This function will make bid requests and then call the bidders functions
  * for callbacks for a successfull bid call.
- * @param {Function} props.refresh - Googletag refresh fn.
  * @param {Bidder[]} props.bidProviders - Array of bidProviders.
  * @param {Number} props.bidTimeout - Ammount of time to wait for bidders.
- * @param {Function} props.dispatchBidders - function that fetches the bids.
  * @param {Queue} q - The items that the job passed to thie processing fn.
  * @param {Promise.resolve} done - Resolves a promise and ends the job.
  * @function
- * @returns {void}
+ * @returns {[]Slot}
  */
-var processFn = function processFn(bidProviders, bidTimeout, refresh) {
+var getBidsFn = function getBidsFn(bidProviders, bidTimeout) {
   return function (q, done) {
     var displayQueue = new _Queue.default();
     var videoQueue = new _Queue.default();
+    var slots = [];
+    var ids = [];
 
     while (!q.isEmpty) {
       var item = q.dequeue();
-      if (item.data.type === 'video') videoQueue.enqueue(item);else if (item.data.type === 'display') displayQueue.enqueue(item);
+      if (item.data.type === 'video') videoQueue.enqueue(item);else if (item.data.type === 'display') {
+        if (item.data.slot) slots.push(item.data.slot);
+        if (item.data.id) ids.push(item.data.id);
+        displayQueue.enqueue(item);
+      }
     }
 
-    Promise.all([(0, _video.default)(bidProviders, bidTimeout, videoQueue), (0, _display.default)(bidProviders, bidTimeout, refresh, displayQueue)]).then(done);
+    Promise.all([(0, _video.default)(bidProviders, bidTimeout, videoQueue), (0, _display.default)(bidProviders, bidTimeout, displayQueue)]).then(function () {
+      return done({
+        slots: slots,
+        ids: ids
+      });
+    });
   };
 };
 /** 
@@ -55,7 +62,7 @@ var processFn = function processFn(bidProviders, bidTimeout, refresh) {
  */
 
 
-exports.processFn = processFn;
+exports.getBidsFn = getBidsFn;
 
 var bidManager = function bidManager() {
   var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -70,34 +77,124 @@ var bidManager = function bidManager() {
       refreshDelay = _props$refreshDelay === void 0 ? 100 : _props$refreshDelay,
       _props$onBiddersReady = props.onBiddersReady,
       onBiddersReady = _props$onBiddersReady === void 0 ? function () {} : _props$onBiddersReady;
-  var state = {
-    requested: new _Queue.default(),
-    available: new Set()
-  }; // if prefetched stop the refresh fn from going into refreshJob, apply the bids
-  // and then call refresh.
-  // if prefetching stop the refresh throw the id into the slotQue, and when the
-  // job ends check to see if the slotQue has any of the fetched bids.
-  // if not prefetched then prefecth the bids.
-
-  var prefetchJob = new _JobQueue.default({
+  var waiting = {};
+  var prebidJob = new _JobQueue.default({
     canProcess: false,
     delay: 10,
     chunkSize: chunkSize,
-    processFn: (0, _prefetch.default)(bidProviders, bidTimeout)
-  }); // After every prefetch job check to see if anyone waiting needs to be updated.
+    processFn: getBidsFn(bidProviders, bidTimeout)
+  });
+  prebidJob.on('jobEnd', function (_ref) {
+    var ids = _ref.ids;
+    console.log('ids', ids);
+    console.log('waiting', waiting);
+    var slots = [];
+    var idArr = [];
+    ids.forEach(function (id) {
+      var item = waiting[id];
+      item.status = 'success';
 
+      if (item.slot) {
+        slots.push(item.slot);
+        idArr.push(id);
+        delete waiting[id];
+      }
+    });
+    if (!slots.length) return;
+    var pbjs = window.pbjs || {};
+    var googletag = window.googletag || {};
+    googletag.cmd.push(function () {
+      pbjs.que.push(function () {
+        console.log('setting targeting');
+        pbjs.setTargetingForGPTAsync(idArr);
+        refreshJob.add({
+          priority: 1,
+          data: slots
+        });
+      });
+    });
+  });
   var refreshJob = new _JobQueue.default({
+    canProcess: false,
+    delay: 10,
+    chunkSize: chunkSize,
+    processFn: function processFn(q, done) {
+      while (!q.isEmpty) {
+        var slots = q.dequeue().data.slots;
+
+        if (slots) {
+          refresh(slots);
+        }
+      }
+
+      done();
+    }
+  });
+  var bidJob = new _JobQueue.default({
     canProcess: false,
     delay: refreshDelay,
     chunkSize: chunkSize,
-    processFn: processFn(bidProviders, bidTimeout, refresh)
+    processFn: getBidsFn(bidProviders, bidTimeout)
+  });
+  bidJob.on('jobEnd', function (results) {
+    if (!results || !results.slots) return;
+    var slots = results.slots;
+    if (!slots.length) return;
+    refreshJob.add({
+      priority: 1,
+      data: {
+        slots: slots
+      }
+    });
   }); // Wait for the bidders to be ready before starting the job.
 
-  onBiddersReady(prefetchJob.start);
+  onBiddersReady(bidJob.start);
+  onBiddersReady(prebidJob.start);
   onBiddersReady(refreshJob.start);
+
+  var refreshFn = function refreshFn(message) {
+    var id = message.data.id;
+
+    if (message.data.type === 'prefetch') {
+      waiting[id] = {
+        slot: null,
+        status: 'fetching'
+      };
+      message.data.type = 'display';
+      return prebidJob.add(message);
+    }
+
+    if (message.data.type === 'video') {
+      return bidJob.add(message);
+    } else if (message.data.type === 'display') {
+      // check to see if it has prefetched bids.
+      var found = waiting[id];
+      if (!found) return bidJob.add(message);
+
+      if (found.status === 'fetching') {
+        found.slot = message.data.slot; // console.log('display ad is being fetched', message.data.id);
+
+        return;
+      }
+
+      if (found.status === 'success') {
+        found.slot = message.data.slot;
+        var pbjs = window.pbjs || {};
+        var googletag = window.googletag || {};
+        googletag.cmd.push(function () {
+          pbjs.que.push(function () {
+            console.log('display ad success is being refreshsed', id);
+            delete waiting[id];
+            pbjs.setTargetingForGPTAsync([id]);
+            refresh([message.data.slot]);
+          });
+        });
+      }
+    }
+  };
+
   return {
-    refresh: refreshJob.add,
-    prefetch: prefetchJob.add
+    refresh: refreshFn
   };
 };
 

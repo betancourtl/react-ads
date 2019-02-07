@@ -10,6 +10,7 @@ class Prefetch extends React.Component {
   constructor(props) {
     super(props);
     // Call prefetch right away.
+    console.log('prefetch running');
     this.prefetch();
   }
 
@@ -19,7 +20,7 @@ class Prefetch extends React.Component {
    * @returns {Function | Null}
    */
   get bidHandler() {
-    return this.props.bidHandler({ id: this.props.id });
+    return this.props.bidHandler({ id: this.props.id, sizes: this.props.sizes });
   }
 
   /**
@@ -29,7 +30,8 @@ class Prefetch extends React.Component {
    * @returns {void}
    */
   prefetch() {
-    this.props.prefetch({
+    console.log('prefetch called');
+    this.props.refresh({
       priority: this.props.priority,
       data: {
         id: this.props.id,
@@ -39,36 +41,37 @@ class Prefetch extends React.Component {
     });
   }
 
+  componentDidMount() {
+    console.log('component mounted');
+  }
+
   render() {
-    return null;
+    return <div>Hello</div>;
   }
 }
 
 Prefetch.defaultProps = {
   id: '',
   priority: 1,
-  prefetch: () => { },
+  refresh: () => { },
   bidHandler: () => { },
 };
 
 Prefetch.propTypes = {
   priority: PropTypes.number,
   id: PropTypes.string.isRequired,
-  prefetch: PropTypes.func.isRequired,
+  refresh: PropTypes.func.isRequired,
   bidHandler: PropTypes.func.isRequired,
 };
 
-const MaybeHiddenAd = hideHOC(Prefetch);
-
-export const stateToProps = ({ prefetch }) => {
+export const stateToProps = ({ refresh }) => {
   return {
-    prefetch,
+    refresh,
   };
 };
 
 export {
   Prefetch,
-  MaybeHiddenAd,
 };
 
-export default connect(AdsContext, stateToProps)(MaybeHiddenAd);
+export default connect(AdsContext, stateToProps)(Prefetch);

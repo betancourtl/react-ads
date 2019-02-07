@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.MaybeHiddenAd = exports.Prefetch = exports.stateToProps = void 0;
+exports.default = exports.Prefetch = exports.stateToProps = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
@@ -47,6 +47,8 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Prefetch).call(this, props)); // Call prefetch right away.
 
+    console.log('prefetch running');
+
     _this.prefetch();
 
     return _this;
@@ -68,7 +70,8 @@ function (_React$Component) {
      * @returns {void}
      */
     value: function prefetch() {
-      this.props.prefetch({
+      console.log('prefetch called');
+      this.props.refresh({
         priority: this.props.priority,
         data: {
           id: this.props.id,
@@ -78,15 +81,21 @@ function (_React$Component) {
       });
     }
   }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      console.log('component mounted');
+    }
+  }, {
     key: "render",
     value: function render() {
-      return null;
+      return _react.default.createElement("div", null, "Hello");
     }
   }, {
     key: "bidHandler",
     get: function get() {
       return this.props.bidHandler({
-        id: this.props.id
+        id: this.props.id,
+        sizes: this.props.sizes
       });
     }
   }]);
@@ -98,27 +107,25 @@ exports.Prefetch = Prefetch;
 Prefetch.defaultProps = {
   id: '',
   priority: 1,
-  prefetch: function prefetch() {},
+  refresh: function refresh() {},
   bidHandler: function bidHandler() {}
 };
 Prefetch.propTypes = {
   priority: _propTypes.default.number,
   id: _propTypes.default.string.isRequired,
-  prefetch: _propTypes.default.func.isRequired,
+  refresh: _propTypes.default.func.isRequired,
   bidHandler: _propTypes.default.func.isRequired
 };
-var MaybeHiddenAd = (0, _hide.default)(Prefetch);
-exports.MaybeHiddenAd = MaybeHiddenAd;
 
 var stateToProps = function stateToProps(_ref) {
-  var prefetch = _ref.prefetch;
+  var refresh = _ref.refresh;
   return {
-    prefetch: prefetch
+    refresh: refresh
   };
 };
 
 exports.stateToProps = stateToProps;
 
-var _default = (0, _connector.default)(_context.AdsContext, stateToProps)(MaybeHiddenAd);
+var _default = (0, _connector.default)(_context.AdsContext, stateToProps)(Prefetch);
 
 exports.default = _default;

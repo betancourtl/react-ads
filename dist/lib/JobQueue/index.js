@@ -91,10 +91,10 @@ var JobQueue = function JobQueue(props) {
 
       _this.emit.jobStart();
 
-      var done = function done() {
+      var done = function done(x) {
         resolve();
 
-        _this.emit.jobEnd();
+        _this.emit.jobEnd(x);
       };
 
       var q = _this.grab();
@@ -159,8 +159,8 @@ var JobQueue = function JobQueue(props) {
     jobStart: function jobStart() {
       return _this.pubsub.emit('jobStart');
     },
-    jobEnd: function jobEnd() {
-      return _this.pubsub.emit('jobEnd');
+    jobEnd: function jobEnd(x) {
+      return _this.pubsub.emit('jobEnd', x);
     }
   };
 }

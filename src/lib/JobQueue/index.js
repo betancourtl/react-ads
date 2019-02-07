@@ -59,7 +59,7 @@ class JobQueue {
      */
     this.emit = {
       jobStart: () => this.pubsub.emit('jobStart'),
-      jobEnd: () => this.pubsub.emit('jobEnd'),
+      jobEnd: (x) => this.pubsub.emit('jobEnd', x),
     };
   }
 
@@ -155,9 +155,9 @@ class JobQueue {
     this.isProcessing = true;
     this.emit.jobStart();
     
-    const done = () => {
+    const done = x => {
       resolve();
-      this.emit.jobEnd();
+      this.emit.jobEnd(x);
     };
     
     const q = this.grab();

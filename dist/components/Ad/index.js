@@ -79,6 +79,19 @@ function (_Component) {
       return typeof maybeFn === 'function';
     });
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "prefetch", function () {
+      console.log('prefetch called');
+
+      _this.props.refresh({
+        priority: _this.props.priority,
+        data: {
+          id: _this.id,
+          bids: _this.bidHandler,
+          type: 'prefetch'
+        }
+      });
+    });
+
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "breakPointRefresh", function () {
       if (_this.canRefresh) _this.refresh();
     });
@@ -168,7 +181,8 @@ function (_Component) {
      *  @type {String}
      */
 
-    _this.id = _props.id || _props.generateId(_props.type);
+    _this.id = _props.id || _props.generateId(_props.type); // this.prefetch();
+
     return _this;
   }
   /**
@@ -201,21 +215,24 @@ function (_Component) {
   }, {
     key: "refresh",
     value: function refresh() {
+      console.log('refreshing!');
       this.props.refresh({
         priority: this.props.priority,
         data: {
-          bids: this.bidHandler,
+          id: this.id,
+          type: 'display',
           slot: this.slot,
-          type: 'display'
+          bids: this.bidHandler
         }
       });
       this.refreshedOnce = true;
     }
     /**
-     * Will trigger a refresh whenever this slot enters into a new breakpoint.
-     * @funtion
-     * @returns {void}
-     */
+    * Will refresh this slot using the refresh function passed by the provider.
+    * component.
+    * @function   
+    * @returns {void}
+    */
 
   }, {
     key: "refreshWhenVisible",

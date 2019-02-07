@@ -3,7 +3,6 @@ import Queue from '../../lib/Queue';
 import JobQueue from '../../lib/JobQueue';
 import processVideo from './video';
 import processDisplay from './display';
-import prefetchBids from './prefetch';
 
 /**
  * This function will make bid requests and then call the bidders functions
@@ -15,7 +14,7 @@ import prefetchBids from './prefetch';
  * @function
  * @returns {[]Slot}
  */
-export const getBidsFn = (bidProviders, bidTimeout) => (q, done) => new Promise((resolve) => {
+export const getBidsFn = (bidProviders, bidTimeout) => (q, done) => {
   const displayQueue = new Queue();
   const videoQueue = new Queue();
   const slots = [];
@@ -25,8 +24,8 @@ export const getBidsFn = (bidProviders, bidTimeout) => (q, done) => new Promise(
     const item = q.dequeue();
     if (item.data.type === 'video') videoQueue.enqueue(item);
     else if (item.data.type === 'display') {
-      if (item.slot) slots.push(item.slot);
-      if (item.id) ids.push(item.id);
+      if (item.data.slot) slots.push(item.data.slot);
+      if (item.data.id) ids.push(item.data.id);
       displayQueue.enqueue(item);
     }
   }
@@ -34,11 +33,8 @@ export const getBidsFn = (bidProviders, bidTimeout) => (q, done) => new Promise(
   Promise.all([
     processVideo(bidProviders, bidTimeout, videoQueue),
     processDisplay(bidProviders, bidTimeout, displayQueue),
-  ]).then(() => {
-    resolve({ slots, ids });
-    done();
-  });
-});
+  ]).then(() => done({ slots, ids }));
+};
 
 /** 
  * @param {Function} props.refresh - Googletag refresh fn.
@@ -65,23 +61,39 @@ const bidManager = (props = {}) => {
     canProcess: false,
     delay: 10,
     chunkSize: chunkSize,
-    processFn: getBidsFn(bidProviders, bidTimeout).then(({ ids }) => {
-      const slots = [];
+    processFn: getBidsFn(bidProviders, bidTimeout)
+  });
 
-      ids.forEach(id => {
-        const item = waiting[id];
-        if (!item) return;
-        if (item.slot) slots.push(item.slot);
+  prebidJob.on('jobEnd', ({ ids }) => {
+    console.log('ids', ids);
+    console.log('waiting', waiting);
+    const slots = [];
+    const idArr = [];
+
+    ids.forEach(id => {
+      const item = waiting[id];
+      item.status = 'success';
+      if (item.slot) {
+        slots.push(item.slot);
+        idArr.push(id);
         delete waiting[id];
-      });
+      }
+    });
 
-      if (!slots.length) return;
+    if (!slots.length) return;
 
-      refreshJob.add({
-        priority: 1,
-        data: slots,
+    var pbjs = window.pbjs || {};
+    var googletag = window.googletag || {};
+    googletag.cmd.push(function () {
+      pbjs.que.push(function () {
+        console.log('setting targeting');
+        pbjs.setTargetingForGPTAsync(idArr);
+        refreshJob.add({
+          priority: 1,
+          data: slots,
+        });
       });
-    }),
+    });
   });
 
   const refreshJob = new JobQueue({
@@ -89,25 +101,28 @@ const bidManager = (props = {}) => {
     delay: 10,
     chunkSize: chunkSize,
     processFn: (q, done) => {
-      const slots = [];
       while (!q.isEmpty) {
-        const slot = q.dequeue().data;
-        slots.push(slot);
+        const slots = q.dequeue().data.slots;
+        if (slots) {
+          refresh(slots);
+        }
       }
-      refresh(slots);
       done();
     },
   });
 
-  // fetche the bids and returns the slots.
   const bidJob = new JobQueue({
     canProcess: false,
     delay: refreshDelay,
     chunkSize: chunkSize,
-    processFn: getBidsFn(bidProviders, bidTimeout).then(({ slots }) => {
-      if (!slots.length) return;
-      refreshJob.add({ priority: 1, slots });
-    }),
+    processFn: getBidsFn(bidProviders, bidTimeout)
+  });
+
+  bidJob.on('jobEnd', (results) => {
+    if (!results || !results.slots) return;
+    const { slots } = results;
+    if (!slots.length) return;
+    refreshJob.add({ priority: 1, data: { slots } });
   });
 
   // Wait for the bidders to be ready before starting the job.
@@ -116,22 +131,22 @@ const bidManager = (props = {}) => {
   onBiddersReady(refreshJob.start);
 
   const refreshFn = message => {
-    const id = message.id;
+    const id = message.data.id;
 
-    if (message.type === 'prefetch') {
+    if (message.data.type === 'prefetch') {
       waiting[id] = {
         slot: null,
         status: 'fetching',
       };
-
+      message.data.type = 'display';
       return prebidJob.add(message);
     }
 
-    else if (message.type === 'video') {
+    if (message.data.type === 'video') {
       return bidJob.add(message);
     }
 
-    else if (message.type === 'display') {
+    else if (message.data.type === 'display') {
       // check to see if it has prefetched bids.
       const found = waiting[id];
 
@@ -139,6 +154,7 @@ const bidManager = (props = {}) => {
 
       if (found.status === 'fetching') {
         found.slot = message.data.slot;
+        // console.log('display ad is being fetched', message.data.id);
         return;
       }
 
@@ -148,9 +164,10 @@ const bidManager = (props = {}) => {
         var googletag = window.googletag || {};
         googletag.cmd.push(function () {
           pbjs.que.push(function () {
+            console.log('display ad success is being refreshsed', id);
             delete waiting[id];
             pbjs.setTargetingForGPTAsync([id]);
-            refresh([message.slot]);
+            refresh([message.data.slot]);
           });
         });
       }
