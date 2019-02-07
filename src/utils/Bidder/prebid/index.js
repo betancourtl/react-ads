@@ -75,6 +75,10 @@ bidder.handleResponse = ({ adUnitCodes }) => {
   });
 };
 
+bidder.onVideoBidTimeout = () => {
+
+};
+
 /**
  * Will fetch the video bids and return an adTagURL.
  * @param {Object} adUnit 

@@ -66,7 +66,7 @@ class Ad extends Component {
      */
     this.id = props.id || props.generateId(props.type);
     
-    // this.prefetch();
+    this.prefetch();
   }
 
   /**

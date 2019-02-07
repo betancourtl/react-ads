@@ -2,7 +2,6 @@
 /* eslint-disable react/no-find-dom-node */
 import React from 'react';
 import PropTypes from 'prop-types';
-import hideHOC from '../../hoc/hide';
 import { AdsContext } from '../context';
 import connect from '../../hoc/connector';
 
@@ -30,7 +29,6 @@ class Prefetch extends React.Component {
    * @returns {void}
    */
   prefetch() {
-    console.log('prefetch called');
     this.props.refresh({
       priority: this.props.priority,
       data: {

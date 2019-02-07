@@ -65,8 +65,6 @@ const bidManager = (props = {}) => {
   });
 
   prebidJob.on('jobEnd', ({ ids }) => {
-    console.log('ids', ids);
-    console.log('waiting', waiting);
     const slots = [];
     const idArr = [];
 
@@ -86,11 +84,12 @@ const bidManager = (props = {}) => {
     var googletag = window.googletag || {};
     googletag.cmd.push(function () {
       pbjs.que.push(function () {
-        console.log('setting targeting');
         pbjs.setTargetingForGPTAsync(idArr);
         refreshJob.add({
           priority: 1,
-          data: slots,
+          data: {
+            slots,
+          }
         });
       });
     });
@@ -102,7 +101,8 @@ const bidManager = (props = {}) => {
     chunkSize: chunkSize,
     processFn: (q, done) => {
       while (!q.isEmpty) {
-        const slots = q.dequeue().data.slots;
+        const item = q.dequeue();
+        const slots = item.data.slots;
         if (slots) {
           refresh(slots);
         }
@@ -150,11 +150,12 @@ const bidManager = (props = {}) => {
       // check to see if it has prefetched bids.
       const found = waiting[id];
 
-      if (!found) return bidJob.add(message);
+      if (!found) {
+        return bidJob.add(message);
+      }
 
       if (found.status === 'fetching') {
         found.slot = message.data.slot;
-        // console.log('display ad is being fetched', message.data.id);
         return;
       }
 
@@ -164,7 +165,6 @@ const bidManager = (props = {}) => {
         var googletag = window.googletag || {};
         googletag.cmd.push(function () {
           pbjs.que.push(function () {
-            console.log('display ad success is being refreshsed', id);
             delete waiting[id];
             pbjs.setTargetingForGPTAsync([id]);
             refresh([message.data.slot]);
