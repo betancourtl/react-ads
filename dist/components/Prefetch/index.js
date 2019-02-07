@@ -3,15 +3,21 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.connect = void 0;
+exports.default = exports.MaybeHiddenAd = exports.Prefetch = exports.stateToProps = void 0;
 
 var _react = _interopRequireDefault(require("react"));
+
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
+var _hide = _interopRequireDefault(require("../../hoc/hide"));
+
+var _context = require("../context");
+
+var _connector = _interopRequireDefault(require("../../hoc/connector"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -29,43 +35,90 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-/**
- * Will connect a component with at Provider component.
- * @param {React.Context} Context - Receive state from the parent component.
- * @param {Function} StateToProps - Component to pass the provider values.
- * @param {React.Component} Component
- * @returns {class}
- */
-var connect = function connect(Context, stateToProps) {
-  return function (Component) {
-    return (
-      /*#__PURE__*/
-      function (_React$Component) {
-        _inherits(Connector, _React$Component);
+var Prefetch =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(Prefetch, _React$Component);
 
-        function Connector() {
-          _classCallCheck(this, Connector);
+  function Prefetch(props) {
+    var _this;
 
-          return _possibleConstructorReturn(this, _getPrototypeOf(Connector).apply(this, arguments));
+    _classCallCheck(this, Prefetch);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Prefetch).call(this, props)); // Call prefetch right away.
+
+    _this.prefetch();
+
+    return _this;
+  }
+  /**
+   * Will call the bidHandler function that generates the adUnit code.
+   * @funtion
+   * @returns {Function | Null}
+   */
+
+
+  _createClass(Prefetch, [{
+    key: "prefetch",
+
+    /**
+     * Will refresh this slot using the refresh function passed by the provider.
+     * component.
+     * @function   
+     * @returns {void}
+     */
+    value: function prefetch() {
+      this.props.prefetch({
+        priority: this.props.priority,
+        data: {
+          id: this.props.id,
+          bids: this.bidHandler,
+          type: 'prefetch'
         }
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return null;
+    }
+  }, {
+    key: "bidHandler",
+    get: function get() {
+      return this.props.bidHandler({
+        id: this.props.id
+      });
+    }
+  }]);
 
-        _createClass(Connector, [{
-          key: "render",
-          value: function render() {
-            var _this = this;
+  return Prefetch;
+}(_react.default.Component);
 
-            return _react.default.createElement(Context.Consumer, null, function (ctxProps) {
-              return _react.default.createElement(Component, _extends({}, _this.props, stateToProps(ctxProps, _this.props)));
-            });
-          }
-        }]);
+exports.Prefetch = Prefetch;
+Prefetch.defaultProps = {
+  id: '',
+  priority: 1,
+  prefetch: function prefetch() {},
+  bidHandler: function bidHandler() {}
+};
+Prefetch.propTypes = {
+  priority: _propTypes.default.number,
+  id: _propTypes.default.string.isRequired,
+  prefetch: _propTypes.default.func.isRequired,
+  bidHandler: _propTypes.default.func.isRequired
+};
+var MaybeHiddenAd = (0, _hide.default)(Prefetch);
+exports.MaybeHiddenAd = MaybeHiddenAd;
 
-        return Connector;
-      }(_react.default.Component)
-    );
+var stateToProps = function stateToProps(_ref) {
+  var prefetch = _ref.prefetch;
+  return {
+    prefetch: prefetch
   };
 };
 
-exports.connect = connect;
-var _default = connect;
+exports.stateToProps = stateToProps;
+
+var _default = (0, _connector.default)(_context.AdsContext, stateToProps)(MaybeHiddenAd);
+
 exports.default = _default;

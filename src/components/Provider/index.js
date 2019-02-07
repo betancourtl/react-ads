@@ -233,6 +233,7 @@ class Provider extends Component {
         bidHandler: this.props.bidHandler,
         lazyOffset: this.props.lazyOffset,
         refreshAdById: this.refreshAdById,
+        prefetch: this.bidManager.prefetch,
         loadVideoPlayer: this.loadVideoPlayer,
       }}
       >

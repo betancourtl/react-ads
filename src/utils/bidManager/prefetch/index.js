@@ -1,6 +1,6 @@
 import timedPromise, { status } from '../../timedPromise';
 
-// TODO [] - Add tests
+// This function will prefetch the display bids.
 /**
  * 
  * @param {Bidder[]} bidProviders 
@@ -9,10 +9,9 @@ import timedPromise, { status } from '../../timedPromise';
  * @param {Queue} q 
  * @returns {Promise}
  */
-const processDisplay = (bidProviders, bidTimeout, q) => new Promise(resolve => {
+const prefetchBids = (bidProviders, bidTimeout, q) => new Promise(resolve => {
   const nextBids = {};
 
-  // tested
   if (q.isEmpty) return resolve();
 
   while (!q.isEmpty) {
@@ -31,9 +30,7 @@ const processDisplay = (bidProviders, bidTimeout, q) => new Promise(resolve => {
   const noBidsOrProviders = [bidProviders, Object.keys(nextBids)]
     .some(x => x.length === 0);
 
-  if (noBidsOrProviders) {
-    return resolve();
-  }
+  if (noBidsOrProviders) return resolve();
 
   timedPromise(
     bidProviders.map(bidder => bidder._fetchDisplayBids(nextBids[bidder.name])),
@@ -42,8 +39,7 @@ const processDisplay = (bidProviders, bidTimeout, q) => new Promise(resolve => {
     .then(responses => {
       responses.forEach((res, i) => {
         if (res.status === status.fulfilled) {
-          bidProviders[i].onBidWon(res.data);
-          bidProviders[i].handleResponse(res.data);
+          bidProviders[i].handlePrefetchedBids(res.data);
         }
 
         if (res.status === status.rejected) {
@@ -57,4 +53,4 @@ const processDisplay = (bidProviders, bidTimeout, q) => new Promise(resolve => {
     });
 });
 
-export default processDisplay;
+export default prefetchBids;

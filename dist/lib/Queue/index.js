@@ -1,1 +1,80 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;function _classCallCheck(a,b){if(!(a instanceof b))throw new TypeError("Cannot call a class as a function")}function _defineProperties(a,b){for(var c,d=0;d<b.length;d++)c=b[d],c.enumerable=c.enumerable||!1,c.configurable=!0,"value"in c&&(c.writable=!0),Object.defineProperty(a,c.key,c)}function _createClass(a,b,c){return b&&_defineProperties(a.prototype,b),c&&_defineProperties(a,c),a}function _defineProperty(a,b,c){return b in a?Object.defineProperty(a,b,{value:c,enumerable:!0,configurable:!0,writable:!0}):a[b]=c,a}var Queue=function(){function a(){var b=this;_classCallCheck(this,a),_defineProperty(this,"enqueue",function(){var a=0<arguments.length&&void 0!==arguments[0]?arguments[0]:[];return[].concat(a).forEach(function(a){b.items[b.count]=a,b.count++}),b}),_defineProperty(this,"dequeue",function(){if(!b.isEmpty){var a=b.items[b.lowestCount];return delete b.items[b.lowestCount],b.lowestCount++,a}}),_defineProperty(this,"clear",function(){b.items={},b.lowestCount=0,b.count=0}),_defineProperty(this,"peek",function(){return b.isEmpty?void 0:b.items[b.lowestCount]}),_defineProperty(this,"toString",function(){return b.isEmpty?"":Object.keys(b.items).map(function(a){return b.items[a]}).join(", ")}),this.items={},this.count=0,this.lowestCount=0}return _createClass(a,[{key:"size",get:function a(){return this.count-this.lowestCount}},{key:"isEmpty",get:function a(){return 0===this.size}}]),a}(),_default=Queue;exports.default=_default;
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Queue =
+/*#__PURE__*/
+function () {
+  function Queue() {
+    var _this = this;
+
+    _classCallCheck(this, Queue);
+
+    _defineProperty(this, "enqueue", function () {
+      var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      [].concat(items).forEach(function (item) {
+        _this.items[_this.count] = item;
+        _this.count++;
+      });
+      return _this;
+    });
+
+    _defineProperty(this, "dequeue", function () {
+      if (_this.isEmpty) return;
+      var item = _this.items[_this.lowestCount];
+      delete _this.items[_this.lowestCount];
+      _this.lowestCount++;
+      return item;
+    });
+
+    _defineProperty(this, "clear", function () {
+      _this.items = {};
+      _this.lowestCount = 0;
+      _this.count = 0;
+    });
+
+    _defineProperty(this, "peek", function () {
+      if (_this.isEmpty) return undefined;
+      return _this.items[_this.lowestCount];
+    });
+
+    _defineProperty(this, "toString", function () {
+      if (_this.isEmpty) return '';
+      return Object.keys(_this.items).map(function (x) {
+        return _this.items[x];
+      }).join(', ');
+    });
+
+    this.items = {};
+    this.count = 0;
+    this.lowestCount = 0;
+  }
+
+  _createClass(Queue, [{
+    key: "size",
+    get: function get() {
+      return this.count - this.lowestCount;
+    }
+  }, {
+    key: "isEmpty",
+    get: function get() {
+      return this.size === 0;
+    }
+  }]);
+
+  return Queue;
+}();
+
+var _default = Queue;
+exports.default = _default;

@@ -17,7 +17,7 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-// TODO [] - Add tests
+// This function will prefetch the display bids.
 
 /**
  * 
@@ -27,18 +27,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
  * @param {Queue} q 
  * @returns {Promise}
  */
-var processDisplay = function processDisplay(bidProviders, bidTimeout, refresh, q) {
+var prefetchBids = function prefetchBids(bidProviders, bidTimeout, q) {
   return new Promise(function (resolve) {
-    var slots = [];
-    var nextBids = {}; // tested
-
+    var nextBids = {};
     if (q.isEmpty) return resolve();
 
     while (!q.isEmpty) {
-      var _q$dequeue$data = q.dequeue().data,
-          slot = _q$dequeue$data.slot,
-          bids = _q$dequeue$data.bids;
-      slots.push(slot);
+      var bids = q.dequeue().data.bids;
 
       if (bids) {
         Object.entries(bids).forEach(function (_ref) {
@@ -55,22 +50,13 @@ var processDisplay = function processDisplay(bidProviders, bidTimeout, refresh, 
     var noBidsOrProviders = [bidProviders, Object.keys(nextBids)].some(function (x) {
       return x.length === 0;
     });
-
-    if (noBidsOrProviders) {
-      refresh(slots);
-      return resolve();
-    } // expect bidder.fetchDisplayBids to be called.
-    // expect bidder.handleResponse to be called.
-    // expect refresh.toBeCalledTimes(1)
-
-
+    if (noBidsOrProviders) return resolve();
     (0, _timedPromise.default)(bidProviders.map(function (bidder) {
       return bidder._fetchDisplayBids(nextBids[bidder.name]);
     }), bidTimeout).then(function (responses) {
       responses.forEach(function (res, i) {
         if (res.status === _timedPromise.status.fulfilled) {
-          bidProviders[i].onBidWon(res.data);
-          bidProviders[i].handleResponse(res.data);
+          bidProviders[i].handlePrefetchedBids(res.data);
         }
 
         if (res.status === _timedPromise.status.rejected) {
@@ -80,11 +66,10 @@ var processDisplay = function processDisplay(bidProviders, bidTimeout, refresh, 
     }).catch(function (err) {
       return console.log('error', err);
     }).finally(function () {
-      refresh(slots);
       resolve();
     });
   });
 };
 
-var _default = processDisplay;
+var _default = prefetchBids;
 exports.default = _default;

@@ -85,7 +85,6 @@ bidder.fetchVideoBids = (adUnit, params) => new Promise(resolve => {
   const pbjs = window.pbjs || {};
   pbjs.que = pbjs.que || [];
   pbjs.que.push(() => {
-    console.log('fetching video ads');
     // remove adUnit
     window.pbjs.removeAdUnit(adUnit.code);
     // add adUnit
@@ -93,8 +92,7 @@ bidder.fetchVideoBids = (adUnit, params) => new Promise(resolve => {
     pbjs.requestBids({
       adUnitCodes: [adUnit.code],
       timeout: bidder.timeout,
-      bidsBackHandler: (bids) => {
-        console.log('video bids', bids);
+      bidsBackHandler: bids => {
         resolve({
           adTagUrl: pbjs.adServers.dfp.buildVideoUrl({ adUnit, params })
         });
@@ -110,7 +108,6 @@ bidder.fetchVideoBids = (adUnit, params) => new Promise(resolve => {
  * @param {void}
  */
 bidder.handleVideoResponse = ({ adTagUrl } = {}, callback) => {
-  console.log('tagUrl', adTagUrl);
   callback(adTagUrl);
 };
 

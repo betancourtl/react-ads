@@ -27,6 +27,7 @@ ___
 | Event based ad adTypes [ 'lazy', 'event', 'initial']   | x      |
 | Implement Instream Video                               | ok     |
 | Queue Instream Videos                                  | ok     |
+| Prefetching bids                                       | ok     |
 
 ### Ad Loading strategies
 ___
@@ -793,5 +794,23 @@ What needs to happen?
 2. The heap is processed and video calls are made.
 3. The Prebid video handler will process the video bids and executes the callback.
 4. Only support prebid videos bids for now.
+
+## Prefetch bids
+
+Clientside javascript takes some time to render. Ads that are requested need
+to wait for the whole application to render before it can start requesting ads.
+For this reason It probably makes sense to prefect some bids for adSlots that
+you know are going to be in the page.
+
+**How does it work**
+
+A Prefetch component can be placed very close to the Provider component. This 
+will make it start fetching the bids for a specific slot right away. If there 
+where any bids fetched then these will be cached in a Set, to indicate that 
+are bids for a specific component where fetched.
+
+When an ad makes an ad request it can check in the Set if there are any 
+prefetched ads and then call the targeting/refresh fns right away.
+
 
 Tables created with: [tablesgenerator](https://www.tablesgenerator.com/markdown_tables)
