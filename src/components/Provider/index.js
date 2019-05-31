@@ -229,7 +229,7 @@ class Provider extends Component {
   }
 
   render() {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === 'undefined') return this.props.children;
     return (
       <AdsContext.Provider value={{
         generateId: this.generateId,
