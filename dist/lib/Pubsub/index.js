@@ -1,1 +1,59 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;function _classCallCheck(a,b){if(!(a instanceof b))throw new TypeError("Cannot call a class as a function")}function _defineProperty(a,b,c){return b in a?Object.defineProperty(a,b,{value:c,enumerable:!0,configurable:!0,writable:!0}):a[b]=c,a}var PubSub=function a(){var b=this;_classCallCheck(this,a),_defineProperty(this,"emit",function(a){for(var c=arguments.length,d=Array(1<c?c-1:0),e=1;e<c;e++)d[e-1]=arguments[e];b.events[a]&&b.events[a].forEach(function(a){return a.apply(void 0,d)})}),_defineProperty(this,"on",function(a,c){b.events[a]||(b.events[a]=[]),b.events[a].push(c)}),_defineProperty(this,"off",function(a,c){b.events[a]&&b.events[a].splice(b.events[a].indexOf(c))}),_defineProperty(this,"clear",function(){b.events={}}),this.events={}},_default=PubSub;exports.default=_default;
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * Pubsub - This is used to notify when monkey patched functions are called.
+ * In the goolgetag library.
+ * @class
+ */
+var PubSub = function PubSub() {
+  var _this = this;
+
+  _classCallCheck(this, PubSub);
+
+  _defineProperty(this, "emit", function (name) {
+    for (var _len = arguments.length, props = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      props[_key - 1] = arguments[_key];
+    }
+
+    if (_this.events[name]) _this.events[name].forEach(function (fn) {
+      return fn.apply(void 0, props);
+    });
+  });
+
+  _defineProperty(this, "on", function (name, handler) {
+    if (!_this.events[name]) _this.events[name] = [];
+
+    _this.events[name].push(handler);
+  });
+
+  _defineProperty(this, "off", function (name, handler) {
+    if (_this.events[name]) _this.events[name].splice(_this.events[name].indexOf(handler));
+  });
+
+  _defineProperty(this, "clear", function () {
+    _this.events = {};
+  });
+
+  this.events = {};
+}
+/**
+* Will emit an action and then call the functions that are subscribed to
+* the event.
+* @function
+* @param {String} name - The event that we want to emit.
+* @param {*} props - parameters to pass to the callback.
+* @returns {void}
+*/
+;
+
+var _default = PubSub;
+exports.default = _default;

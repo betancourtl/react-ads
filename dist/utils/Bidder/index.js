@@ -1,1 +1,146 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.default=void 0;function _classCallCheck(a,b){if(!(a instanceof b))throw new TypeError("Cannot call a class as a function")}function _defineProperty(a,b,c){return b in a?Object.defineProperty(a,b,{value:c,enumerable:!0,configurable:!0,writable:!0}):a[b]=c,a}var Bidder=function a(b){var c=this;if(_classCallCheck(this,a),_defineProperty(this,"_interfaceError",function(a){throw Error("".concat(a," is not implemented on ").concat(c.name," Bidder."))}),_defineProperty(this,"_init",function(){var a=c.init();return a&&a.then?a.then(function(){return c.isReady=!0,"".concat(c.name," resolved")}).catch(function(){return c.isReady=!1,"".concat(c.name," rejected")}):(c.isReady=!0,Promise.resolve("".concat(c.name," resolved")))}),_defineProperty(this,"init",function(){c._interfaceError("init")}),_defineProperty(this,"handleResponse",function(){c._interfaceError("handleResponse")}),_defineProperty(this,"onTimeout",function(){c._interfaceError("onTimeout")}),_defineProperty(this,"onVideoBidTimeout",function(){c._interfaceError("onVideoBidTimeout")}),_defineProperty(this,"onBidWon",function(){c._interfaceError("onBidWon")}),_defineProperty(this,"_fetchDisplayBids",function(){for(var a=arguments.length,b=Array(a),d=0;d<a;d++)b[d]=arguments[d];return new Promise(function(a,d){if(!c.isReady)return console.log("".concat(c.name," Bidder is not ready")),d("Bidder is not ready.");var e=setTimeout(function(){d("Timed Out")},c.safeTimeout);return c.fetchDisplayBids.apply(c,b).then(a).catch(d).finally(function(){clearTimeout(e)})})}),_defineProperty(this,"fetchDisplayBids",function(){c._interfaceError("fetchDisplayBids")}),_defineProperty(this,"_fetchVideoBids",function(){for(var a=arguments.length,b=Array(a),d=0;d<a;d++)b[d]=arguments[d];return new Promise(function(a,d){if(!c.isReady)return console.log("".concat(c.name," Bidder is not ready")),d("Bidder is not ready.");var e=setTimeout(function(){d("Timed Out")},c.safeTimeout);return c.fetchVideoBids.apply(c,b).then(a).catch(d).finally(function(){clearTimeout(e)})})}),_defineProperty(this,"fetchVideoBids",function(){c._interfaceError("fetchVideoBids")}),!b)throw Error("Bidder expects a name to be passed.");this.name=b,this.isReady=!1,this.timeout=1e3,this.safeTimeout=3e3},_default=Bidder;exports.default=_default;
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @class
+ * @classdesc Acts as an interface to communicate with the bidding system.
+ */
+var Bidder = function Bidder(name) {
+  var _this = this;
+
+  _classCallCheck(this, Bidder);
+
+  _defineProperty(this, "_interfaceError", function (fnName) {
+    throw Error("".concat(fnName, " is not implemented on ").concat(_this.name, " Bidder."));
+  });
+
+  _defineProperty(this, "_init", function () {
+    var p = _this.init();
+
+    if (p && p.then) return p.then(function () {
+      _this.isReady = true;
+      return "".concat(_this.name, " resolved");
+    }).catch(function () {
+      _this.isReady = false;
+      return "".concat(_this.name, " rejected");
+    });else {
+      _this.isReady = true;
+      return Promise.resolve("".concat(_this.name, " resolved"));
+    }
+  });
+
+  _defineProperty(this, "init", function () {
+    _this._interfaceError('init');
+  });
+
+  _defineProperty(this, "handleResponse", function () {
+    _this._interfaceError('handleResponse');
+  });
+
+  _defineProperty(this, "onTimeout", function () {
+    _this._interfaceError('onTimeout');
+  });
+
+  _defineProperty(this, "onVideoBidTimeout", function () {
+    _this._interfaceError('onVideoBidTimeout');
+  });
+
+  _defineProperty(this, "onBidWon", function () {
+    _this._interfaceError('onBidWon');
+  });
+
+  _defineProperty(this, "_fetchDisplayBids", function () {
+    for (var _len = arguments.length, props = new Array(_len), _key = 0; _key < _len; _key++) {
+      props[_key] = arguments[_key];
+    }
+
+    return new Promise(function (resolve, reject) {
+      if (!_this.isReady) {
+        console.log("".concat(_this.name, " Bidder is not ready"));
+        return reject('Bidder is not ready.');
+      }
+
+      var id = setTimeout(function () {
+        reject('Timed Out');
+      }, _this.safeTimeout);
+      return _this.fetchDisplayBids.apply(_this, props).then(resolve).catch(reject).finally(function () {
+        clearTimeout(id);
+      });
+    });
+  });
+
+  _defineProperty(this, "fetchDisplayBids", function () {
+    _this._interfaceError('fetchDisplayBids');
+  });
+
+  _defineProperty(this, "_fetchVideoBids", function () {
+    for (var _len2 = arguments.length, props = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      props[_key2] = arguments[_key2];
+    }
+
+    return new Promise(function (resolve, reject) {
+      if (!_this.isReady) {
+        console.log("".concat(_this.name, " Bidder is not ready"));
+        return reject('Bidder is not ready.');
+      }
+
+      var id = setTimeout(function () {
+        reject('Timed Out');
+      }, _this.safeTimeout);
+      return _this.fetchVideoBids.apply(_this, props).then(resolve).catch(reject).finally(function () {
+        clearTimeout(id);
+      });
+    });
+  });
+
+  _defineProperty(this, "fetchVideoBids", function () {
+    _this._interfaceError('fetchVideoBids');
+  });
+
+  if (!name) throw Error('Bidder expects a name to be passed.');
+  /**
+   * The name of the bidder.
+   * @type {String}
+   */
+
+  this.name = name;
+  /**
+   * If the bidder is ready to make bids.
+   * @type {Boolean}
+   */
+
+  this.isReady = false;
+  /**
+   * Bids timeout. If the bidder does not get any responses from the server in
+   * the specified amount of time it will end the bidder request.
+   * @type {Number}
+   */
+
+  this.timeout = 1000;
+  /**
+   * Failsafe timeout used to stop waiting fir bids in case the first timeout 
+   * fails for some reason.
+   * @type {Number}
+   */
+
+  this.safeTimeout = 3000;
+}
+/**
+ * Internal function used to throw errors in methods that are not defined.
+ * @private
+ * @throws
+ * @param {String}
+ * @returns {void}   
+ */
+;
+
+var _default = Bidder;
+exports.default = _default;
