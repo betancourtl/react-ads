@@ -250,6 +250,7 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
+      if (typeof window === 'undefined') return null;
       return _react["default"].createElement(_context.AdsContext.Provider, {
         value: {
           generateId: this.generateId,

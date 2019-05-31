@@ -423,6 +423,7 @@ function (_Component) {
     value: function render() {
       var _this6 = this;
 
+      if (typeof window === 'undefined') return null;
       return _react["default"].createElement("div", {
         id: this.id,
         ref: function ref(_ref5) {
