@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.status = void 0;
+exports["default"] = exports.status = void 0;
 var DEFAULT_TIMEOUT = 1000;
 var status = {
   rejected: 'rejected',
@@ -67,4 +67,4 @@ var timedPromise = function timedPromise(promises) {
 };
 
 var _default = timedPromise;
-exports.default = _default;
+exports["default"] = _default;

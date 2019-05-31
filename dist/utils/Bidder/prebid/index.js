@@ -3,14 +3,14 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _ = _interopRequireDefault(require("../"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 /* eslint-disable no-console */
-var bidder = new _.default('prebid');
+var bidder = new _["default"]('prebid');
 /**
  * Initializes the bidder.
  * @returns {Promise}
@@ -142,4 +142,4 @@ bidder.handleVideoResponse = function () {
 };
 
 var _default = bidder;
-exports.default = _default;
+exports["default"] = _default;

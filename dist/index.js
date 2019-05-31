@@ -6,31 +6,31 @@ Object.defineProperty(exports, "__esModule", {
 Object.defineProperty(exports, "Ad", {
   enumerable: true,
   get: function get() {
-    return _Ad.default;
+    return _Ad["default"];
   }
 });
 Object.defineProperty(exports, "Bidder", {
   enumerable: true,
   get: function get() {
-    return _Bidder.default;
+    return _Bidder["default"];
   }
 });
 Object.defineProperty(exports, "Provider", {
   enumerable: true,
   get: function get() {
-    return _Provider.default;
+    return _Provider["default"];
   }
 });
 Object.defineProperty(exports, "Video", {
   enumerable: true,
   get: function get() {
-    return _Video.default;
+    return _Video["default"];
   }
 });
 Object.defineProperty(exports, "withAdRefresh", {
   enumerable: true,
   get: function get() {
-    return _withAdRefresh.default;
+    return _withAdRefresh["default"];
   }
 });
 
@@ -44,4 +44,4 @@ var _Video = _interopRequireDefault(require("./components/Video"));
 
 var _withAdRefresh = _interopRequireDefault(require("./hoc/withAdRefresh"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }

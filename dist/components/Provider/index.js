@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
@@ -21,9 +21,9 @@ var _timedPromise = _interopRequireDefault(require("../../utils/timedPromise"));
 
 var _googletag = require("../../utils/googletag");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj["default"] = obj; return newObj; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -37,11 +37,11 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -61,8 +61,8 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Provider).call(this, _props)); // Prevent constructor from running when SSR.
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "initGPT", function () {
-      var _assertThisInitialize = _assertThisInitialized(_assertThisInitialized(_this)),
+    _defineProperty(_assertThisInitialized(_this), "initGPT", function () {
+      var _assertThisInitialize = _assertThisInitialized(_this),
           props = _assertThisInitialize.props;
 
       var gpt = props.gpt;
@@ -79,19 +79,19 @@ function (_Component) {
       gpt.destroySlots();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "initBidders", function () {
+    _defineProperty(_assertThisInitialized(_this), "initBidders", function () {
       if (!_this.props.bidProviders.length) _this.pubsub.emit('bidders-ready', true);else {
-        (0, _timedPromise.default)(_this.props.bidProviders.map(function (bidder) {
+        (0, _timedPromise["default"])(_this.props.bidProviders.map(function (bidder) {
           return bidder._init();
-        }), _this.props.initTimeout).catch(function (err) {
+        }), _this.props.initTimeout)["catch"](function (err) {
           return console.log('Error initializing bidders', err);
-        }).finally(function () {
+        })["finally"](function () {
           return _this.pubsub.emit('bidders-ready', true);
         });
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadVideoScripts", function (scripts) {
+    _defineProperty(_assertThisInitialized(_this), "loadVideoScripts", function (scripts) {
       var postFix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'postfix';
       return new Promise(function (resolve, reject) {
         var timeout = setTimeout(reject, 4000);
@@ -124,7 +124,7 @@ function (_Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadVideoCss", function () {
+    _defineProperty(_assertThisInitialized(_this), "loadVideoCss", function () {
       return new Promise(function (resolve, reject) {
         var timeout = setTimeout(reject, 4000);
         var stylesheets = ['https://cdnjs.cloudflare.com/ajax/libs/video.js/7.5.0/video-js.min.css', 'https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-ads/6.6.1/videojs-contrib-ads.min.css', 'https://cdnjs.cloudflare.com/ajax/libs/videojs-ima/1.5.2/videojs.ima.min.css'];
@@ -156,7 +156,7 @@ function (_Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "loadVideoPlayer", function (cb) {
+    _defineProperty(_assertThisInitialized(_this), "loadVideoPlayer", function (cb) {
       if (_this.videoStatus === FAIL) return;
       if (_this.videoStatus === STARTED) return _this.videoQue.push(cb);
       if (_this.videoStatus === SUCCESS) return cb();
@@ -177,19 +177,19 @@ function (_Component) {
         _this.videoQue.forEach(function (fn) {
           return fn();
         });
-      }).catch(function () {
+      })["catch"](function () {
         _this.videoStatus = FAIL;
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "generateId", function () {
+    _defineProperty(_assertThisInitialized(_this), "generateId", function () {
       var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'ad';
       _this.slotCount[type];
       if (isNaN(_this.slotCount[type])) _this.slotCount[type] = 1;else _this.slotCount[type] = _this.slotCount[type] + 1;
       return "".concat(type).concat(_this.props.divider).concat(_this.slotCount[type]);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "refreshAdById", function (ids) {
+    _defineProperty(_assertThisInitialized(_this), "refreshAdById", function (ids) {
       [].concat(ids).forEach(function (id) {
         window.dispatchEvent(new CustomEvent('refresh-ad', {
           detail: {
@@ -199,7 +199,7 @@ function (_Component) {
       });
     });
 
-    if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === undefined) return _possibleConstructorReturn(_this);
+    if (typeof window === 'undefined') return _possibleConstructorReturn(_this);
     var _gpt = _props.gpt;
     if (!_props.enableAds) return _possibleConstructorReturn(_this);
     _this.pubsub = _props.pubsub;
@@ -207,7 +207,7 @@ function (_Component) {
 
     _this.initGPT();
 
-    _this.bidManager = (0, _bidManager.default)({
+    _this.bidManager = (0, _bidManager["default"])({
       refresh: _gpt.refresh,
       chunkSize: _props.chunkSize,
       bidTimeout: _props.bidTimeout,
@@ -236,7 +236,7 @@ function (_Component) {
     key: "componentWillUnmount",
     value: function componentWillUnmount() {
       // Do not do anything.
-      if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === undefined) return;
+      if (typeof window === 'undefined') return;
       if (!this.props.enableAds) return;
       this.pubsub.clear();
     }
@@ -250,7 +250,7 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      return _react.default.createElement(_context.AdsContext.Provider, {
+      return _react["default"].createElement(_context.AdsContext.Provider, {
         value: {
           generateId: this.generateId,
           enableAds: this.props.enableAds,
@@ -276,13 +276,13 @@ Provider.defaultProps = {
   targeting: {},
   enableAds: true,
   lazyOffset: 800,
-  bidProviders: [_prebid.default],
+  bidProviders: [_prebid["default"]],
   bidTimeout: 1000,
   initTimeout: 350,
   refreshDelay: 200,
   adIframeTitle: '',
   setCentering: true,
-  pubsub: new _Pubsub.default(),
+  pubsub: new _Pubsub["default"](),
   bidHandler: undefined,
   enableVideoAds: false,
   collapseEmptyDivs: false,
@@ -303,37 +303,37 @@ Provider.defaultProps = {
   }
 };
 Provider.propTypes = {
-  divider: _propTypes.default.string,
-  enableAds: _propTypes.default.bool,
-  bidHandler: _propTypes.default.func,
-  targeting: _propTypes.default.object,
-  chunkSize: _propTypes.default.number,
-  adUnitPath: _propTypes.default.string,
-  bidTimeout: _propTypes.default.number,
-  lazyOffset: _propTypes.default.number,
-  setCentering: _propTypes.default.bool,
-  bidProviders: _propTypes.default.array,
-  initTimeout: _propTypes.default.number,
-  refreshDelay: _propTypes.default.number,
-  enableVideoAds: _propTypes.default.bool,
-  adIframeTitle: _propTypes.default.string,
-  collapseEmptyDivs: _propTypes.default.bool,
-  pubsub: _propTypes.default.instanceOf(_Pubsub.default),
-  networkId: _propTypes.default.number.isRequired,
-  children: _propTypes.default.oneOfType([_propTypes.default.node, _propTypes.default.arrayOf(_propTypes.default.node)]),
-  gpt: _propTypes.default.shape({
-    refresh: _propTypes.default.func.isRequired,
-    destroySlots: _propTypes.default.func.isRequired,
-    setCentering: _propTypes.default.func.isRequired,
-    setTargeting: _propTypes.default.func.isRequired,
-    enableServices: _propTypes.default.func.isRequired,
-    createGPTScript: _propTypes.default.func.isRequired,
-    setAdIframeTitle: _propTypes.default.func.isRequired,
-    collapseEmptyDivs: _propTypes.default.func.isRequired,
-    disableInitialLoad: _propTypes.default.func.isRequired,
-    enableSingleRequest: _propTypes.default.func.isRequired,
-    enableAsyncRendering: _propTypes.default.func.isRequired
+  divider: _propTypes["default"].string,
+  enableAds: _propTypes["default"].bool,
+  bidHandler: _propTypes["default"].func,
+  targeting: _propTypes["default"].object,
+  chunkSize: _propTypes["default"].number,
+  adUnitPath: _propTypes["default"].string,
+  bidTimeout: _propTypes["default"].number,
+  lazyOffset: _propTypes["default"].number,
+  setCentering: _propTypes["default"].bool,
+  bidProviders: _propTypes["default"].array,
+  initTimeout: _propTypes["default"].number,
+  refreshDelay: _propTypes["default"].number,
+  enableVideoAds: _propTypes["default"].bool,
+  adIframeTitle: _propTypes["default"].string,
+  collapseEmptyDivs: _propTypes["default"].bool,
+  pubsub: _propTypes["default"].instanceOf(_Pubsub["default"]),
+  networkId: _propTypes["default"].number.isRequired,
+  children: _propTypes["default"].oneOfType([_propTypes["default"].node, _propTypes["default"].arrayOf(_propTypes["default"].node)]),
+  gpt: _propTypes["default"].shape({
+    refresh: _propTypes["default"].func.isRequired,
+    destroySlots: _propTypes["default"].func.isRequired,
+    setCentering: _propTypes["default"].func.isRequired,
+    setTargeting: _propTypes["default"].func.isRequired,
+    enableServices: _propTypes["default"].func.isRequired,
+    createGPTScript: _propTypes["default"].func.isRequired,
+    setAdIframeTitle: _propTypes["default"].func.isRequired,
+    collapseEmptyDivs: _propTypes["default"].func.isRequired,
+    disableInitialLoad: _propTypes["default"].func.isRequired,
+    enableSingleRequest: _propTypes["default"].func.isRequired,
+    enableAsyncRendering: _propTypes["default"].func.isRequired
   })
 };
 var _default = Provider;
-exports.default = _default;
+exports["default"] = _default;
