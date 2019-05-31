@@ -401,6 +401,7 @@ class Ad extends Component {
   }
 
   render() {
+    if (typeof window === 'undefined') return null;
     return (
       <div
         id={this.id}
