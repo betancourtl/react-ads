@@ -22,7 +22,7 @@ class Ad extends Component {
   constructor(props) {
     super(props);
     // Do not run when SSR.
-    if (typeof window === undefined) return;
+    if (typeof window === 'undefined') return;
 
     /**
      * Reference to the googletag GPT slot.
@@ -378,7 +378,7 @@ class Ad extends Component {
 
   componentDidMount() {
     // Do not run when SSR.
-    if (typeof window === undefined) return;
+    if (typeof window === 'undefined') return;
 
     this.ref.refresh = this.imperativeRefresh;
     window.addEventListener('refresh-ad', this.handleCustomRefreshEvent);
@@ -392,7 +392,7 @@ class Ad extends Component {
 
   componentWillUnmount() {
     // Do not run when SSR.
-    if (typeof window === undefined) return;
+    if (typeof window === 'undefined') return;
 
     this.unsetMQListeners();
     window.removeEventListener('scroll', this.refreshWhenVisible);

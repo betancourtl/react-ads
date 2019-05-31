@@ -10,7 +10,7 @@ class VideoPlayer extends Component {
   constructor(props) {
     super(props);
     // Do not run when SSR.
-    if (typeof window === undefined) return;
+    if (typeof window === 'undefined') return;
 
     this.unmounted = false;
     this.refreshedOnce = false;
@@ -74,7 +74,7 @@ class VideoPlayer extends Component {
 
   componentDidMount() {
     // Do not run when SSR.
-    if (typeof window === undefined) return;
+    if (typeof window === 'undefined') return;
 
     if (!this.props.lazy) this.props.loadVideoPlayer(this.refresh);
     else {
@@ -86,7 +86,7 @@ class VideoPlayer extends Component {
   // destroy player on unmount
   componentWillUnmount() {
     // Do not run when SSR.
-    if (typeof window === undefined) return;
+    if (typeof window === 'undefined') return;
 
     this.unmounted = true;
     if (this.player) this.player.dispose();
