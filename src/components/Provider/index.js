@@ -29,6 +29,9 @@ const FAIL = 'FAIL';
 class Provider extends Component {
   constructor(props) {
     super(props);
+    // Prevent constructor from running when SSR.
+    if (typeof window === undefined) return;
+
     const { gpt } = props;
     if (!props.enableAds) return;
     this.pubsub = props.pubsub;
@@ -206,6 +209,9 @@ class Provider extends Component {
   };
 
   componentWillUnmount() {
+    // Do not do anything.
+    if (typeof window === undefined) return;
+    
     if (!this.props.enableAds) return;
     this.pubsub.clear();
   }
