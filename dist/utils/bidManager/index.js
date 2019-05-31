@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = exports.processFn = void 0;
+exports.default = exports.processFn = void 0;
 
 var _Queue = _interopRequireDefault(require("../../lib/Queue"));
 
@@ -13,7 +13,7 @@ var _video = _interopRequireDefault(require("./video"));
 
 var _display = _interopRequireDefault(require("./display"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /* eslint-disable no-console */
 // TODO [] - Add tests
@@ -32,15 +32,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
  */
 var processFn = function processFn(bidProviders, bidTimeout, refresh) {
   return function (q, done) {
-    var displayQueue = new _Queue["default"]();
-    var videoQueue = new _Queue["default"]();
+    var displayQueue = new _Queue.default();
+    var videoQueue = new _Queue.default();
 
     while (!q.isEmpty) {
       var item = q.dequeue();
       if (item.data.type === 'video') videoQueue.enqueue(item);else if (item.data.type === 'display') displayQueue.enqueue(item);
     }
 
-    Promise.all([(0, _video["default"])(bidProviders, bidTimeout, videoQueue), (0, _display["default"])(bidProviders, bidTimeout, refresh, displayQueue)]).then(done);
+    Promise.all([(0, _video.default)(bidProviders, bidTimeout, videoQueue), (0, _display.default)(bidProviders, bidTimeout, refresh, displayQueue)]).then(done);
   };
 };
 /** 
@@ -69,7 +69,7 @@ var bidManager = function bidManager() {
       refreshDelay = _props$refreshDelay === void 0 ? 100 : _props$refreshDelay,
       _props$onBiddersReady = props.onBiddersReady,
       onBiddersReady = _props$onBiddersReady === void 0 ? function () {} : _props$onBiddersReady;
-  var refreshJob = new _JobQueue["default"]({
+  var refreshJob = new _JobQueue.default({
     canProcess: false,
     delay: refreshDelay,
     chunkSize: chunkSize,
@@ -83,4 +83,4 @@ var bidManager = function bidManager() {
 };
 
 var _default = bidManager;
-exports["default"] = _default;
+exports.default = _default;

@@ -97,6 +97,7 @@ class VideoPlayer extends Component {
    * used when unmounting videojs.
    */
   render() {
+    if (typeof window === 'undefined') return null;
     return (
       <div>
         <div data-vjs-player>

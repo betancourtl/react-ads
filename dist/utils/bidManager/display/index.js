@@ -3,11 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports.default = void 0;
 
 var _timedPromise = _interopRequireWildcard(require("../../timedPromise"));
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj["default"] = obj; return newObj; } }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
@@ -64,7 +64,7 @@ var processDisplay = function processDisplay(bidProviders, bidTimeout, refresh, 
     // expect refresh.toBeCalledTimes(1)
 
 
-    (0, _timedPromise["default"])(bidProviders.map(function (bidder) {
+    (0, _timedPromise.default)(bidProviders.map(function (bidder) {
       return bidder._fetchDisplayBids(nextBids[bidder.name]);
     }), bidTimeout).then(function (responses) {
       responses.forEach(function (res, i) {
@@ -77,9 +77,9 @@ var processDisplay = function processDisplay(bidProviders, bidTimeout, refresh, 
           bidProviders[i].onTimeout(res.err);
         }
       });
-    })["catch"](function (err) {
+    }).catch(function (err) {
       return console.log('error', err);
-    })["finally"](function () {
+    }).finally(function () {
       refresh(slots);
       resolve();
     });
@@ -87,4 +87,4 @@ var processDisplay = function processDisplay(bidProviders, bidTimeout, refresh, 
 };
 
 var _default = processDisplay;
-exports["default"] = _default;
+exports.default = _default;

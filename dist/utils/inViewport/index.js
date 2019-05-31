@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = exports.inView = void 0;
+exports.default = exports.inView = void 0;
 
 /**
  * Will return true if the element is in view.
@@ -49,4 +49,4 @@ var inView = function inView(_ref) {
 
 exports.inView = inView;
 var _default = elementInViewport;
-exports["default"] = _default;
+exports.default = _default;

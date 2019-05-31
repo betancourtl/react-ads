@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = exports.MaybeHiddenAd = exports.Ad = exports.stateToProps = void 0;
+exports.default = exports.MaybeHiddenAd = exports.Ad = exports.stateToProps = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
@@ -21,9 +21,9 @@ var _inViewport = _interopRequireDefault(require("../../utils/inViewport"));
 
 var _googletag = require("../../utils/googletag");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj["default"] = obj; return newObj; } }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
@@ -51,11 +51,11 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -71,42 +71,42 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Ad).call(this, _props)); // Do not run when SSR.
 
-    _defineProperty(_assertThisInitialized(_this), "isFunction", function (maybeFn) {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isFunction", function (maybeFn) {
       return typeof maybeFn === 'function';
     });
 
-    _defineProperty(_assertThisInitialized(_this), "breakPointRefresh", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "breakPointRefresh", function () {
       if (_this.canRefresh) _this.refresh();
     });
 
-    _defineProperty(_assertThisInitialized(_this), "withAdProps", function (props) {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "withAdProps", function (props) {
       return _objectSpread({
         id: _this.id,
         ref: _this.ref
       }, props);
     });
 
-    _defineProperty(_assertThisInitialized(_this), "onSlotOnload", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "onSlotOnload", function () {
       return _this.handleGPTEvent(_googletag.events.slotOnload, _this.props.onSlotOnload);
     });
 
-    _defineProperty(_assertThisInitialized(_this), "onSlotRenderEnded", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "onSlotRenderEnded", function () {
       return _this.handleGPTEvent(_googletag.events.slotRenderEnded, _this.props.onSlotRenderEnded);
     });
 
-    _defineProperty(_assertThisInitialized(_this), "onImpressionViewable", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "onImpressionViewable", function () {
       return _this.handleGPTEvent(_googletag.events.impressionViewable, _this.props.onImpressionViewable);
     });
 
-    _defineProperty(_assertThisInitialized(_this), "onSlotVisibilityChanged", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "onSlotVisibilityChanged", function () {
       return _this.handleGPTEvent(_googletag.events.slotVisibilityChanged, _this.props.onSlotVisibilityChanged);
     });
 
-    _defineProperty(_assertThisInitialized(_this), "onSlotRequested", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "onSlotRequested", function () {
       return _this.handleGPTEvent(_googletag.events.slotRequested, _this.props.onSlotRequested);
     });
 
-    _defineProperty(_assertThisInitialized(_this), "handleCustomRefreshEvent", function (_ref) {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleCustomRefreshEvent", function (_ref) {
       var detail = _ref.detail;
       if (detail.id !== _this.id) return;
 
@@ -118,7 +118,7 @@ function (_Component) {
       _this.refresh();
     });
 
-    _defineProperty(_assertThisInitialized(_this), "imperativeRefresh", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "imperativeRefresh", function () {
       if (!_this.canRefresh) {
         console.log('Ad has to call window.googletag.display before triggering a refresh.');
         return;
@@ -157,13 +157,13 @@ function (_Component) {
      * @type {Function}
      */
 
-    _this.refreshWhenVisible = (0, _withRaf["default"])(_this.refreshWhenVisible.bind(_assertThisInitialized(_this)));
+    _this.refreshWhenVisible = (0, _withRaf.default)(_this.refreshWhenVisible.bind(_assertThisInitialized(_assertThisInitialized(_this))));
     /**
      * Will refresh the Ad.
      * @type {Function}
      */
 
-    _this.refresh = _this.refresh.bind(_assertThisInitialized(_this));
+    _this.refresh = _this.refresh.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     /**
      * The ad's unique id. We only want the id to be generated once, so we run
      * generateId in the constructor.
@@ -424,7 +424,7 @@ function (_Component) {
       var _this6 = this;
 
       if (typeof window === 'undefined') return null;
-      return _react["default"].createElement("div", {
+      return _react.default.createElement("div", {
         id: this.id,
         ref: function ref(_ref5) {
           return _this6.ref = _ref5;
@@ -484,7 +484,7 @@ function (_Component) {
   }, {
     key: "isVisible",
     get: function get() {
-      return (0, _inViewport["default"])(this.ref, this.props.lazyOffset);
+      return (0, _inViewport.default)(this.ref, this.props.lazyOffset);
     }
     /**
      * Returns true when the parameter is a function.
@@ -530,42 +530,42 @@ Ad.defaultProps = {
   }
 };
 Ad.propTypes = {
-  lazy: _propTypes["default"].bool,
-  type: _propTypes["default"].string,
-  refresh: _propTypes["default"].func,
-  style: _propTypes["default"].object,
-  bidHandler: _propTypes["default"].func,
-  priority: _propTypes["default"].number,
-  className: _propTypes["default"].string,
-  networkId: _propTypes["default"].number,
-  targeting: _propTypes["default"].object,
-  lazyOffset: _propTypes["default"].number,
-  onSlotOnload: _propTypes["default"].func,
-  outOfPageSlot: _propTypes["default"].bool,
-  id: _propTypes["default"].string.isRequired,
-  onSlotRequested: _propTypes["default"].func,
-  setCollapseEmpty: _propTypes["default"].bool,
-  onSlotRenderEnded: _propTypes["default"].func,
-  onImpressionViewable: _propTypes["default"].func,
-  generateId: _propTypes["default"].func.isRequired,
-  adUnitPath: _propTypes["default"].string.isRequired,
-  onSlotVisibilityChanged: _propTypes["default"].func,
-  getWindowWidth: _propTypes["default"].func.isRequired,
-  size: _propTypes["default"].oneOfType([_propTypes["default"].array.isRequired, _propTypes["default"].string.isRequired]),
-  sizeMap: _propTypes["default"].arrayOf(_propTypes["default"].shape({
-    viewPort: _propTypes["default"].arrayOf(_propTypes["default"].number),
-    slots: _propTypes["default"].oneOfType([_propTypes["default"].arrayOf(_propTypes["default"].number), _propTypes["default"].arrayOf(_propTypes["default"].arrayOf(_propTypes["default"].number))])
+  lazy: _propTypes.default.bool,
+  type: _propTypes.default.string,
+  refresh: _propTypes.default.func,
+  style: _propTypes.default.object,
+  bidHandler: _propTypes.default.func,
+  priority: _propTypes.default.number,
+  className: _propTypes.default.string,
+  networkId: _propTypes.default.number,
+  targeting: _propTypes.default.object,
+  lazyOffset: _propTypes.default.number,
+  onSlotOnload: _propTypes.default.func,
+  outOfPageSlot: _propTypes.default.bool,
+  id: _propTypes.default.string.isRequired,
+  onSlotRequested: _propTypes.default.func,
+  setCollapseEmpty: _propTypes.default.bool,
+  onSlotRenderEnded: _propTypes.default.func,
+  onImpressionViewable: _propTypes.default.func,
+  generateId: _propTypes.default.func.isRequired,
+  adUnitPath: _propTypes.default.string.isRequired,
+  onSlotVisibilityChanged: _propTypes.default.func,
+  getWindowWidth: _propTypes.default.func.isRequired,
+  size: _propTypes.default.oneOfType([_propTypes.default.array.isRequired, _propTypes.default.string.isRequired]),
+  sizeMap: _propTypes.default.arrayOf(_propTypes.default.shape({
+    viewPort: _propTypes.default.arrayOf(_propTypes.default.number),
+    slots: _propTypes.default.oneOfType([_propTypes.default.arrayOf(_propTypes.default.number), _propTypes.default.arrayOf(_propTypes.default.arrayOf(_propTypes.default.number))])
   })),
-  gpt: _propTypes["default"].shape({
-    define: _propTypes["default"].func.isRequired,
-    cmdPush: _propTypes["default"].func.isRequired,
-    display: _propTypes["default"].func.isRequired,
-    sizeMapping: _propTypes["default"].func.isRequired,
-    destroySlots: _propTypes["default"].func.isRequired,
-    addEventListener: _propTypes["default"].func.isRequired
+  gpt: _propTypes.default.shape({
+    define: _propTypes.default.func.isRequired,
+    cmdPush: _propTypes.default.func.isRequired,
+    display: _propTypes.default.func.isRequired,
+    sizeMapping: _propTypes.default.func.isRequired,
+    destroySlots: _propTypes.default.func.isRequired,
+    addEventListener: _propTypes.default.func.isRequired
   })
 };
-var MaybeHiddenAd = (0, _hide["default"])(Ad);
+var MaybeHiddenAd = (0, _hide.default)(Ad);
 exports.MaybeHiddenAd = MaybeHiddenAd;
 
 var stateToProps = function stateToProps(_ref7, props) {
@@ -607,6 +607,6 @@ var stateToProps = function stateToProps(_ref7, props) {
 
 exports.stateToProps = stateToProps;
 
-var _default = (0, _connector["default"])(_context.AdsContext, stateToProps)(MaybeHiddenAd);
+var _default = (0, _connector.default)(_context.AdsContext, stateToProps)(MaybeHiddenAd);
 
-exports["default"] = _default;
+exports.default = _default;

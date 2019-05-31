@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports.default = void 0;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -28,7 +28,7 @@ var Bidder = function Bidder(name) {
     if (p && p.then) return p.then(function () {
       _this.isReady = true;
       return "".concat(_this.name, " resolved");
-    })["catch"](function () {
+    }).catch(function () {
       _this.isReady = false;
       return "".concat(_this.name, " rejected");
     });else {
@@ -71,7 +71,7 @@ var Bidder = function Bidder(name) {
       var id = setTimeout(function () {
         reject('Timed Out');
       }, _this.safeTimeout);
-      return _this.fetchDisplayBids.apply(_this, props).then(resolve)["catch"](reject)["finally"](function () {
+      return _this.fetchDisplayBids.apply(_this, props).then(resolve).catch(reject).finally(function () {
         clearTimeout(id);
       });
     });
@@ -95,7 +95,7 @@ var Bidder = function Bidder(name) {
       var id = setTimeout(function () {
         reject('Timed Out');
       }, _this.safeTimeout);
-      return _this.fetchVideoBids.apply(_this, props).then(resolve)["catch"](reject)["finally"](function () {
+      return _this.fetchVideoBids.apply(_this, props).then(resolve).catch(reject).finally(function () {
         clearTimeout(id);
       });
     });
@@ -143,4 +143,4 @@ var Bidder = function Bidder(name) {
 ;
 
 var _default = Bidder;
-exports["default"] = _default;
+exports.default = _default;

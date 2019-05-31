@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports.default = void 0;
 
 /**
  * Will use call the requestAnimationFrame function. This is an alternative
@@ -26,4 +26,4 @@ var withRaf = function withRaf(cb) {
 };
 
 var _default = withRaf;
-exports["default"] = _default;
+exports.default = _default;

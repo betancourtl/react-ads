@@ -3,11 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports.default = void 0;
 
 var _timedPromise = _interopRequireWildcard(require("../../timedPromise"));
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj["default"] = obj; return newObj; } }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
@@ -52,7 +52,7 @@ var processVideo = function processVideo(bidProviders, bidTimeout, q) {
         v: promises.push(Promise.resolve(callback()))
       }; // If a bid is provided. Pass the bids to the bidProviders.
 
-      var p = (0, _timedPromise["default"])(bidProviders.map(function (bidder) {
+      var p = (0, _timedPromise.default)(bidProviders.map(function (bidder) {
         return bidder._fetchVideoBids(nextBids[bidder.name], params);
       }), bidTimeout).then(function (responses) {
         responses.forEach(function (res, i) {
@@ -66,7 +66,7 @@ var processVideo = function processVideo(bidProviders, bidTimeout, q) {
             bidProviders[i].onVideoBidTimeout(res);
           }
         });
-      })["catch"](function (err) {
+      }).catch(function (err) {
         return console.log('error', err);
       }); // Save the promise in an arary so we can verify when they are all completed
       // using promise.all.
@@ -81,9 +81,9 @@ var processVideo = function processVideo(bidProviders, bidTimeout, q) {
     } // Finally resolve the promise.
 
 
-    return Promise.all(promises).then(resolve)["catch"](resolve);
+    return Promise.all(promises).then(resolve).catch(resolve);
   });
 };
 
 var _default = processVideo;
-exports["default"] = _default;
+exports.default = _default;

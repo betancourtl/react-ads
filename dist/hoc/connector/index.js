@@ -3,11 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = exports.connect = void 0;
+exports.default = exports.connect = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -54,18 +54,18 @@ var connect = function connect(Context, stateToProps) {
           value: function render() {
             var _this = this;
 
-            return _react["default"].createElement(Context.Consumer, null, function (ctxProps) {
-              return _react["default"].createElement(Component, _extends({}, _this.props, stateToProps(ctxProps, _this.props)));
+            return _react.default.createElement(Context.Consumer, null, function (ctxProps) {
+              return _react.default.createElement(Component, _extends({}, _this.props, stateToProps(ctxProps, _this.props)));
             });
           }
         }]);
 
         return Connector;
-      }(_react["default"].Component)
+      }(_react.default.Component)
     );
   };
 };
 
 exports.connect = connect;
 var _default = connect;
-exports["default"] = _default;
+exports.default = _default;

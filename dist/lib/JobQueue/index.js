@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports.default = void 0;
 
 var _MinHeap = _interopRequireDefault(require("../MinHeap"));
 
@@ -13,7 +13,7 @@ var _Pubsub = _interopRequireDefault(require("../Pubsub"));
 
 var _lodash = _interopRequireDefault(require("lodash.debounce"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -75,7 +75,7 @@ var JobQueue = function JobQueue(props) {
 
   _defineProperty(this, "grab", function () {
     var count = 0;
-    var items = new _Queue["default"]();
+    var items = new _Queue.default();
 
     while (!_this.heap.isEmpty && count < _this.chunkSize) {
       items.enqueue(_this.heap.extract());
@@ -106,14 +106,14 @@ var JobQueue = function JobQueue(props) {
   /**
    * @type {Heap}
    */
-  this.heap = new _MinHeap["default"](function (a, b) {
+  this.heap = new _MinHeap.default(function (a, b) {
     return a.priority > b.priority;
   });
   /**
    * @type {PubSub}
    */
 
-  this.pubsub = new _Pubsub["default"]();
+  this.pubsub = new _Pubsub.default();
   /**
    * @type {Number}
    */
@@ -150,7 +150,7 @@ var JobQueue = function JobQueue(props) {
    */
 
 
-  this.debouncedWork = (0, _lodash["default"])(this.work, Number(this.delay));
+  this.debouncedWork = (0, _lodash.default)(this.work, Number(this.delay));
   /**
    * @type {Object}
    */
@@ -174,4 +174,4 @@ var JobQueue = function JobQueue(props) {
 ;
 
 var _default = JobQueue;
-exports["default"] = _default;
+exports.default = _default;
