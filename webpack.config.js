@@ -50,6 +50,6 @@ module.exports = {
     port: 9000
   },
   externals: {
-    react: 'react'
+    react: 'react',
   },
 };
