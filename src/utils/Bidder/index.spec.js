@@ -75,6 +75,7 @@ describe('Bidder', () => {
 
   test('Should resolve video bidder when the promise resolves before the safeTimeout.', async () => {
     const bidder = new Bidder('test');
+    jest.mock('prebid.js');
     bidder.isReady = true;
     bidder.safeTimeout = 50;
     bidder.fetchVideoBids = () => new Promise(resolve => {
