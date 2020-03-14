@@ -1,7 +1,6 @@
 import Provider from './';
 import PubSub from '../../lib/Pubsub';
 import Bidder from '../../utils/Bidder';
-
 const createProps = ({ gpt = {}, ...props } = {}) => ({
   gpt: {
     refresh: jest.fn(),
@@ -112,9 +111,10 @@ describe('<Provider />', () => {
     expect(biddersReady).toBeCalledTimes(1);
   });
 
-  test('Calls biddersReady when bidProviders are have loaded or timed out.', done => {
+  test('Calls biddersReady when bidProviders have loaded or timed out.', done => {
     const pubsub = new PubSub();
     const bidder1 = new Bidder('bidder1');
+    jest.mock('prebid.js')
 
     bidder1.init = () => new Promise((resolve) => {
       setTimeout(resolve, 10);

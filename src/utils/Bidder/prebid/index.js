@@ -1,7 +1,5 @@
 /* eslint-disable no-console */
 import Bidder from '../';
-import prebid from 'prebid.js';
-
 const bidder = new Bidder('prebid');
 
 /**
@@ -12,19 +10,23 @@ bidder.init = (bidders = []) => {
   if (bidder.isReady) return;
   var pbjs = window.pbjs || {};
   pbjs.que = pbjs.que || [];
-  console.log('bidders', bidders)
-  return Promise.all(bidders.map(bidder => {
-    return import(
-      /* webpackMode: "lazy" */
+
+  return import(
+      /* webpackMode: "lazy" */      
       /* webpackInclude: /\.js$/ */
-      `prebid.js/modules/${bidder}`
-    )
-  }))
-    .then(() => {
-      // do something with the translations
-      prebid.processQueue();
-    })
-    .catch(err => {
+    'prebid.js'
+  )
+    .then(prebid => {
+      return Promise.all(bidders.map(bidder => {
+        return import(
+          /* webpackMode: "lazy" */
+          /* webpackInclude: /\.js$/ */
+          `prebid.js/modules/${bidder}`
+        ).then(() => {
+          prebid.processQueue();
+        })
+      }))
+    }).catch(err => {
       console.log('err', err);
     });
 };

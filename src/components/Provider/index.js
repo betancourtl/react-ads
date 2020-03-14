@@ -88,7 +88,7 @@ class Provider extends Component {
           if (bidder.name === 'prebid') {
             return bidder._init(this.bidders);
           }
-          return budder._init()
+          return bidder._init()
         }),
         this.props.initTimeout
       )
