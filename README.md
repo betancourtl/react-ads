@@ -18,89 +18,6 @@ Example
 
 ## Example
 
-
-`prebid.js`
-
-Create your prebid implementation. You can copy and paste this as a starting 
-point.
-
-```javascript
-/* eslint-disable no-console */
-import Bidder from '../';
-
-const bidder = new Bidder('prebid');
-
-bidder.init = () => {
-  if (bidder.isReady) return;
-  var pbjs = window.pbjs || {};
-  pbjs.que = pbjs.que || [];
-
-  return new Promise((resolve, reject) => {
-    const el = document.createElement('script');
-    el.src = `https://acdn.adnxs.com/prebid/not-for-prod/1/prebid.js?${Math.random(1, 10)}`;
-    el.async = true;
-    el.onload = resolve;
-    el.onerror = reject;
-    document.head.appendChild(el);
-  });
-};
-
-bidder.onBidWon = () => { };
-
-bidder.onTimeout = () => { };
-
-/**
- * Will fetch the prebid bids.
- * @param {Number} timeout 
- * @param {Number} failSafeTimeout 
- * @param {Object} adUnits 
- * @returns {Promise}
- */
-bidder.fetchBids = adUnits => new Promise(resolve => {
-  var pbjs = window.pbjs || {};
-  pbjs.que.push(function () {
-    // Set new adUnits
-    const adUnitCodes = adUnits.map(x => x.code);
-    pbjs.addAdUnits(adUnits);
-
-    // Make the request
-    pbjs.requestBids({
-      adUnitCodes,
-      timeout: bidder.timeout,
-      bidsBackHandler: response => {
-        resolve({
-          response,
-          bids: pbjs.getBidResponses(),
-          adUnitCodes,
-        });
-        // remove the adUnits
-        adUnitCodes.forEach(adUnitCode => window.pbjs.removeAdUnit(adUnitCode));
-      },
-    });
-  });
-});
-
-/**
- * 
- * @function
- * @param {Object} response.adUnitCodes
- * @returns {void}
- */
-bidder.handleResponse = ({ adUnitCodes }) => {
-  var pbjs = window.pbjs || {};
-  var googletag = window.googletag || {};
-  googletag.cmd.push(function () {
-    pbjs.que.push(function () {
-      pbjs.setTargetingForGPTAsync(adUnitCodes);
-    });
-  });
-};
-
-export default bidder;
-
-```
-
-
 `app.js`
 
 Import your bidder implementation and add it as a bidProvider.
@@ -131,7 +48,7 @@ class Example extends React.Component {
   render() {
     return (
       <Provider
-        bidProviders={[prebid]}        
+        bidders={['criteoBidAdapter', 'appnexusBidAdapter']}        
         chunkSize={5}
         adUnitPath="header-bid-tag-0"
         networkId={19968336}
@@ -169,10 +86,11 @@ export default Example;
 
 ## Provider
 
-| Name                  | Type     | Default  | Description                                                                                                                                                                                                                                                                                                                                                                                       |
-|-----------------------|----------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| bidProviders          | Bidders[] |          | Array of bidder implementations of the Bidder class that makes the request to handle the bids                                                                                                                                                                                                                                                                                                                     |
-| adIframeTitle         | String    |          | Sets that title for all ad container iframes created by pubads service, from this point onwards. |
+| Name                  | Type      | Default  | Description                                                                                                                                                                                                                                                                                                                                                                                       |
+|-----------------------|-----------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| bidProviders          | Bidders[] |          | Array of bidder implementations of the Bidder class that makes the request to handle the bids                                                                                                                                                                                                                                                                                                     |
+| bidders               | String[]  |    []    | Set the prebid bidders that you want to use. The bidders will be lazyloaded via script tags. This allows us to only import bidders that we want to use.                                                                                                                                                                                                                                           |
+| adIframeTitle         | String    |          | Sets that title for all ad container iframes created by pubads service, from this point onwards.                                                                                                                                                                                                                                                                                                  |
 | chunkSize             | Number    |          | This will fetch ads in chunks of the specified number.                                                                                                                                                                                                                                                                                                                                            |
 | networkId             | Number    |          | DFP network id.                                                                                                                                                                                                                                                                                                                                                                                   |
 | bidHandler({id, sizes})| Function |          | Function used to handle the prebid bids. The function must return a prebid formatted object.                                                                                                                                                                                                                                                                                                      |
@@ -180,7 +98,7 @@ export default Example;
 | refreshDelay          | Number    |          | Time to wait before refreshing ads. This allows ads to be added to a queue beforebeing defined and refreshed. This multiple ads to be refreshed at the same time.                                                                                                                                                                                                                                 |
 | setCentering          | Boolean   |          | Enables/disables centering of ads. This mode must be set before the service is enabled. Centering is disabled by default. In legacy gpt_mobile.js, centering is enabled by default.                                                                                                                                                                                                               |
 | targeting             | Object    |          | Sets page level targeting for all slots. This targeting will apply to all slots.                                                                                                                                                                                                                                                                                                                  |
-| bidTimeout            | Number    |          | Max amount of time a bid request can take before requesting ads.                                                                                                                                                                                                                                                                                                                                                                              |
+| bidTimeout            | Number    |          | Max amount of time a bid request can take before requesting ads.                                                                                                                                                                                                                                                                                                                                  |
 | enableVideoAds        | Boolean   |          | Signals to GPT that video ads will be present on the page. This enables competitive exclusion constraints on display and video ads. If the video content is known, call setVideoContent in order to be able to use content exclusion for display ads.                                                                                                                                             |
 | collapseEmptyDivs     | Boolean   |          | If you're using the asynchronous mode of Google Publisher Tags (GPT) and know that one or more ad slots on your page don't always get filled, you can instruct the browser to collapse empty divs by adding the collapseEmptyDivs(),method to your tags. This method may trigger a reflow of the content of your,page, so how you use it depends on how often you expect an ad slot to be,filled. |
 | divider               | String    |          | Divider used when generating the ad id. This is used only if no id is set on the ad.|
