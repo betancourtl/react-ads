@@ -2,7 +2,7 @@
   "name": "react-ads",
   "version": "2.0.1",
   "description": "reactjs implementation of googletag (gpt) and prebid.",
-  "main": "./dist/index.js",
+  "main": "./dist/react-ads.js",
   "peerDependencies": {
     "react": "^16.x"
   },
@@ -52,7 +52,8 @@
     "test:watch": "node node_modules/.bin/jest --watch --verbose false",
     "prebuild": "rm -rf ./dist",
     "build": "webpack",
-    "release": "np"
+    "release": "np",
+    "server": "webpack-dev-server"
   },
   "keywords": [
     "react",

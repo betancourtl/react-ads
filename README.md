@@ -1,7 +1,8 @@
 [![Build Status](https://travis-ci.com/webdeveloperpr/react-ads.svg?branch=master)](https://travis-ci.com/webdeveloperpr/react-ads)
 # react-ads
 
-This package allows you to render ads with DFP and Prebid.
+This package allows you to render ads with DFP and Prebid. All prebid modules 
+are split into separte chunks, that way you only load what you need.
 
 API
 - [Provider](#provider)
@@ -16,11 +17,72 @@ Example
 - [Example](#example)
 - [Storybook](https://webdeveloperpr.github.io/react-ads)
 
+## Installation
+
+```shell
+  npm i react-ads --save 
+```
+
+**webpack**
+
+Copy the bidder files into your assets dir. They can't 
+be loaded directly from `react-ads/dist/bidders`.
+
+Use the `copy-webpack-plugin` to do this if using weback
+
+```js
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var path = require('path');
+var babelConfig = require('./babel.config');
+var CopyPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+  mode: 'production',
+  entry: './src/index.js',
+  output: {
+    path: path.resolve(__dirname, './dist'),
+    filename: 'bundle.js'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.m?js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: babelConfig
+        }
+      }
+    ]
+  },
+  devServer: {
+    contentBase: path.join(__dirname, 'dist'),
+    compress: true,
+    port: 9000,
+  },
+  plugins: [
+  // Use the copy plugin to copy all the bundles into your statics dir.
+  // That way they can be lazy-loaded.
+    new CopyPlugin([
+      {
+        from: 'node_modules/react-ads/dist/bidders/bidder-*.js',
+        to: 'bidders/',
+        flatten: true,
+      }
+    ])
+  ]
+};
+```
+
+**Non webpack**
+
+just copy and paste `node_modules/react-ads/dist/bidders/bidder-*.js` files
+into your statics dir `statics/bidders/all-the-bidder-files`
+
+
 ## Example
 
 `app.js`
-
-Import your bidder implementation and add it as a bidProvider.
 
 ```javascript
 import React from 'react';

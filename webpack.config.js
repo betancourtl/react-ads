@@ -33,21 +33,17 @@ module.exports = {
   mode: 'production',
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    chunkFilename: 'bidder-[id].js',
-    filename: 'index.js',
+    path: __dirname + '/dist',
+    chunkFilename: 'bidders/bidder-[name].js',
+    filename: 'react-ads.js',
     libraryTarget: 'umd',
+    library: 'react-ads',
   },
   module: {
     rules: [
       jsLoader,
       prebidLoader,
     ]
-  },
-  devServer: {
-    contentBase: path.join(__dirname, 'dist'),
-    compress: true,
-    port: 9000
   },
   externals: {
     react: 'react',
