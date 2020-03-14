@@ -50,8 +50,8 @@ class Bidder {
    * @function
    * @returns {Promise}
    */
-  _init = () => {
-    const p = this.init();
+  _init = (x) => {
+    const p = this.init(x);
     if (p && p.then) return p
       .then(() => {
         this.isReady = true;

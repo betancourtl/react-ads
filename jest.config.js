@@ -73,7 +73,7 @@ module.exports = {
   // ],
 
   // A map from regular expressions to module names that allow to stub out resources with a single module
-  // moduleNameMapper: {},
+  // moduleNameMapper: {},a
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
@@ -120,7 +120,7 @@ module.exports = {
   // setupFiles: [],
 
   // The path to a module that runs some code to configure or set up the testing framework before each test
-  setupTestFrameworkScriptFile: '<rootDir>/test/test-setup.js',
+  setupFilesAfterEnv: ['<rootDir>/test/test-setup.js'],
 
   // A list of paths to snapshot serializer modules Jest should use for snapshot testing
   // snapshotSerializers: [],

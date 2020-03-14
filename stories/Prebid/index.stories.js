@@ -23,6 +23,11 @@ class Story extends React.Component {
   render() {
     return (
       <Provider
+        bidders={[
+          'criteoBidAdapter',
+          'rubiconBidAdapter',
+          'kargoBidAdapter',
+        ]}
         bidHandler={bidHandler}
         chunkSize={5}
         adUnitPath="header-bid-tag-0"
