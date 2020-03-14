@@ -37,6 +37,7 @@ class Provider extends Component {
     this.pubsub = props.pubsub;
     this.slotCount = {};
     this.initGPT();
+    this.bidders = props.bidders;
     this.bidManager = bidManager({
       refresh: gpt.refresh,
       chunkSize: props.chunkSize,
@@ -83,7 +84,12 @@ class Provider extends Component {
     if (!this.props.bidProviders.length) this.pubsub.emit('bidders-ready', true);
     else {
       timedPromise(
-        this.props.bidProviders.map(bidder => bidder._init()),
+        this.props.bidProviders.map(bidder => {
+          if (bidder.name === 'prebid') {
+            return bidder._init(this.bidders);
+          }
+          return budder._init()
+        }),
         this.props.initTimeout
       )
         .catch(err => console.log('Error initializing bidders', err))

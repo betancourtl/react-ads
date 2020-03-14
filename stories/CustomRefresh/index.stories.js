@@ -14,6 +14,11 @@ class Story extends React.Component {
   render() {
     return (
       <Provider
+        bidders={[
+          'criteoBidAdapter',
+          'rubiconBidAdapter',
+          'appnexusBidAdapter',
+        ]}
         refreshDelay={100}
         adUnitPath="travel"
         networkId={6355419}
@@ -52,7 +57,7 @@ class Story extends React.Component {
                   { viewPort: [0, 0], slots: [] },
                 ]}
               />
-            );  
+            );
           })}
         </div>
       </Provider>

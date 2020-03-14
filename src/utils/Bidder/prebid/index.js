@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import Bidder from '../';
+import prebid from 'prebid.js';
 
 const bidder = new Bidder('prebid');
 
@@ -7,19 +8,25 @@ const bidder = new Bidder('prebid');
  * Initializes the bidder.
  * @returns {Promise}
  */
-bidder.init = () => {
+bidder.init = (bidders = []) => {
   if (bidder.isReady) return;
   var pbjs = window.pbjs || {};
   pbjs.que = pbjs.que || [];
-
-  return new Promise((resolve, reject) => {
-    const el = document.createElement('script');
-    el.src = 'https://acdn.adnxs.com/prebid/not-for-prod/1/prebid.js';
-    el.async = true;
-    el.onload = resolve;
-    el.onerror = reject;
-    document.head.appendChild(el);
-  });
+  console.log('bidders', bidders)
+  return Promise.all(bidders.map(bidder => {
+    return import(
+      /* webpackMode: "lazy" */
+      /* webpackInclude: /\.js$/ */
+      `prebid.js/modules/${bidder}`
+    )
+  }))
+    .then(() => {
+      // do something with the translations
+      prebid.processQueue();
+    })
+    .catch(err => {
+      console.log('err', err);
+    });
 };
 
 bidder.onBidWon = () => { };
